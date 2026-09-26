@@ -1,0 +1,11 @@
+{
+  "model": "jev-1.13.0",
+  "unsafe_probability": 0.99,
+  "threshold": 0.20,
+  "decision": "BLOCK",
+  "forward_to_assistant": false,
+  "usage": {
+    "input_tokens": 498,
+    "output_tokens": 20
+  }
+}

@@ -1,0 +1,14 @@
+[project]
+name = "jev-bench"
+version = "0.1.0"
+description = "A typed-decision benchmark harness for Jev and djev"
+requires-python = ">=3.11"
+# Unpinned on purpose: uv resolves the current published versions and records
+# exact ones in uv.lock. No version here is typed from memory.
+dependencies = [
+    "huggingface-hub",
+    "pyarrow",
+]
+
+[tool.uv]
+package = false

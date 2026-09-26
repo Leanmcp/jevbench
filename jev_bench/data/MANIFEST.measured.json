@@ -1,0 +1,542 @@
+{
+  "manifest_version": "0.1",
+  "pinned_on": "2026-09-26",
+  "measured_at": "2026-09-26T12:17:14+0800",
+  "selected": [
+    "vqa_rad",
+    "scienceqa"
+  ],
+  "failures": [],
+  "sources": [
+    {
+      "key": "aegis2",
+      "hf_repo": "nvidia/Aegis-AI-Content-Safety-Dataset-2.0",
+      "revision": "d86bb8bedff51d25ac834ab7838f1cc61acb7a2c",
+      "license": "cc-by-4.0",
+      "tier": "safety",
+      "task_type": "noul",
+      "exposure": "unknown",
+      "files": [
+        {
+          "path": "test.json",
+          "local_path": "data/aegis2/test.json",
+          "bytes": 1731373,
+          "sha256": "b0a6d602260524866053cb34105194f074f2c2906e3691b68d43b9e6e9318f35",
+          "row_count": 1964,
+          "columns_observed": [
+            "id",
+            "reconstruction_id_if_redacted",
+            "prompt",
+            "response",
+            "prompt_label",
+            "response_label",
+            "violated_categories",
+            "prompt_label_source",
+            "response_label_source"
+          ],
+          "label_distribution": {
+            "n_distinct": 2,
+            "n_null": 0,
+            "counts": {
+              "unsafe": 1059,
+              "safe": 905
+            }
+          },
+          "detected_format": "json_array",
+          "columns_missing_vs_manifest": [],
+          "columns_extra_vs_manifest": [
+            "reconstruction_id_if_redacted"
+          ]
+        }
+      ],
+      "measured_at": "2026-09-26T12:15:22+0800"
+    },
+    {
+      "key": "atbench500",
+      "hf_repo": "AI45Research/ATBench",
+      "revision": "4476ef92ed8f85c8d58d8a5b9dfdf55aa7893138",
+      "license": "apache-2.0",
+      "tier": "safety",
+      "task_type": "noul",
+      "exposure": "unknown",
+      "files": [
+        {
+          "path": "ATBench500/test.json",
+          "local_path": "data/atbench500/ATBench500/test.json",
+          "bytes": 5422164,
+          "sha256": "031285443c6b8ca64fc117bd995a4b4490c340467136506763aeed1b23c8f34c",
+          "row_count": 500,
+          "columns_observed": [
+            "tool_used",
+            "content",
+            "conv_id",
+            "label",
+            "risk_source",
+            "failure_mode",
+            "real_world_harm"
+          ],
+          "label_distribution": {
+            "n_distinct": 2,
+            "n_null": 0,
+            "counts": {
+              "0": 250,
+              "1": 250
+            }
+          },
+          "detected_format": "json_array",
+          "columns_missing_vs_manifest": [],
+          "columns_extra_vs_manifest": []
+        }
+      ],
+      "measured_at": "2026-09-26T12:15:21+0800"
+    },
+    {
+      "key": "banking77",
+      "hf_repo": "mteb/banking77",
+      "revision": "18072d2685ea682290f7b8924d94c62acc19c0b2",
+      "license": "mit",
+      "tier": "options_stress",
+      "task_type": "choice",
+      "exposure": "reported",
+      "files": [
+        {
+          "path": "data/test-00000-of-00001.parquet",
+          "local_path": "data/banking77/data/test-00000-of-00001.parquet",
+          "bytes": 91367,
+          "sha256": "9575f636fdeae0c94a0f3f2d926ca8f9a2833b998cf94108936dfd5d72322bf9",
+          "row_count": 3076,
+          "row_groups": 4,
+          "columns_observed": [
+            "text",
+            "label",
+            "label_text"
+          ],
+          "label_distribution": {
+            "n_distinct": 77,
+            "n_null": 0,
+            "counts": {
+              "Refund_not_showing_up": 40,
+              "activate_my_card": 40,
+              "age_limit": 40,
+              "apple_pay_or_google_pay": 40,
+              "automatic_top_up": 40,
+              "balance_not_updated_after_bank_transfer": 40,
+              "balance_not_updated_after_cheque_or_cash_deposit": 40,
+              "beneficiary_not_allowed": 40,
+              "cancel_transfer": 40,
+              "card_about_to_expire": 40,
+              "card_acceptance": 40,
+              "card_arrival": 40,
+              "card_delivery_estimate": 40,
+              "card_linking": 40,
+              "card_not_working": 40,
+              "card_payment_fee_charged": 40,
+              "card_payment_not_recognised": 40,
+              "card_payment_wrong_exchange_rate": 40,
+              "card_swallowed": 40,
+              "cash_withdrawal_charge": 40,
+              "cash_withdrawal_not_recognised": 40,
+              "change_pin": 40,
+              "compromised_card": 40,
+              "contactless_not_working": 40,
+              "country_support": 40,
+              "declined_card_payment": 40,
+              "declined_cash_withdrawal": 40,
+              "declined_transfer": 40,
+              "direct_debit_payment_not_recognised": 40,
+              "disposable_card_limits": 40,
+              "edit_personal_details": 40,
+              "exchange_charge": 40,
+              "exchange_rate": 40,
+              "extra_charge_on_statement": 40,
+              "failed_transfer": 40,
+              "fiat_currency_support": 40,
+              "get_disposable_virtual_card": 40,
+              "get_physical_card": 40,
+              "getting_spare_card": 40,
+              "getting_virtual_card": 40,
+              "lost_or_stolen_card": 40,
+              "lost_or_stolen_phone": 40,
+              "order_physical_card": 40,
+              "passcode_forgotten": 40,
+              "pending_card_payment": 40,
+              "pending_cash_withdrawal": 40,
+              "pending_top_up": 40,
+              "pin_blocked": 40,
+              "receiving_money": 40,
+              "request_refund": 40,
+              "reverted_card_payment?": 40,
+              "supported_cards_and_currencies": 40,
+              "terminate_account": 40,
+              "top_up_by_bank_transfer_charge": 40,
+              "top_up_by_card_charge": 40,
+              "top_up_by_cash_or_cheque": 40,
+              "top_up_failed": 40,
+              "top_up_limits": 40,
+              "top_up_reverted": 40,
+              "topping_up_by_card": 40,
+              "transaction_charged_twice": 40,
+              "transfer_fee_charged": 40,
+              "transfer_into_account": 40,
+              "transfer_timing": 40,
+              "unable_to_verify_identity": 40,
+              "verify_my_identity": 40,
+              "verify_source_of_funds": 40,
+              "verify_top_up": 40,
+              "virtual_card_not_working": 40,
+              "visa_or_mastercard": 40,
+              "why_verify_identity": 40,
+              "wrong_amount_of_cash_received": 40,
+              "wrong_exchange_rate_for_cash_withdrawal": 40,
+              "atm_support": 39,
+              "exchange_via_app": 39,
+              "pending_transfer": 39,
+              "transfer_not_received_by_recipient": 39
+            }
+          },
+          "columns_missing_vs_manifest": [],
+          "columns_extra_vs_manifest": []
+        }
+      ],
+      "measured_at": "2026-09-26T12:15:16+0800"
+    },
+    {
+      "key": "jailbreak_classification",
+      "hf_repo": "jackhhao/jailbreak-classification",
+      "revision": "2f2ceeb39658696fd3f462403562b6eea5306287",
+      "license": "apache-2.0",
+      "tier": "safety",
+      "task_type": "noul",
+      "exposure": "unknown",
+      "files": [
+        {
+          "path": "default/jailbreak_dataset_test.csv",
+          "local_path": "data/jailbreak_classification/default/jailbreak_dataset_test.csv",
+          "bytes": 453350,
+          "sha256": "a546ce540973d8f5ef87ce3be4bd21ee5923154b9dda86eba5a12c7fa00829da",
+          "row_count": 400,
+          "columns_observed": [
+            "prompt",
+            "type"
+          ],
+          "label_distribution": {
+            "n_distinct": 2,
+            "n_null": 0,
+            "counts": {
+              "benign": 259,
+              "jailbreak": 141
+            }
+          },
+          "columns_missing_vs_manifest": [],
+          "columns_extra_vs_manifest": []
+        }
+      ],
+      "measured_at": "2026-09-26T12:15:26+0800"
+    },
+    {
+      "key": "medmcqa",
+      "hf_repo": "openlifescienceai/medmcqa",
+      "revision": "91c6572c454088bf71b679ad90aa8dffcd0d5868",
+      "license": "apache-2.0",
+      "tier": "mcq",
+      "task_type": "choice",
+      "exposure": "unknown",
+      "files": [
+        {
+          "path": "data/validation-00000-of-00001.parquet",
+          "local_path": "data/medmcqa/data/validation-00000-of-00001.parquet",
+          "bytes": 1476104,
+          "sha256": "b768a1ea34afc9f80d3106d9b21f80fa8a00ec450a1f6cd641af72ca9e591021",
+          "row_count": 4183,
+          "row_groups": 5,
+          "columns_observed": [
+            "id",
+            "question",
+            "opa",
+            "opb",
+            "opc",
+            "opd",
+            "cop",
+            "choice_type",
+            "exp",
+            "subject_name",
+            "topic_name"
+          ],
+          "label_distribution": {
+            "n_distinct": 4,
+            "n_null": 0,
+            "counts": {
+              "0": 1348,
+              "1": 1085,
+              "2": 925,
+              "3": 825
+            }
+          },
+          "columns_missing_vs_manifest": [],
+          "columns_extra_vs_manifest": []
+        }
+      ],
+      "measured_at": "2026-09-26T12:15:02+0800"
+    },
+    {
+      "key": "medqa_usmle",
+      "hf_repo": "GBaker/MedQA-USMLE-4-options",
+      "revision": "0fb93dd23a7339b6dcd27e241cb9b5eca62d4d18",
+      "license": "cc-by-4.0",
+      "tier": "mcq",
+      "task_type": "choice",
+      "exposure": "likely",
+      "files": [
+        {
+          "path": "phrases_no_exclude_test.jsonl",
+          "local_path": "data/medqa_usmle/phrases_no_exclude_test.jsonl",
+          "bytes": 2075679,
+          "sha256": "c3b905ccfa66152dc25afbcb2c10e86c0bdb208824f0658fcdb2c040f60a2beb",
+          "row_count": 1273,
+          "columns_observed": [
+            "question",
+            "answer",
+            "options",
+            "meta_info",
+            "answer_idx",
+            "metamap_phrases"
+          ],
+          "label_distribution": {
+            "n_distinct": 4,
+            "n_null": 0,
+            "counts": {
+              "A": 353,
+              "C": 346,
+              "B": 309,
+              "D": 265
+            }
+          },
+          "columns_missing_vs_manifest": [],
+          "columns_extra_vs_manifest": []
+        }
+      ],
+      "measured_at": "2026-09-26T12:15:13+0800"
+    },
+    {
+      "key": "mmlu_pro",
+      "hf_repo": "TIGER-Lab/MMLU-Pro",
+      "revision": "b189ec765aa7ed75c8acfea42df31fdae71f97be",
+      "license": "mit",
+      "tier": "mcq_wide",
+      "task_type": "choice",
+      "exposure": "likely",
+      "files": [
+        {
+          "path": "data/test-00000-of-00001.parquet",
+          "local_path": "data/mmlu_pro/data/test-00000-of-00001.parquet",
+          "bytes": 4144185,
+          "sha256": "0e24a191921c2f453518a537a8b2117bd137e7714d4ef1565e9ba06c1ecb9ad8",
+          "row_count": 12032,
+          "row_groups": 13,
+          "columns_observed": [
+            "question_id",
+            "question",
+            "options",
+            "answer",
+            "answer_index",
+            "cot_content",
+            "category",
+            "src"
+          ],
+          "label_distribution": {
+            "n_distinct": 10,
+            "n_null": 0,
+            "counts": {
+              "0": 1403,
+              "1": 1352,
+              "3": 1336,
+              "2": 1314,
+              "6": 1182,
+              "4": 1149,
+              "5": 1128,
+              "7": 1115,
+              "8": 1108,
+              "9": 945
+            }
+          },
+          "columns_missing_vs_manifest": [],
+          "columns_extra_vs_manifest": []
+        }
+      ],
+      "measured_at": "2026-09-26T12:15:14+0800"
+    },
+    {
+      "key": "prompt_injections",
+      "hf_repo": "deepset/prompt-injections",
+      "revision": "4f61ecb038e9c3fb77e21034b22511b523772cdd",
+      "license": "apache-2.0",
+      "tier": "safety",
+      "task_type": "noul",
+      "exposure": "unknown",
+      "files": [
+        {
+          "path": "data/test-00000-of-00001-701d16158af87368.parquet",
+          "local_path": "data/prompt_injections/data/test-00000-of-00001-701d16158af87368.parquet",
+          "bytes": 10892,
+          "sha256": "39ac797cabc157eeed58435a08593b2952bb6cb16fc394a2d383f447cc7b246e",
+          "row_count": 116,
+          "row_groups": 1,
+          "columns_observed": [
+            "text",
+            "label"
+          ],
+          "label_distribution": {
+            "n_distinct": 2,
+            "n_null": 0,
+            "counts": {
+              "1": 60,
+              "0": 56
+            }
+          },
+          "columns_missing_vs_manifest": [],
+          "columns_extra_vs_manifest": []
+        }
+      ],
+      "measured_at": "2026-09-26T12:15:24+0800"
+    },
+    {
+      "key": "pubmedqa",
+      "hf_repo": "qiaojin/PubMedQA",
+      "revision": "9001f2853fb87cab8d220904e0de81ac6973b318",
+      "license": "mit",
+      "tier": "grounded",
+      "task_type": "choice",
+      "exposure": "unknown",
+      "files": [
+        {
+          "path": "pqa_labeled/train-00000-of-00001.parquet",
+          "local_path": "data/pubmedqa/pqa_labeled/train-00000-of-00001.parquet",
+          "bytes": 1075513,
+          "sha256": "3d56bd1abc11884579ecc3aab9dd3cdfce8b7cf54715daeca93b8022b7be231c",
+          "row_count": 1000,
+          "row_groups": 1,
+          "columns_observed": [
+            "pubid",
+            "question",
+            "context",
+            "long_answer",
+            "final_decision"
+          ],
+          "label_distribution": {
+            "n_distinct": 3,
+            "n_null": 0,
+            "counts": {
+              "yes": 552,
+              "no": 338,
+              "maybe": 110
+            }
+          },
+          "columns_missing_vs_manifest": [],
+          "columns_extra_vs_manifest": []
+        }
+      ],
+      "measured_at": "2026-09-26T12:15:18+0800"
+    },
+    {
+      "key": "scienceqa",
+      "hf_repo": "derek-thomas/ScienceQA",
+      "revision": "f18b0a70359ebfb41f658fd564208d0355b013f4",
+      "license": "cc-by-sa-4.0",
+      "tier": "multimodal",
+      "task_type": "choice",
+      "exposure": "likely",
+      "files": [
+        {
+          "path": "data/test-00000-of-00001-f0e719df791966ff.parquet",
+          "local_path": "data/scienceqa/data/test-00000-of-00001-f0e719df791966ff.parquet",
+          "bytes": 122386007,
+          "sha256": "235e92d1f30155266df76bc9f28fc6e4fcb6bec2c6a8c7d67f9086ea6b392a84",
+          "row_count": 4241,
+          "row_groups": 5,
+          "columns_observed": [
+            "image",
+            "question",
+            "choices",
+            "answer",
+            "hint",
+            "task",
+            "grade",
+            "subject",
+            "topic",
+            "category",
+            "skill",
+            "lecture",
+            "solution"
+          ],
+          "columns_missing_vs_manifest": [],
+          "columns_extra_vs_manifest": []
+        }
+      ],
+      "measured_at": "2026-09-26T12:17:09+0800"
+    },
+    {
+      "key": "sst5",
+      "hf_repo": "SetFit/sst5",
+      "revision": "e51bdcd8cd3a30da231967c1a249ba59361279a3",
+      "license": "unspecified-on-card",
+      "tier": "ordinal",
+      "task_type": "score",
+      "exposure": "reported",
+      "files": [
+        {
+          "path": "test.jsonl",
+          "local_path": "data/sst5/test.jsonl",
+          "bytes": 342783,
+          "sha256": "1384216112a34f3d70b6fa210762f3399bb080410c0456ac6e54a5cb413f04b2",
+          "row_count": 2210,
+          "columns_observed": [
+            "text",
+            "label",
+            "label_text"
+          ],
+          "label_distribution": {
+            "n_distinct": 5,
+            "n_null": 0,
+            "counts": {
+              "1": 633,
+              "3": 510,
+              "4": 399,
+              "2": 389,
+              "0": 279
+            }
+          },
+          "columns_missing_vs_manifest": [],
+          "columns_extra_vs_manifest": []
+        }
+      ],
+      "measured_at": "2026-09-26T12:15:20+0800"
+    },
+    {
+      "key": "vqa_rad",
+      "hf_repo": "flaviagiammarino/vqa-rad",
+      "revision": "bcf91e7654fb9d51c8ab6a5b82cacf3fafd2fae9",
+      "license": "cc0-1.0",
+      "tier": "multimodal",
+      "task_type": "noul",
+      "exposure": "unknown",
+      "files": [
+        {
+          "path": "data/test-00000-of-00001-e5bc3d208bb4deeb.parquet",
+          "local_path": "data/vqa_rad/data/test-00000-of-00001-e5bc3d208bb4deeb.parquet",
+          "bytes": 10312735,
+          "sha256": "eb520bdab1116dd4f420120da19049d2315389fa126d031f65ec42e153264ea7",
+          "row_count": 451,
+          "row_groups": 1,
+          "columns_observed": [
+            "image",
+            "question",
+            "answer"
+          ],
+          "columns_missing_vs_manifest": [],
+          "columns_extra_vs_manifest": []
+        }
+      ],
+      "measured_at": "2026-09-26T12:17:06+0800"
+    }
+  ]
+}
