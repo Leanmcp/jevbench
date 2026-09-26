@@ -21,7 +21,13 @@ import statistics
 
 import common as C
 
-# Slices to build, in report order. vqa_rad is excluded: it needs djev's image path.
+# Image slices run on djev only: Jev's route in this workspace has no image input
+# and Laya takes text. They are NOT in DEFAULT_SLICES, so a plain build stays
+# text-only and comparable across all three models. Build them with
+# --with-images, or name one with --only.
+IMAGE_SLICES = {"vqa_rad", "scienceqa_image"}
+
+# Slices to build, in report order.
 DEFAULT_SLICES = [
     "medmcqa",
     "medqa_usmle",
@@ -48,15 +54,31 @@ def rows_for_slice(slice_key: str) -> tuple[list[dict], dict, dict]:
     src = C.source_by_key(C.parent_key(slice_key))
     extras: dict = {}
 
-    if slice_key == "scienceqa_text":
+    if slice_key in {"scienceqa_text", "scienceqa_image"}:
+        want_image = slice_key == "scienceqa_image"
         cols = [c for c in src["columns"] if c != "image"]
         rows = C.load_rows(src, columns=cols)
         flags = C.scienceqa_has_image(C.local_path(src))
         if len(flags) != len(rows):
             raise RuntimeError(f"scienceqa image flags {len(flags)} != rows {len(rows)}")
-        keep = [i for i, has_img in enumerate(flags) if not has_img]
+        keep = [i for i, has_img in enumerate(flags) if has_img == want_image]
         extras["filtered_from"] = len(rows)
-        extras["filter"] = "image is null (text-only rows)"
+        extras["filter"] = f"image is {'not null' if want_image else 'null'}"
+        rows = [dict(rows[i], _row_index=i) for i in keep]
+        return rows, src, extras
+
+    if slice_key == "vqa_rad":
+        cols = [c for c in src["columns"] if c != "image"]
+        rows = C.load_rows(src, columns=cols)
+        before = len(rows)
+        # Answers are free text. Only the closed-form yes/no subset gives a clean
+        # noul; everything else is dropped and the count is reported.
+        keep = [
+            i for i, r in enumerate(rows)
+            if str(r.get("answer", "")).strip().lower() in (C.VQA_YES | C.VQA_NO)
+        ]
+        extras["filtered_from"] = before
+        extras["filter"] = "answer is closed-form yes/no"
         rows = [dict(rows[i], _row_index=i) for i in keep]
         return rows, src, extras
 
@@ -79,16 +101,41 @@ def build_slice(slice_key: str, permute: bool, n_override: int | None) -> list[d
     stratify = src.get("stratify_by")
     if slice_key == "aegis2_response":
         stratify = "response_label"
-    if slice_key == "scienceqa_text":
+    if slice_key in {"scienceqa_text", "scienceqa_image"}:
         stratify = "subject"
+    if slice_key == "vqa_rad":
+        stratify = "answer"
 
     target = n_override if n_override is not None else src.get("target_n")
     picks = C.stratified_sample(rows, target, SEED, stratify)
+
+    # Image slices: extract the selected rows' images to files once, so cases.jsonl
+    # holds a path rather than megabytes of base64 and the run is resumable
+    # without rescanning a 122 MB parquet.
+    image_paths: dict[int, str] = {}
+    if slice_key in IMAGE_SLICES:
+        wanted = [rows[p]["_row_index"] for p in picks]
+        raw_images = C.read_images_at(C.local_path(src), wanted)
+        missing = [i for i in wanted if i not in raw_images]
+        if missing:
+            print(f"    WARNING {len(missing)} selected rows had no image bytes; they are dropped")
+        notes: list[dict] = []
+        for idx, raw in raw_images.items():
+            rel, note = C.write_image(C.parent_key(slice_key), idx, raw)
+            image_paths[idx] = rel
+            notes.append(note)
+        resized = sum(1 for n in notes if "resized_to" in n)
+        recompressed = sum(1 for n in notes if "recompressed_jpeg_quality" in n)
+        total_bytes = sum(n.get("final_bytes", n["original_bytes"]) for n in notes)
+        print(f"    extracted {len(image_paths)} images, {total_bytes:,} bytes total"
+              f" ({resized} resized to fit {C.MAX_IMAGE_SIDE}px, {recompressed} recompressed)")
 
     cases: list[dict] = []
     for pick in picks:
         row = rows[pick]
         row_index = row["_row_index"]
+        if slice_key in IMAGE_SLICES and row_index not in image_paths:
+            continue
         family_id = f"{slice_key}-{row_index}"
         perturbations = ["none"]
         if permute and slice_key in PERMUTABLE:
@@ -134,6 +181,7 @@ def build_slice(slice_key: str, permute: bool, n_override: int | None) -> list[d
                     "state_chars": chars,
                     "est_tokens": C.est_tokens(chars + len(C.state_json(built["question"]))),
                     "state_hash": C.content_hash(C.state_json(state)),
+                    "image_path": image_paths.get(row_index),
                     "license": src["license"],
                     "redistributable": src.get("redistributable", False),
                     "exposure": src["exposure"],
@@ -169,9 +217,14 @@ def main() -> int:
     ap.add_argument("--permute", action="store_true", help="add an option-order variant per case, doubling permutable slices")
     ap.add_argument("--n", type=int, default=None, help="override target_n for every slice")
     ap.add_argument("--list", action="store_true")
+    ap.add_argument("--with-images", action="store_true",
+                    help="also build the djev-only image slices (vqa_rad, scienceqa_image)")
     args = ap.parse_args()
 
-    slices = [s for s in DEFAULT_SLICES if (not args.only or s in set(args.only)) and s not in set(args.skip)]
+    catalogue = DEFAULT_SLICES + (sorted(IMAGE_SLICES) if args.with_images else [])
+    if args.only:
+        catalogue = DEFAULT_SLICES + sorted(IMAGE_SLICES)
+    slices = [s for s in catalogue if (not args.only or s in set(args.only)) and s not in set(args.skip)]
     if args.list:
         print("buildable slices: " + ", ".join(DEFAULT_SLICES))
         print("permutable:       " + ", ".join(sorted(PERMUTABLE)))

@@ -7,6 +7,7 @@ requires-python = ">=3.11"
 # exact ones in uv.lock. No version here is typed from memory.
 dependencies = [
     "huggingface-hub",
+    "pillow>=12.3.0",
     "pyarrow",
 ]
 

@@ -1,0 +1,59 @@
+\relax 
+\providecommand\hyper@newdestlabel[2]{}
+\providecommand\HyField@AuxAddToFields[1]{}
+\providecommand\HyField@AuxAddToCoFields[2]{}
+\@writefile{toc}{\contentsline {section}{\numberline {1}Introduction}{1}{section.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {2}Related work}{2}{section.2}\protected@file@percent }
+\newlabel{sec:related}{{2}{2}{Related work}{section.2}{}}
+\@writefile{toc}{\contentsline {paragraph}{Vendor and independent evaluation of typed-decision models.}{2}{section*.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Calibration.}{2}{section*.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Option-order sensitivity in multiple-choice evaluation.}{2}{section*.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Agent and content safety benchmarks.}{2}{section*.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {3}Benchmark construction}{2}{section.3}\protected@file@percent }
+\newlabel{sec:benchmark}{{3}{2}{Benchmark construction}{section.3}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.1}Sources}{2}{subsection.3.1}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces Benchmark sources. \textsc  {Exposure} records whether the dataset is reported in the training mixture of an evaluated model or its plausible base.}}{3}{table.1}\protected@file@percent }
+\newlabel{tab:sources}{{1}{3}{Benchmark sources. \textsc {Exposure} records whether the dataset is reported in the training mixture of an evaluated model or its plausible base}{table.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.2}Adapters and leakage control}{3}{subsection.3.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.3}Sampling and perturbation}{3}{subsection.3.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.4}Protocol}{3}{subsection.3.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {4}Experimental setup}{3}{section.4}\protected@file@percent }
+\newlabel{sec:setup}{{4}{3}{Experimental setup}{section.4}{}}
+\@writefile{toc}{\contentsline {paragraph}{Cost and duration.}{3}{section*.5}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces Evaluated systems. Serving conditions differ and are not matched; see Section~\ref {sec:limitations}.}}{4}{table.2}\protected@file@percent }
+\newlabel{tab:systems}{{2}{4}{Evaluated systems. Serving conditions differ and are not matched; see Section~\ref {sec:limitations}}{table.2}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {3}{\ignorespaces Accuracy with 95\% percentile bootstrap intervals over 2{,}000 resamples grouped by family. SST-5 reports mean absolute error on the expected level, where lower is better. \textsc  {Chance} is the mean per-case random-guess rate, accounting for varying option counts.}}{4}{table.3}\protected@file@percent }
+\newlabel{tab:main}{{3}{4}{Accuracy with 95\% percentile bootstrap intervals over 2{,}000 resamples grouped by family. SST-5 reports mean absolute error on the expected level, where lower is better. \textsc {Chance} is the mean per-case random-guess rate, accounting for varying option counts}{table.3}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {5}Results}{4}{section.5}\protected@file@percent }
+\newlabel{sec:results}{{5}{4}{Results}{section.5}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.1}Main comparison}{4}{subsection.5.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{The exception is informative.}{4}{section*.6}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Four slices are at chance for the 421M model.}{4}{section*.7}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.2}The operating point is wrong for every model}{4}{subsection.5.2}\protected@file@percent }
+\newlabel{sec:threshold}{{5.2}{4}{The operating point is wrong for every model}{subsection.5.2}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {4}{\ignorespaces Binary slices at the conventional 0.5 threshold, at the accuracy-maximising threshold, and threshold-free. Accuracy at the best threshold is selected on the data it scores and is therefore optimistic; it is reported as a diagnostic of available headroom, not as an operating point.}}{5}{table.4}\protected@file@percent }
+\newlabel{tab:threshold}{{4}{5}{Binary slices at the conventional 0.5 threshold, at the accuracy-maximising threshold, and threshold-free. Accuracy at the best threshold is selected on the data it scores and is therefore optimistic; it is reported as a diagnostic of available headroom, not as an operating point}{table.4}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {5}{\ignorespaces Fraction (\%) of matched families whose correctness changed when options were reordered. Reordering does not change the question, so any value materially above zero is positional preference.}}{5}{table.5}\protected@file@percent }
+\newlabel{tab:position}{{5}{5}{Fraction (\%) of matched families whose correctness changed when options were reordered. Reordering does not change the question, so any value materially above zero is positional preference}{table.5}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.3}Option-order sensitivity}{5}{subsection.5.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.4}Context budget is a confound that must be measured, not assumed}{5}{subsection.5.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.5}Probability mass on the gold option}{5}{subsection.5.5}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {6}{\ignorespaces The same 500 ATBench trajectories, input tokens as reported by each serving stack.}}{6}{table.6}\protected@file@percent }
+\newlabel{tab:context}{{6}{6}{The same 500 ATBench trajectories, input tokens as reported by each serving stack}{table.6}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {7}{\ignorespaces Count of cases where the correct option received exactly zero probability.}}{6}{table.7}\protected@file@percent }
+\newlabel{tab:zeromass}{{7}{6}{Count of cases where the correct option received exactly zero probability}{table.7}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.6}Image-grounded decisions}{6}{subsection.5.6}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Verification that the image is consumed.}{6}{section*.8}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Latency.}{6}{section*.9}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {6}Discussion}{6}{section.6}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Calibration, not accuracy, is the binding constraint.}{6}{section*.10}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{The interface admits non-overlapping competence.}{6}{section*.11}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Reading a question and choosing among options is the discriminating capability.}{6}{section*.12}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {7}Limitations}{6}{section.7}\protected@file@percent }
+\newlabel{sec:limitations}{{7}{6}{Limitations}{section.7}{}}
+\bibstyle{unsrt}
+\bibdata{references}
+\@writefile{lot}{\contentsline {table}{\numberline {8}{\ignorespaces Image-grounded decisions, djev-0.1. The ScienceQA pair is a controlled comparison: identical model, adapter and dataset, differing only in whether the answer requires the image.}}{7}{table.8}\protected@file@percent }
+\newlabel{tab:images}{{8}{7}{Image-grounded decisions, djev-0.1. The ScienceQA pair is a controlled comparison: identical model, adapter and dataset, differing only in whether the answer requires the image}{table.8}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {8}Reproducibility and artifacts}{7}{section.8}\protected@file@percent }
+\gdef \@abspage@last{7}

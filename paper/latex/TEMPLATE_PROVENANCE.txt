@@ -1,0 +1,10 @@
+# Provenance of vendored LaTeX style
+fetched_at: 2026-09-26T13:48:51Z
+source: https://github.com/kourgeorge/arxiv-style
+files:
+  - name: arxiv.sty
+    bytes: 7642
+    sha256: 5ca551dbda41573265dd8c1e9c983ba9729f7d4070a9f1503dd8c7fd65d1dc46
+  - name: template-upstream.tex.txt
+    bytes: 6874
+    sha256: 4a47b72175b5d10c8eeb677d7e94524a83e3c17facae2a6894324372028f6883

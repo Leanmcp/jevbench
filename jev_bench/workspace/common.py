@@ -525,9 +525,15 @@ def key_status() -> dict:
 class DecisionClient:
     """One typed decision per request against Jev or a local djev."""
 
-    def __init__(self, endpoint: str = JEV_URL, model: str | None = JEV_MODEL, require_key: bool = True, timeout: float = 60.0, max_retries: int = 6):
+    def __init__(self, endpoint: str = JEV_URL, model: str | None = JEV_MODEL, require_key: bool = True, timeout: float = 60.0, max_retries: int = 6, options: dict | None = None):
         self.endpoint = endpoint
+        # `model` is what goes on the wire. djev's documented request contract has
+        # only state/questions/options, so sending a model field there may be
+        # rejected; pass model=None and label the run with --label instead.
         self.model = model
+        # djev accepts options {seed, samples, diagnostics}. Pinning seed=0 and
+        # samples=1 is what makes a djev run reproducible; Jev ignores it.
+        self.options = options
         self.timeout = timeout
         self.max_retries = max_retries
         self._key = os.environ.get(API_KEY_ENV)
@@ -538,8 +544,12 @@ class DecisionClient:
 
     def build_request(self, case: dict) -> dict:
         body: dict[str, Any] = {"state": case["state"], "questions": {case["question_key"]: case["question"]}}
+        if case.get("_images"):
+            body["images"] = case["_images"]
         if self.model:
             body["model"] = self.model
+        if self.options:
+            body["options"] = dict(self.options)
         return body
 
     def call(self, case: dict) -> dict:
@@ -658,3 +668,159 @@ def jsonl_append(path: Path, records: Iterable[dict]) -> None:
     with path.open("a", encoding="utf-8") as fh:
         for rec in records:
             fh.write(json.dumps(rec, ensure_ascii=False) + "\n")
+
+
+# --------------------------------------------------------------------------
+# images (djev only)
+# --------------------------------------------------------------------------
+# djev's live /config: state_images 1, image_bytes 5,242,880, image_dimension
+# 2048, body_bytes 8,388,608. Images are extracted to files at build time and
+# base64'd at send time, so cases.jsonl stays small and publishable.
+
+IMAGES = DATA / "images"
+MAX_IMAGE_BYTES = 5_242_880
+MAX_IMAGE_SIDE = 2048
+
+_MAGIC = [
+    (b"\x89PNG\r\n\x1a\n", "image/png", ".png"),
+    (b"\xff\xd8\xff", "image/jpeg", ".jpg"),
+    (b"GIF87a", "image/gif", ".gif"),
+    (b"GIF89a", "image/gif", ".gif"),
+    (b"RIFF", "image/webp", ".webp"),
+]
+
+
+def sniff_image(raw: bytes) -> tuple[str, str]:
+    """(mime, extension) from magic bytes. djev rejects a wrong MIME, so this is
+    read from the bytes rather than assumed from the dataset."""
+    for magic, mime, ext in _MAGIC:
+        if raw.startswith(magic):
+            return mime, ext
+    return "image/png", ".png"
+
+
+def fit_image_limits(raw: bytes) -> tuple[bytes, str, dict]:
+    """Return (bytes, mime, note) within djev's limits, downscaling only if needed.
+
+    Pillow is imported lazily so the text-only pipeline never needs it.
+    """
+    mime, _ = sniff_image(raw)
+    note: dict = {"original_bytes": len(raw)}
+    try:
+        from PIL import Image  # noqa: PLC0415
+    except ImportError:
+        if len(raw) > MAX_IMAGE_BYTES:
+            raise RuntimeError(
+                f"image is {len(raw)} bytes, over djev's {MAX_IMAGE_BYTES}, and Pillow is not installed to resize it. "
+                "Run: uv add pillow"
+            )
+        return raw, mime, note
+
+    import io
+
+    with Image.open(io.BytesIO(raw)) as img:
+        width, height = img.size
+        note["original_size"] = [width, height]
+        needs_resize = max(width, height) > MAX_IMAGE_SIDE
+        if not needs_resize and len(raw) <= MAX_IMAGE_BYTES:
+            return raw, mime, note
+        work = img.convert("RGB") if img.mode not in {"RGB", "L"} else img.copy()
+
+    if needs_resize:
+        scale = MAX_IMAGE_SIDE / max(width, height)
+        work = work.resize((max(1, int(width * scale)), max(1, int(height * scale))), Image.LANCZOS)
+        note["resized_to"] = list(work.size)
+
+    import io as _io
+
+    for quality in (90, 80, 70, 60):
+        buf = _io.BytesIO()
+        work.save(buf, format="JPEG", quality=quality)
+        out = buf.getvalue()
+        if len(out) <= MAX_IMAGE_BYTES:
+            note["recompressed_jpeg_quality"] = quality
+            note["final_bytes"] = len(out)
+            return out, "image/jpeg", note
+    raise RuntimeError(f"cannot fit image under {MAX_IMAGE_BYTES} bytes even at JPEG q60")
+
+
+def write_image(source: str, row_index: int, raw: bytes) -> tuple[str, dict]:
+    """Write one image under data/images/<source>/ and return (relative path, note)."""
+    fitted, mime, note = fit_image_limits(raw)
+    ext = {"image/png": ".png", "image/jpeg": ".jpg", "image/gif": ".gif", "image/webp": ".webp"}.get(mime, ".png")
+    folder = IMAGES / source
+    folder.mkdir(parents=True, exist_ok=True)
+    path = folder / f"{row_index:06d}{ext}"
+    path.write_bytes(fitted)
+    note["mime"] = mime
+    return str(path.relative_to(DATA)), note
+
+
+def read_images_at(path: Path, indices: list[int], column: str = "image") -> dict[int, bytes]:
+    """Pull specific rows' image bytes without holding the whole column in memory."""
+    import pyarrow.parquet as pq
+
+    wanted = set(indices)
+    out: dict[int, bytes] = {}
+    offset = 0
+    pf = pq.ParquetFile(path)
+    for batch in pf.iter_batches(columns=[column], batch_size=32):
+        rows = batch.column(0).to_pylist()
+        for i, cell in enumerate(rows):
+            idx = offset + i
+            if idx in wanted and isinstance(cell, dict) and cell.get("bytes"):
+                out[idx] = cell["bytes"]
+        offset += len(rows)
+        if len(out) == len(wanted):
+            break
+    return out
+
+
+def data_url(relative_path: str) -> str:
+    import base64
+
+    path = DATA / relative_path
+    raw = path.read_bytes()
+    mime, _ = sniff_image(raw)
+    return f"data:{mime};base64," + base64.b64encode(raw).decode("ascii")
+
+
+def attach_images(case: dict) -> dict:
+    """Materialise a case's state image for sending. Never persisted."""
+    rel = case.get("image_path")
+    if rel:
+        case = dict(case)
+        case["_images"] = [data_url(rel)]
+    return case
+
+
+# vqa_rad answers are free text; only this closed-form subset gives a clean noul.
+VQA_YES = {"yes", "y"}
+VQA_NO = {"no", "n"}
+
+
+def adapt_vqa_rad(row: dict, order: list[int] | None) -> dict:
+    return {
+        "state": {"question": row["question"]},
+        "question": noul_q(
+            "A radiology image is supplied with the state. Answer the question about it.",
+            "The answer to the question is yes.",
+            "The answer to the question is no.",
+        ),
+        "gold": str(row["answer"]).strip().lower() in VQA_YES,
+        "option_texts": ["no", "yes"],
+        "order": [0, 1],
+    }
+
+
+def adapt_scienceqa_image(row: dict, order: list[int] | None) -> dict:
+    built = adapt_scienceqa_text(row, order)
+    built["question"]["instructions"] = (
+        "A science question is supplied in the state, together with an image. Select the single best answer."
+    )
+    return built
+
+
+ADAPTERS["vqa_rad"] = adapt_vqa_rad
+ADAPTERS["scienceqa_image"] = adapt_scienceqa_image
+SLICE_PARENT["scienceqa_image"] = "scienceqa"

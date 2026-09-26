@@ -1,0 +1,1 @@
+{"api_path":"/v1/request","model":"djev-0.1","auth_required":false,"limits":{"state_characters":20000,"instructions_characters":2000,"criterion_characters":500,"questions":32,"images":6,"state_images":1,"image_bytes":5242880,"image_dimension":2048,"body_bytes":8388608},"features":{"images":true,"question_images":true,"durable_requests":false}}

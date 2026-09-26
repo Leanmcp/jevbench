@@ -70,7 +70,20 @@ def main() -> int:
     ap.add_argument("--timeout", type=float, default=60.0)
     ap.add_argument("--stop-after", type=int, default=STOP_AFTER_CONSECUTIVE_FAILURES, help="abort after this many consecutive failures")
     ap.add_argument("--dry-run", action="store_true", help="build every request, send nothing")
+    ap.add_argument("--no-send-model", action="store_true",
+                    help="omit the model field from the request body. djev's documented contract is state/questions/options only.")
+    ap.add_argument("--label", default=None,
+                    help="what to record as the model in meta.json, when it differs from what is sent (e.g. djev-0.1)")
+    ap.add_argument("--seed", type=int, default=None, help="djev options.seed. Pass 0 for a reproducible run.")
+    ap.add_argument("--samples", type=int, default=None, help="djev options.samples, 1-4. Averages independent one-step reads.")
     args = ap.parse_args()
+
+    options: dict = {}
+    if args.seed is not None:
+        options["seed"] = args.seed
+    if args.samples is not None:
+        options["samples"] = args.samples
+    label = args.label or args.model or "unlabelled"
 
     keys = C.available_case_keys()
     if args.only:
@@ -83,12 +96,14 @@ def main() -> int:
     endpoint = resolve_endpoint(args.endpoint)
     status = C.key_status()
     print(f"endpoint  {endpoint}")
-    print(f"model     {args.model}")
+    print(f"model     sent={'(omitted)' if args.no_send_model else args.model}  recorded as={label}")
+    print(f"options   {options or '(none)'}")
     print(f"api key   {status['env_var']} present={status['present']} length={status['length']}")
 
     client = C.DecisionClient(
         endpoint=endpoint,
-        model=args.model,
+        model=None if args.no_send_model else args.model,
+        options=options or None,
         require_key=(not args.dry_run) and endpoint.startswith("https://api.typesafe.ai"),
         timeout=args.timeout,
     )
@@ -105,7 +120,7 @@ def main() -> int:
     if args.dry_run:
         sizes = []
         for case in work:
-            body = json.dumps(client.build_request(case), ensure_ascii=False)
+            body = json.dumps(client.build_request(C.attach_images(case)), ensure_ascii=False)
             sizes.append(len(body.encode("utf-8")))
         sizes.sort()
         print(f"\nBuilt {len(sizes):,} request bodies without sending any.")
@@ -113,7 +128,7 @@ def main() -> int:
         print("\nCheck one rendered request in data/cases/previews/ then drop --dry-run.")
         return 0
 
-    run_id = args.run_id or f"{args.model}-{time.strftime('%Y%m%dT%H%M%S')}"
+    run_id = args.run_id or f"{label}-{time.strftime('%Y%m%dT%H%M%S')}"
     run_dir = C.RUNS / run_id
     run_dir.mkdir(parents=True, exist_ok=True)
     pred_path = run_dir / "predictions.jsonl"
@@ -125,12 +140,18 @@ def main() -> int:
         print("Nothing left to send. Next: uv run workspace/score_runs.py --run-id " + run_id)
         return 0
 
-    (run_dir / "meta.json").write_text(
+    meta_path = run_dir / "meta.json"
+    prior_meta = json.loads(meta_path.read_text(encoding="utf-8")) if meta_path.exists() else {}
+    meta_path.write_text(
         json.dumps(
             {
                 "run_id": run_id,
+                "first_started_at": prior_meta.get("first_started_at") or prior_meta.get("started_at") or time.strftime("%Y-%m-%dT%H:%M:%S%z"),
+                "resume_count": prior_meta.get("resume_count", -1) + 1,
                 "endpoint": endpoint,
-                "model_requested": args.model,
+                "model_requested": label,
+                "model_sent_on_wire": None if args.no_send_model else args.model,
+                "request_options": options or None,
                 "started_at": time.strftime("%Y-%m-%dT%H:%M:%S%z"),
                 "slices": keys,
                 "n_cases_total": len(work),
@@ -153,7 +174,7 @@ def main() -> int:
     def handle(case: dict) -> dict:
         if state["stop"]:
             return {}
-        result = client.call(case)
+        result = client.call(C.attach_images(case))
         rec = {
             "run_id": run_id,
             "case_id": case["case_id"],
