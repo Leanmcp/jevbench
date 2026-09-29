@@ -1,22 +1,22 @@
-# Typed Decisions Under Audit: A Cross-Implementation Benchmark of Compact Decision Models
+# TDBench: An Open Evaluation Framework for Typed Decision Models
 
-**Draft preprint, 26 September 2026.** Author list, affiliations and acknowledgements to be completed. All numbers reported here were produced by the runs described in Section 4 and are reproducible from the released artifacts.
+**Draft preprint, 26 September 2026.** Author list, affiliations and acknowledgements to be completed. All numbers reported here were produced by the runs described in Section 5 and are reproducible from the released artifacts.
 
 ---
 
 ## Abstract
 
-A class of compact models has emerged that does not generate text but emits typed decisions: a probability for a yes/no question, a distribution over named options, or an expected level on an ordered rubric. These models are marketed on latency and calibration rather than on reasoning, and they are evaluated almost entirely by their own vendors. We construct jev-bench, a 12-slice benchmark spanning binary, multi-option and ordinal decisions over medicine, examination, banking intent, sentiment and agent safety, and evaluate three independent implementations of the typed-decision interface on identical inputs: a hosted commercial model (Jev 1.13), an open reimplementation on a diffusion backbone (djev-0.1 on DiffusionGemma 26B-A4B, served on one A100 80GB), and a 421M-parameter local model (Laya). We collect 24,818 decisions with full probability vectors.
+A class of compact models does not generate text but returns typed decisions: a probability for a yes/no question, a distribution over a set of choices, or an expected level on an ordered rubric. These models are marketed on latency and calibration, and they are evaluated almost entirely by their own vendors. We present TDBench, an open evaluation framework that runs any model exposing this interface on identical inputs, and apply it to 12 slices of existing public datasets covering medicine, examinations, banking intent, sentiment and agent safety. We evaluate three typed-decision models: Jev 1.13, a hosted commercial model; djev-0.1, an open model on a DiffusionGemma 26B-A4B backbone; and Laya, a 421M-parameter local model. We collect 24,818 decisions with full probability vectors.
 
-Three findings hold across the suite. First, all three models are materially miscalibrated at the natural operating point: moving the decision threshold alone raises accuracy from 73.3% to 94.8% for the commercial model on prompt-injection detection, and from 64.7% to 83.6% for the open reimplementation, with optimal thresholds as low as 0.002. Reported accuracy at a 0.5 threshold therefore understates every model we tested. Second, sensitivity to option order differs by an order of magnitude between implementations, from 2.6-5.4% of matched items flipping under reordering for the commercial model to 12.0-33.6% for the other two, which places a floor on how finely multi-option results can be interpreted. Third, the 421M model is statistically indistinguishable from random guessing on four of six multi-option slices while simultaneously outperforming both larger models on prompt-injection detection at the default threshold, indicating that the typed-decision interface admits models with sharply non-overlapping competence rather than a single quality ordering.
+Three findings hold across the suite. First, the models rank inputs well, but their probabilities sit away from the default 0.5 threshold, so much of their measured error comes from the threshold rather than the model. On prompt-injection detection the commercial model reaches an AUROC of 0.978 yet only 73.3% accuracy at 0.5; moving the threshold alone raises this to 94.8%, and raises djev-0.1 from 64.7% to 83.6%, with best thresholds as low as 0.002. These thresholds are chosen on the scored data, so the gains mark the headroom a calibration split can recover, and accuracy at 0.5 understates every model we tested. Second, sensitivity to option order differs by an order of magnitude: 2.6-5.4% of matched items flip under reordering for the commercial model, against 12.0-33.6% for the other two, which limits how finely set-of-choices results can be interpreted. Third, the 421M model is statistically indistinguishable from random guessing on four of six set-of-choices slices, yet outperforms djev-0.1 on prompt-injection detection at the default threshold, so no single quality ordering holds across the three models.
 
-We additionally report the first evaluation we are aware of for the image path of an open typed-decision model, and show by controlled ablation that its accuracy on image-grounded multiple choice (82.8%) is close to its accuracy on the text-only rows of the same dataset (84.7%). We release the case set, the adapters, and all 24,818 predictions with their complete probability vectors.
+We additionally report the first evaluation we are aware of for the image path of an open typed-decision model, and show by controlled ablation that its accuracy on image-grounded multiple choice (82.8%) is close to its accuracy on the text-only rows of the same dataset (84.7%). We release the framework, its dataset adapters, and all 24,818 predictions with their complete probability vectors.
 
 ---
 
 ## 1 Introduction
 
-Most evaluation of language models assumes a generative interface. A model is prompted, it produces tokens, and the tokens are parsed. A different interface has become commercially significant: the model is given a state and a typed question, and returns a decision directly, reading the probabilities of the allowed labels rather than generating and reparsing prose. Three question types cover the products we examined: a single probability for a yes/no question, a distribution over named options, and an expected index over an ordered rubric.
+Most evaluation of language models assumes a generative interface. A model is prompted, it produces tokens, and the tokens are parsed. A different interface has become commercially significant: the model is given a state and a typed question, and returns a decision directly, reading the probabilities of the allowed labels rather than generating and reparsing prose. Three question types cover the products we examined: a single probability for a yes/no question, a distribution over a set of choices, and an expected index over an ordered rubric.
 
 This interface is worth evaluating separately for three reasons. The output is a distribution rather than a string, so calibration is a first-class property rather than an afterthought. The latency profile is different, since there is no autoregressive decode. And the deployment pattern is different: these models sit in front of other systems as routers, guards and classifiers, where a miscalibrated probability produces an unsafe action rather than an unsatisfying paragraph.
 
@@ -24,36 +24,36 @@ Public evidence about these models comes predominantly from their vendors or fro
 
 We make four contributions.
 
-1. **A cross-implementation benchmark.** 12 slices, 8,016 text cases, built from eight public datasets pinned to exact commit hashes, with a single adapter per question type so that three independently developed implementations receive byte-identical inputs.
-2. **A measurement of the operating-point problem.** We show that the 0.5 threshold, which is the natural reading of a probability and the one every default integration uses, is wrong for all three models, and we quantify the accuracy left on the table.
-3. **A measurement of interface fragility.** By constructing a reordered twin of every multi-option case, we separate positional preference from task competence, and find that it differs by an order of magnitude across implementations.
-4. **Released predictions, not just scores.** All 24,818 decisions with full probability vectors, so that calibration, risk-coverage and distributional agreement can be recomputed by others without re-running any model.
+1. **An open evaluation framework.** TDBench runs any typed-decision model on 12 slices (8,016 text cases) of eight public datasets pinned to exact commit hashes. A single adapter per question type guarantees that every model receives byte-identical inputs.
+2. **A measurement of interface fragility.** By constructing a reordered twin of every set-of-choices case, we separate positional preference from task competence, and find that it differs by an order of magnitude across implementations.
+3. **A measurement of the operating-point problem.** We show that the 0.5 threshold, which is the natural reading of a probability and the one every default integration uses, is wrong for all three models, and we quantify the accuracy left on the table.
+4. **Released predictions.** We release all 24,818 decisions with their full probability vectors. Anyone can recompute calibration, risk-coverage curves and agreement between models from these files, and test new metrics on them, without access to the models or a GPU.
 
-Our aim is diagnostic rather than competitive. We do not claim to rank these systems for production use, and Section 7 sets out why the results should not be read that way.
+Our aim is diagnostic rather than competitive. We do not claim to rank these systems for production use, and Section 8 sets out why the results should not be read that way.
 
 ---
 
-## 2 What a typed decision is
+## 2 Preliminaries
 
-The research literature has no settled name for the interface this paper evaluates, so we define it before measuring it. Readers familiar with classification heads, constrained decoding or reranking will recognise pieces of each; Section 3 says where the differences lie.
+This section defines the interface evaluated in this paper and the quantities we measure on it. The interface combines elements of classification heads, constrained decoding and reranking; Section 3 discusses how it differs from each.
 
-### 2.1 The interface, informally
+### 2.1 The typed-decision interface
 
-A caller supplies a **state**, which is any text or JSON describing a situation, together with one or more **typed questions**. Each question declares its answer space up front. The model returns a distribution over exactly that declared space and nothing else. It emits no prose, and there is nothing to parse.
+A caller supplies a **state**, which is any text or JSON describing a situation, together with one or more **typed questions**. Each question declares its answer space in advance, and the model returns a probability distribution over exactly that space. No free text is generated, so no output parsing is required.
 
-Three question types cover every product we examined. The examples below are real requests from our suite with the probabilities the commercial model actually returned.
+Three question types cover every system we examined: **binary**, **choice** and **score**. Each corresponds to a response type with a long history in statistics, and vendors name them differently; the commercial API, for example, calls the binary type `noul`, and our released case files keep that name for compatibility. The examples below are requests from our suite, with the probabilities returned by the commercial model.
 
-**Noul, a yes/no probability.** An agent trajectory is supplied as state, and the question asks whether the agent behaved unsafely. The answer is one number, 0.90, which the application compares against a threshold of its own choosing. Nothing in the protocol says what that threshold should be, which turns out to matter a great deal (Section 6.2).
+**Binary.** The model returns a single probability that a yes/no proposition holds. Weather forecasting has evaluated outputs of this kind, such as the chance of rain tomorrow, since Brier (1950). In our example the state is an agent trajectory, the question asks whether the agent acted unsafely, and the model returned 0.90. The application turns this number into a decision by comparing it with a threshold of its own choosing. The interface does not specify that threshold, and Section 6.2 shows that the choice has a large effect on measured accuracy.
 
-**Choice, a distribution over named options.** A medical examination question is supplied as state, with four options declared as criteria. The returned distribution was `{a: 0.01, b: 0.00, c: 0.99, d: 0.00}` and the correct option was `c`. The caller receives the full vector, not just the argmax, which is what makes calibration measurable at all.
+**Choice.** The model returns a distribution over an unordered set of options. Econometrics studies the same output under the name discrete choice models, which predict the probability that a person selects each item from a fixed menu (McFadden, 1974). In our example the state is a medical examination question with four declared options, and the model returned `{a: 0.01, b: 0.00, c: 0.99, d: 0.00}`. The correct option was `c`. The caller receives the full probability vector, which makes calibration directly measurable.
 
-**Score, an expected level on an ordered rubric.** A sentence is supplied as state and the rubric is declared as an ordered list, here `["very negative", "negative", "neutral", "positive", "very positive"]`. The model returned level probabilities (0.99, 0.01, 0, 0, 0) and the answer 0.01, which is the *expected* level index, not the most likely one. The distinction is not cosmetic: a distribution (0.2, 0.5, 0.3) yields an expected level of 1.1 while its mode is 1, so evaluation code that rounds the expected value and evaluation code that takes the mode are measuring different quantities.
+**Score.** The model returns a distribution over an ordered set of levels, together with the expected level index. Statistics treats outcomes of this kind, such as ratings on a five-point scale, with ordinal regression: the levels are ordered, but the distances between them are not assumed equal (McCullagh, 1980). In our example the state is a sentence and the rubric is `["very negative", "negative", "neutral", "positive", "very positive"]`. The model returned level probabilities (0.99, 0.01, 0, 0, 0) and an expected level of 0.01. The expected level and the most probable level can differ: the distribution (0.2, 0.5, 0.3) has expected level 1.1 and mode 1. Evaluation code that rounds the expected value and evaluation code that takes the mode therefore measure different quantities.
 
-A single request may carry many questions against one state, and the vendors' latency claims are strongest in that regime. We deliberately send one question per request throughout, for the reasons in Section 8.
+A single request may carry several questions against one state, and vendor latency claims are strongest in that setting. We send one question per request throughout, for the reasons given in Section 8.
 
-### 2.2 The interface, formally
+### 2.2 Formal definition
 
-Let `s` be a state and `q` a question with type `τ(q) ∈ {noul, choice, score}` and a caller-declared, ordered label set `L_q = (l_1, ..., l_K)`. A typed-decision model defines a conditional distribution supported on that declared set:
+Let `s` be a state and `q` a question with type `τ(q) ∈ {binary, choice, score}` and a caller-declared, ordered label set `L_q = (l_1, ..., l_K)`. A typed-decision model defines a conditional distribution supported on that declared set:
 
 > `p_θ(· | s, q) ∈ Δ^{K-1}`, where `Δ^{K-1} = { p ∈ R^K_{≥0} : Σ_j p_j = 1 }`
 
@@ -61,7 +61,7 @@ The three types differ only in how a decision is read from `p_θ`:
 
 | type | read | note |
 |---|---|---|
-| noul, K=2 | `π = p_θ(true | s,q)`, decision `d_γ(π) = 1[π ≥ γ]` | not a decision until a threshold γ is supplied from outside the model |
+| binary, K=2 | `π = p_θ(true | s,q)`, decision `d_γ(π) = 1[π ≥ γ]` | not a decision until a threshold γ is supplied from outside the model |
 | choice | `ĵ = argmax_j p_j` | full vector also returned |
 | score, levels 0..K-1 | `E[Y] = Σ_k k·p_k ∈ [0, K-1]` | the expected level, not the mode |
 
@@ -95,15 +95,15 @@ We measure the **flip rate**: the fraction of matched pairs `(q, σq)` whose cor
 
 **Calibration.** We report Brier score under the sum convention, negative log-likelihood, expected calibration error with a declared bin count, and the ranked probability score for ordinal slices. The known weaknesses of expected calibration error, in particular its sensitivity to binning and its tolerance of uninformative base-rate predictors, apply here and we report accompanying metrics for that reason.
 
-**Option-order sensitivity in multiple-choice evaluation.** Sensitivity of model answers to the order and labelling of options is documented for generative models. We measure the analogous property for a model that returns a probability over named options rather than emitting a letter.
+**Option-order sensitivity in multiple-choice evaluation.** Sensitivity of model answers to the order and labelling of options is documented for generative models. We measure the analogous property for a model that returns a probability over a set of choices rather than emitting a letter.
 
 **Agent and content safety benchmarks.** Four of our slices derive from published safety corpora for agent trajectories, content moderation, prompt injection and jailbreak classification.
 
 ---
 
-## 4 Benchmark construction
+## 4 The TDBench framework
 
-### 3.1 Sources
+### 4.1 Data sources
 
 Eight public datasets, each pinned to a commit hash on the Hugging Face Hub and recorded with its licence and an exposure flag. Row counts were measured from the downloaded files rather than taken from dataset cards.
 
@@ -117,25 +117,25 @@ Eight public datasets, each pinned to a commit hash on the Hugging Face Hub and 
 | sst5 | SetFit/sst5 | unspecified | score | 5 levels | reported |
 | scienceqa_text | derek-thomas/ScienceQA | cc-by-sa-4.0 | choice | 2-5 | likely |
 | scienceqa_image | derek-thomas/ScienceQA | cc-by-sa-4.0 | choice | 2-5 | likely |
-| vqa_rad | flaviagiammarino/vqa-rad | cc0-1.0 | noul | 2 | unknown |
-| atbench500 | AI45Research/ATBench | apache-2.0 | noul | 2 | unknown |
-| aegis2, aegis2_response | nvidia/Aegis-AI-Content-Safety-2.0 | cc-by-4.0 | noul | 2 | unknown |
-| prompt_injections | deepset/prompt-injections | apache-2.0 | noul | 2 | unknown |
-| jailbreak_classification | jackhhao/jailbreak-classification | apache-2.0 | noul | 2 | unknown |
+| vqa_rad | flaviagiammarino/vqa-rad | cc0-1.0 | binary | 2 | unknown |
+| atbench500 | AI45Research/ATBench | apache-2.0 | binary | 2 | unknown |
+| aegis2, aegis2_response | nvidia/Aegis-AI-Content-Safety-2.0 | cc-by-4.0 | binary | 2 | unknown |
+| prompt_injections | deepset/prompt-injections | apache-2.0 | binary | 2 | unknown |
+| jailbreak_classification | jackhhao/jailbreak-classification | apache-2.0 | binary | 2 | unknown |
 
 **Exposure** records whether a dataset is reported in the training mixture of any evaluated model or its plausible base. BANKING77 and SST-5 appear in a published training recipe for this model family; MMLU-Pro, MedQA and ScienceQA are near-certain to appear in the pretraining of any large base model. Held-out rows from an exposed task measure in-domain generalisation, not transfer, and results must not be averaged across this flag.
 
-### 3.2 Adapters and leakage control
+### 4.2 Adapters and leakage control
 
 Each source has an explicit allowlist of model-visible fields. The adapter constructs the state from the allowlist alone. Gold labels, rationales and risk annotations are stored outside the state and never sent. The fields excluded for this reason include the answer explanations in MedMCQA, MMLU-Pro, PubMedQA and ScienceQA, the risk-source, failure-mode and real-world-harm annotations in ATBench, and the violated-category taxonomy in Aegis.
 
 A verification pass checks, for every built case, that gold is reachable among the presented options, that request limits are respected, and that no hidden field appears in the state. The reverse-direction check produced 33 flags on ScienceQA which we investigated and found to be false positives: the dataset's `solution` field quotes the question stem verbatim before reasoning, and its `lecture` field is duplicated into the visible `hint` upstream. We report this because the naive check has its causality backwards, and a benchmark that treats such flags as leaks will discard valid cases.
 
-### 3.3 Sampling and perturbation
+### 4.3 Sampling and perturbation
 
 Cases are sampled deterministically under a fixed seed, stratified proportionally with a floor of one per observed class so that a 500-family sample of BANKING77 retains all 77 intents. For every multi-option slice we construct a **reordered twin**: the same question with the same options presented in a shuffled order, so the correct option moves position. Both variants share a family identifier and are resampled together in the bootstrap. This yields 8,016 text cases from 5,516 families.
 
-### 3.4 Protocol
+### 4.4 Evaluation protocol
 
 One typed question per request, so one decision per case. This simplifies scoring and makes per-decision latency comparable across slices. It also forgoes the batching regime in which this model class is reported to be fastest, which we note as a limitation rather than mixing it in as a variable.
 
@@ -147,11 +147,11 @@ States are capped at 12,000 characters and every truncated case is flagged. 34 A
 
 | System | Description | Serving |
 |---|---|---|
-| Jev 1.13.0 | Hosted commercial typed-decision model | Vendor HTTP API, client in Singapore |
+| Jev 1.13.0 | Hosted commercial typed-decision model | Vendor HTTP API |
 | djev-0.1 | Open typed-decision layer over DiffusionGemma 26B-A4B via vLLM, pinned at source revision `3ce907e`, one denoising step | One NVIDIA A100-SXM4-80GB, driver 580.178.04, `max_model_len` 8192, `gpu_memory_utilization` 0.85, BF16 weights and KV cache, seed 0, samples 1 |
 | Laya 421M (English) | Local non-autoregressive decision model | Apple M3 Pro, MPS, 512-token default context |
 
-Identical case files were sent to all three. djev requests pinned `seed=0` and `samples=1`; the hosted API exposes no equivalent control, which we note in Section 7. Predictions record the decision, the full probability vector, latency, token usage and error state, but never the state text, which keeps the released predictions publishable for sources whose text cannot be redistributed.
+Identical case files were sent to all three. djev requests pinned `seed=0` and `samples=1`; the hosted API exposes no equivalent control, which we note in Section 8. Predictions record the decision, the full probability vector, latency, token usage and error state, but never the state text, which keeps the released predictions publishable for sources whose text cannot be redistributed.
 
 **Cost and duration.** The djev text suite completed 8,016 cases in 19.4 minutes with zero errors at concurrency 6, consuming 51 minutes of A100 time in total including model startup. The hosted API consumed 6.03M input tokens. The Laya suite ran on a laptop.
 
@@ -159,7 +159,7 @@ Identical case files were sent to all three. djev requests pinned `seed=0` and `
 
 ## 6 Results
 
-### 5.1 Main comparison
+### 6.1 Main results
 
 Accuracy with 95% percentile bootstrap intervals over 2,000 resamples grouped by family. SST-5 reports mean absolute error on the expected level, where lower is better. "Chance" is the mean per-case random-guess rate, which accounts for the varying option counts in MMLU-Pro and ScienceQA.
 
@@ -180,11 +180,11 @@ Accuracy with 95% percentile bootstrap intervals over 2,000 resamples grouped by
 
 The ordering Laya < djev < Jev holds on 11 of 12 slices. That three independently developed implementations order consistently across binary, multi-option and ordinal tasks is evidence that the harness measures a coherent capability rather than an artefact of our prompt wording.
 
-**The exception is informative.** On prompt-injection detection the 421M model outperforms both larger systems at the default threshold, by 7.7 points over the commercial model. Section 5.2 shows this is a threshold effect rather than superior discrimination, but the effect is real for any integration that uses 0.5.
+**The exception is informative.** On prompt-injection detection the 421M model outperforms both larger systems at the default threshold, by 7.7 points over the commercial model. Section 6.2 shows this is a threshold effect rather than superior discrimination, but the effect is real for any integration that uses 0.5.
 
 **Four slices are at chance for the 421M model.** MedMCQA 26.9 against 25.0, MedQA 26.1 against 25.0, MMLU-Pro 12.5 against 11.1, and PubMedQA 32.8 against 33.3, which is below chance. The same model reaches 93.0% on jailbreak classification. Competence within this interface is therefore not a single scalar.
 
-### 5.2 The operating point is wrong for every model
+### 6.2 Decision threshold and calibration
 
 For binary slices we report accuracy at the conventional 0.5 threshold, the threshold that maximises accuracy on the same data, and the area under the ROC curve, which is threshold-free.
 
@@ -201,11 +201,11 @@ For binary slices we report accuracy at the conventional 0.5 threshold, the thre
 
 Accuracy at the best threshold is selected on the data it scores and is therefore optimistic; it is reported as a diagnostic of available headroom, not as an operating point.
 
-Two observations follow. **The commercial model's worst slice is not a capability failure.** Its AUROC on prompt injection is 0.978, meaning it separates the classes almost perfectly, while its accuracy at 0.5 is 73.3% because its probabilities sit below the threshold. **The open reimplementation is more severely affected**, with optimal thresholds between 0.002 and 0.147 and expected calibration error up to 0.333. Laya shows the opposite sign on jailbreak classification, with an optimal threshold of 0.963.
+Two observations follow. **The commercial model's worst slice is not a capability failure.** Its AUROC on prompt injection is 0.978, meaning it separates the classes almost perfectly, while its accuracy at 0.5 is 73.3% because its probabilities sit below the threshold. **djev-0.1 is more severely affected**, with optimal thresholds between 0.002 and 0.147 and expected calibration error up to 0.333. Laya shows the opposite sign on jailbreak classification, with an optimal threshold of 0.963.
 
-The direction and magnitude of the offset differ by implementation and by slice, so there is no single correction. The practical consequence is that any comparison of these systems at a fixed 0.5 threshold measures probability placement as much as decision quality, and every accuracy figure in Section 5.1 understates the model that produced it.
+The direction and magnitude of the offset differ by implementation and by slice, so there is no single correction. The practical consequence is that any comparison of these systems at a fixed 0.5 threshold measures probability placement as much as decision quality, and every accuracy figure in Section 6.1 understates the model that produced it.
 
-### 5.3 Option-order sensitivity
+### 6.3 Option-order sensitivity
 
 Fraction of matched families whose correctness changed when the options were reordered. Reordering does not change the question, so any value materially above zero is positional preference.
 
@@ -221,7 +221,7 @@ An order of magnitude separates the commercial model from the other two. For dje
 
 For Laya the mechanism is direct. On MedMCQA it selected the first option 431 times out of 1,000 while the gold answer was in first position 267 times, and on MMLU-Pro it selected the first option 247 times against a gold frequency of 100. The commercial model's selections tracked the gold distribution closely (274/272/236/218 against 267/260/248/225). A model whose accuracy is near chance and whose answers are order-driven is not performing the task.
 
-### 5.4 Context budget is a confound that must be measured, not assumed
+### 6.4 Effect of context budget
 
 The same 500 ATBench trajectories, as reported by each serving stack:
 
@@ -235,7 +235,7 @@ Laya's figure is exactly its context limit on every case, meaning the trajectori
 
 Benchmarks comparing models with different context budgets should report per-case input tokens as measured by each serving stack. Tokenizer differences alone do not account for gaps of this size: on MedMCQA the same cases were 79 tokens for Laya against 386 for the commercial model.
 
-### 5.5 Probability mass on the gold option
+### 6.5 Probability mass on the gold option
 
 Count of cases where the correct option received exactly zero probability.
 
@@ -248,7 +248,7 @@ Count of cases where the correct option received exactly zero probability.
 
 djev assigned non-zero mass to the correct option in every one of 4,500 multi-option cases, including all 1,000 at 77 options. This is consistent with its documented mechanism of reading the probabilities of the allowed label tokens directly rather than relying on the answer appearing in a truncated top-k list. Laya failed this on more than a third of BANKING77 cases. Any evaluation relying on log-likelihood of the gold option must report this count rather than clipping it away, since a single zero makes the average infinite.
 
-### 5.6 Image-grounded decisions
+### 6.6 Image-grounded decisions
 
 We evaluated the image path of the open implementation. Neither of the other systems could be evaluated here: the commercial API route available to us has no image input, and the 421M model is text-only.
 
@@ -268,7 +268,7 @@ The ScienceQA pair is a controlled comparison: identical model, identical adapte
 
 ## 7 Discussion
 
-**Calibration, not accuracy, is the binding constraint.** The largest single improvement available to any model in this study is not a better model but a better threshold: 21.5 points for the commercial model on prompt injection, 18.9 for the open reimplementation on Aegis responses. Since these systems are deployed as gates whose threshold determines an action, this is an operational finding, not a scoring technicality. Threshold selection belongs on a calibration split, and vendors should publish a recommended operating point rather than leaving integrators to assume 0.5.
+**Calibration, not accuracy, is the binding constraint.** The largest single improvement available to any model in this study is not a better model but a better threshold: 21.5 points for the commercial model on prompt injection, 18.9 for djev-0.1 on Aegis responses. Since these systems are deployed as gates whose threshold determines an action, this is an operational finding, not a scoring technicality. Threshold selection belongs on a calibration split, and vendors should publish a recommended operating point rather than leaving integrators to assume 0.5.
 
 **The interface admits non-overlapping competence.** A 421M model at chance on four multi-option slices reached 93.0% on jailbreak classification with an AUROC of 0.998, and beat both larger systems on prompt injection at the default threshold. Buyers of this model class should evaluate on their own decision shape rather than on an aggregate score, and benchmark designers should resist reporting one.
 
@@ -278,9 +278,10 @@ The ScienceQA pair is a controlled comparison: identical model, identical adapte
 
 ## 8 Limitations
 
+1. **The commercial training method is undocumented.** The vendor describes its training as RLCD, Reinforcement Learning for Calibrated Decisions, and states that it optimises for "epistemically honest probabilities". No paper, technical specification, objective function, reward definition or training data description has been published, and we have not reproduced the method. We therefore cannot test whether the calibration behaviour we measure follows from this objective, and we attribute no measured behaviour to a training method.
 1. **Prompt wording is ours.** Instructions and criteria were written by us, not by any vendor. A different phrasing is a different benchmark. We release the exact adapters so this is inspectable rather than assumed.
 2. **One question per request.** This model class is reported to be fastest when many questions share one state. That regime is not measured here, so our latency figures should not be read as the best these systems can do.
-3. **Serving conditions are not matched.** The commercial model is remote, the open implementation is on a local A100 behind an SSH tunnel, and the 421M model is on a laptop. Latency comparisons are system comparisons.
+3. **Serving conditions are not matched.** The commercial model is remote, so its latency includes a network round trip; the open implementation is on a local A100 behind an SSH tunnel, and the 421M model is on a laptop. Latency comparisons are system comparisons.
 4. **Sampling controls are not matched.** djev requests pinned seed and sample count; the hosted API exposes no equivalent, so its variance is unmeasured and single-run.
 5. **Training exposure.** Five slices are flagged `reported` or `likely`. Results must not be averaged across that flag.
 6. **Truncation.** 34 ATBench and 1 jailbreak case exceeded the harness cap. Separately, Laya internally truncated every ATBench case to 512 tokens, which our flag did not detect.
@@ -311,5 +312,5 @@ This work used an AI coding assistant for harness implementation, data inspectio
 - Author list, affiliations, funding and conflicts of interest, including any relationship to the evaluated vendors.
 - Verify and complete every reference in Section 2. No bibliography entry in this draft has been checked against a primary source.
 - Confirm redistribution terms for each source against its current licence.
-- Add a paired bootstrap on shared case identifiers for the model-versus-model claims. Section 5.1 reports unpaired intervals.
+- Add a paired bootstrap on shared case identifiers for the model-versus-model claims. Section 6.1 reports unpaired intervals.
 - Consider adding: the multi-sample deliberation baseline, the 421M model's typed-decisions checkpoint at 1,024 tokens, and MMLU-Pro restricted to four options to separate option starvation from capability.

@@ -1,54 +1,67 @@
-\section{What a typed decision is}
+\section{Preliminaries}
 \label{sec:typed}
 
-The research literature has no settled name for the interface this paper
-evaluates, so we define it before measuring it. Readers familiar with
-classification heads, constrained decoding or reranking will recognise pieces of
-each; Section~\ref{sec:related} says where the differences lie.
+This section defines the interface evaluated in this paper and the quantities we
+measure on it. The interface combines elements of classification heads,
+constrained decoding and reranking; Section~\ref{sec:related} discusses how it
+differs from each.
 
-\subsection{The interface, informally}
+\subsection{The typed-decision interface}
 
 A caller supplies a \emph{state}, which is any text or JSON describing a
 situation, together with one or more \emph{typed questions}. Each question
-declares its answer space up front. The model returns a distribution over exactly
-that declared space and nothing else. It emits no prose, and there is nothing to
-parse.
+declares its answer space in advance, and the model returns a probability
+distribution over exactly that space. No free text is generated, so no output
+parsing is required.
 
-Three question types cover every product we examined. The examples below are real
-requests from our suite with the probabilities the commercial model actually
-returned.
+Three question types cover every system we examined: \textsc{binary},
+\textsc{choice} and \textsc{score}. Each corresponds to a response type with a
+long history in statistics, and vendors name them differently; the commercial API,
+for example, calls the binary type \texttt{noul}, and our released case files keep
+that name for compatibility. The examples below are requests from our suite, with
+the probabilities returned by the commercial model.
 
-\paragraph{Noul, a yes/no probability.} An agent trajectory is supplied as state,
-and the question asks whether the agent behaved unsafely. The answer is one
-number, $0.90$, which the application compares against a threshold of its own
-choosing. Nothing in the protocol says what that threshold should be, which turns
-out to matter a great deal (Section~\ref{sec:threshold}).
+\paragraph{Binary.} The model returns a single probability that a yes/no
+proposition holds. Weather forecasting has evaluated outputs of this kind, such as
+the chance of rain tomorrow, since \citet{brier1950}. In our example the state is an agent
+trajectory, the question asks whether the agent acted unsafely, and the model
+returned $0.90$. The application turns this number into a decision by comparing
+it with a threshold of its own choosing. The interface does not specify that
+threshold, and Section~\ref{sec:threshold} shows that the choice has a large
+effect on measured accuracy.
 
-\paragraph{Choice, a distribution over named options.} A medical examination
-question is supplied as state, with four options declared as criteria. The
-returned distribution was
+\paragraph{Choice.} The model returns a distribution over an unordered set of
+options. Econometrics studies the same output under the name discrete choice
+models, which predict the probability that a person selects each item from a
+fixed menu \citep{mcfadden1974conditional}. In our example the state is a medical
+examination question with four declared options, and the model returned
 \[
-  \{\texttt{a}: 0.01,\; \texttt{b}: 0.00,\; \texttt{c}: 0.99,\; \texttt{d}: 0.00\},
+  \{\texttt{a}: 0.01,\; \texttt{b}: 0.00,\; \texttt{c}: 0.99,\; \texttt{d}: 0.00\}.
 \]
-and the correct option was \texttt{c}. Note that the caller receives the full
-vector, which is what makes calibration measurable.
+The correct option was \texttt{c}. The caller receives the full probability
+vector, which makes calibration directly measurable.
 
-\paragraph{Score, an expected level on an ordered rubric.} A sentence is supplied
-as state and the rubric is declared as an ordered list, here
+\paragraph{Score.} The model returns a distribution over an ordered set of
+levels, together with the expected level index. Statistics treats outcomes of
+this kind, such as ratings on a five-point scale, with ordinal regression: the
+levels are ordered, but the distances between them are not assumed equal
+\citep{mccullagh1980ordinal}. In our example the state is a sentence
+and the rubric is
 \texttt{["very negative", "negative", "neutral", "positive", "very positive"]}.
-The model returned level probabilities $(0.99, 0.01, 0, 0, 0)$ and the answer
-$0.01$, the \emph{expected} level index. The mode would be a different number: a distribution $(0.2, 0.5, 0.3)$ yields an expected
-level of $1.1$ while its mode is $1$, so evaluation code that rounds the expected
-value and evaluation code that takes the mode are measuring different quantities.
+The model returned level probabilities $(0.99, 0.01, 0, 0, 0)$ and an expected
+level of $0.01$. The expected level and the most probable level can differ: the
+distribution $(0.2, 0.5, 0.3)$ has expected level $1.1$ and mode $1$. Evaluation
+code that rounds the expected value and evaluation code that takes the mode
+therefore measure different quantities.
 
-A single request may carry many questions against one state, and the vendors'
-latency claims are strongest in that regime. We deliberately send one question per
-request throughout, for the reasons in Section~\ref{sec:limitations}.
+A single request may carry several questions against one state, and vendor
+latency claims are strongest in that setting. We send one question per request
+throughout, for the reasons given in Section~\ref{sec:limitations}.
 
-\subsection{The interface, formally}
+\subsection{Formal definition}
 
 Let $s$ be a state and $q$ a question with type
-$\tau(q) \in \{\textsc{noul}, \textsc{choice}, \textsc{score}\}$ and a
+$\tau(q) \in \{\textsc{binary}, \textsc{choice}, \textsc{score}\}$ and a
 caller-declared, ordered label set $L_q = (l_1, \dots, l_K)$. A typed-decision
 model defines a conditional distribution supported on that declared set,
 \begin{equation}
@@ -59,11 +72,11 @@ model defines a conditional distribution supported on that declared set,
 \end{equation}
 The three types differ only in how a decision is read from $p_\theta$:
 \begin{align}
-  \textsc{noul} \; (K=2):&\quad \pi = p_\theta(\textsc{true} \mid s,q), \qquad d_\gamma(\pi) = \mathbf{1}[\pi \ge \gamma], \label{eq:noul}\\
+  \textsc{binary} \; (K=2):&\quad \pi = p_\theta(\textsc{true} \mid s,q), \qquad d_\gamma(\pi) = \mathbf{1}[\pi \ge \gamma], \label{eq:binary}\\
   \textsc{choice}:&\quad \hat\jmath = \operatorname*{arg\,max}_{j} \; p_j, \label{eq:choice}\\
   \textsc{score} \; (\text{levels } 0..K{-}1):&\quad \mathbb{E}[Y] = \sum_{k=0}^{K-1} k \, p_k \;\in\; [0, K-1]. \label{eq:score}
 \end{align}
-Equation~\eqref{eq:noul} makes explicit that a \textsc{noul} answer is not a
+Equation~\eqref{eq:binary} makes explicit that a \textsc{binary} answer is not a
 decision until a threshold $\gamma$ is supplied from outside the model. The
 convention $\gamma = 0.5$ is the integrator's choice, and
 Section~\ref{sec:threshold} shows it is the wrong choice for every system we
@@ -78,13 +91,12 @@ over the declared labels alone,
   p_j = \frac{\exp(z_{t_j})}{\sum_{k=1}^{K} \exp(z_{t_k})}.
   \label{eq:restricted}
 \end{equation}
-Two consequences are worth stating because both are measurable. Every declared
-label receives positive mass by construction, so an implementation faithful to
-\eqref{eq:restricted} cannot assign zero probability to the correct option;
-Section~\ref{sec:zeromass} reports one implementation achieving exactly that
-across 4{,}500 multi-option cases and another failing it on more than a third of a
-77-option slice. And the cost is one forward pass regardless of $K$, rather than
-one pass per candidate token.
+This construction has two measurable consequences. First, every declared label
+receives positive mass, so an implementation faithful to \eqref{eq:restricted}
+cannot assign zero probability to the correct option;
+Section~\ref{sec:zeromass} reports one implementation meeting this across
+4{,}500 multi-option cases and another failing it on more than a third of a
+77-option slice. Second, a decision costs one forward pass for any $K$.
 
 \paragraph{Calibration.} A model is calibrated if its numbers mean what they say:
 for all $v \in [0,1]$ and all labels $l$,
@@ -96,13 +108,12 @@ Calibration is distinct from \emph{discrimination}, which concerns only the
 ranking that $p_\theta$ induces and is measured threshold-free by the area under
 the ROC curve. The distinction is the backbone of Section~\ref{sec:threshold},
 where we exhibit a model with AUROC $0.978$ and accuracy $73.3\%$ at
-$\gamma = 0.5$: its ordering is nearly perfect while its absolute values are
-displaced downward.
+$\gamma = 0.5$: its ranking is nearly perfect, and its probabilities are
+shifted downward.
 
 \paragraph{Order invariance.} For a permutation $\sigma$ of $\{1,\dots,K\}$, write
-$\sigma q$ for the question with its labels reordered. Reordering the options does
-not change what was asked, so a model that reads the question rather than the
-layout should satisfy
+$\sigma q$ for the question with its labels reordered. Reordering the options
+leaves the question unchanged, so an order-invariant model satisfies
 \begin{equation}
   p_\theta\big(l_{\sigma(j)} \mid s, \sigma q\big) = p_\theta\big(l_j \mid s, q\big)
   \quad \text{for all } j.
@@ -110,12 +121,12 @@ layout should satisfy
 \end{equation}
 We measure the \emph{flip rate}: the fraction of matched pairs $(q, \sigma q)$
 whose correctness differs. It bounds how much of a reported accuracy is
-attributable to label position instead of the task. One caution on reading it:
-a model at chance accuracy has a high expected flip rate mechanically, so the flip
-rate is interpretable only alongside an accuracy above chance.
+attributable to label position. A model at chance accuracy has a high expected
+flip rate mechanically, so the flip rate is interpretable only alongside an
+accuracy above chance.
 
-\paragraph{Confidence is not a probability of correctness.} These
-implementations also return a scalar derived from the concentration of $p$, for
-instance $1 - H(p)/\log K$ with $H$ the Shannon entropy. It is a property of the
-output distribution and carries no calibration guarantee. We never use it as a
-correctness estimate, and report AUROC and expected calibration error instead.
+\paragraph{Confidence scores.} These implementations also return a scalar
+derived from the concentration of $p$, for instance $1 - H(p)/\log K$ with $H$
+the Shannon entropy. It is a property of the output distribution and carries no
+calibration guarantee. We do not use it as a correctness estimate; we report
+AUROC and expected calibration error.

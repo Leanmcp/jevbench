@@ -4,23 +4,16 @@
 \subsection{Training compact decision models}
 
 The training recipes behind this model class are only partly public. The
-best-documented ingredient is RLCD, Reinforcement Learning from Contrast
-Distillation \citep{yang2024rlcd}, which builds preference pairs without human
-annotation and without a post-hoc judge: for a prompt $x$, a positive variant
-$x^+$ steers generation toward the target attribute and a negative variant $x^-$
-steers it away, continuations are sampled from each, and the pair is labelled by
-the construction that produced it. The signal is generative. RLAIF and
-constitutional methods instead need a judge that can rank two finished outputs,
-so the judge's errors enter the training data.
-
-We flag one attribution carefully. The commercial vendor uses the term RLCD in
-public material describing its model, but publishes no specification, and we have
-not reproduced its method. We therefore do not attribute any behaviour we measure
-to a training objective, and Section~\ref{sec:limitations} records this as a
+commercial vendor describes its training as RLCD, Reinforcement Learning for
+Calibrated Decisions, and states that it optimises for answers with
+``epistemically honest probabilities'' \citep{typesafe2026jev}. The vendor
+publishes no paper, specification or objective function, and we have not
+reproduced the method. We therefore attribute no measured behaviour to a
+training objective, and Section~\ref{sec:limitations} records this as a
 limitation.
 
-A second ingredient is distillation of a teacher's full output distribution into a
-small model. Soft targets matter more here than for generative models: the product
+Distillation of a teacher's full output distribution into a small model is
+relevant to this class. Soft targets matter more here than for generative models: the product
 of a typed-decision model is the distribution itself, so a student that matches
 only the teacher's argmax reproduces the decision and discards the calibration.
 
@@ -31,7 +24,7 @@ Section~\ref{sec:limitations} that our suite lacks such a baseline, which leaves
 open whether a task-specific classifier would beat all three systems on the
 slices where they look strongest.
 
-\subsection{Constrained decoding, and why typed decisions differ}
+\subsection{Constrained decoding}
 
 A reader may reasonably ask why a separate interface is needed when constrained
 decoding already forces a model's output into a declared shape. Grammar-guided
@@ -102,7 +95,7 @@ of a calibration split in Section~\ref{sec:threshold}.
 Sensitivity of multiple-choice answers to option order and option labelling is
 documented for generative models, where it is attributed to a token-level
 selection bias over option identifiers \citep{zheng2024mcqbias}. Our flip-rate
-measurement is the analogue for a model that returns a distribution over named
+measurement is the analogue for a model that returns a distribution over a set of
 options instead of emitting an identifier, and Section~\ref{sec:position} shows
 that it separates implementations of the same interface by an order of magnitude.
 The bias is persistent enough that recent work makes permutation consistency a
