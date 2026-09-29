@@ -1,0 +1,42 @@
+% Figure: a reordered-twin family on which Jev 1.13's correctness flips.
+% Cases medqa_usmle-0-none and medqa_usmle-0-permuted, run
+% jev-1.13.0-20260926T133639. Option texts are abbreviated. Bars to scale:
+% 1.0 = 2.2 cm. The correct option is drawn in the tdok colour.
+\begin{tikzpicture}[
+  font=\footnotesize,
+  head/.style={font=\small\bfseries, anchor=west},
+  opt/.style={anchor=west, text width=3.9cm},
+  val/.style={anchor=west, font=\scriptsize},
+]
+  % ---- original order ---------------------------------------------------------
+  \node[head] at (0,0.55) {Original order};
+  \foreach \yy/\ltr/\txt/\pr/\col in {
+      0/a/{Disclose the error to the patient}/0.65/tdbar,
+      -0.5/b/{Tell the attending he must disclose}/0.32/tdok,
+      -1.0/c/{Report to the ethics committee}/0.01/tdbar,
+      -1.5/d/{Refuse to dictate the report}/0.02/tdbar} {
+    \node[anchor=west, font=\ttfamily] at (0,\yy) {\ltr};
+    \node[opt] at (0.3,\yy) {\txt};
+    \fill[\col] (4.35,\yy-0.12) rectangle ++(\pr*2.2,0.24);
+    \node[val] at ({4.4+\pr*2.2},\yy) {\pr};
+  }
+  \node[anchor=west, font=\scriptsize] at (0,-2.1)
+    {Jev selects \texttt{a}: \textbf{incorrect}.};
+
+  % ---- reordered twin ---------------------------------------------------------
+  \begin{scope}[xshift=8.3cm]
+    \node[head] at (0,0.55) {Reordered twin};
+    \foreach \yy/\ltr/\txt/\pr/\col in {
+        0/a/{Tell the attending he must disclose}/0.51/tdok,
+        -0.5/b/{Report to the ethics committee}/0.01/tdbar,
+        -1.0/c/{Refuse to dictate the report}/0.05/tdbar,
+        -1.5/d/{Disclose the error to the patient}/0.43/tdbar} {
+      \node[anchor=west, font=\ttfamily] at (0,\yy) {\ltr};
+      \node[opt] at (0.3,\yy) {\txt};
+      \fill[\col] (4.35,\yy-0.12) rectangle ++(\pr*2.2,0.24);
+      \node[val] at ({4.4+\pr*2.2},\yy) {\pr};
+    }
+    \node[anchor=west, font=\scriptsize] at (0,-2.1)
+      {Jev selects \texttt{a}: \textbf{correct}.};
+  \end{scope}
+\end{tikzpicture}

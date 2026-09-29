@@ -3,29 +3,31 @@ Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
 The top-level auxiliary file: main.aux
 The style file: unsrtnat.bst
 Database file #1: references.bib
+Warning--I didn't find a database entry for "deepset2023promptinjections"
+Warning--I didn't find a database entry for "jackhhao2023jailbreak"
 You've used 22 entries,
             2481 wiz_defined-function locations,
-            680 strings with 9941 characters,
-and the built_in function-call counts, 9794 in all, are:
-= -- 702
-> -- 722
-< -- 11
-+ -- 265
-- -- 221
-* -- 793
-:= -- 1623
+            683 strings with 9998 characters,
+and the built_in function-call counts, 9647 in all, are:
+= -- 700
+> -- 696
+< -- 12
++ -- 257
+- -- 213
+* -- 770
+:= -- 1595
 add.period$ -- 75
 call.type$ -- 22
 change.case$ -- 44
 chr.to.int$ -- 22
 cite$ -- 22
-duplicate$ -- 490
-empty$ -- 830
-format.name$ -- 247
-if$ -- 2053
+duplicate$ -- 482
+empty$ -- 822
+format.name$ -- 239
+if$ -- 2026
 int.to.chr$ -- 1
 int.to.str$ -- 23
-missing$ -- 22
+missing$ -- 21
 newline$ -- 124
 num.names$ -- 68
 pop$ -- 224
@@ -35,7 +37,7 @@ quote$ -- 0
 skip$ -- 283
 stack$ -- 0
 substring$ -- 267
-swap$ -- 97
+swap$ -- 96
 text.length$ -- 5
 text.prefix$ -- 0
 top$ -- 0
@@ -44,3 +46,4 @@ warning$ -- 0
 while$ -- 65
 width$ -- 0
 write$ -- 296
+(There were 2 warnings)

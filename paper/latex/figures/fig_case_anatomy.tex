@@ -1,0 +1,53 @@
+% Figure: how the adapter turns one MedQA-USMLE row (row 0 of the pinned test
+% file) into a request and an answer key. Field names and values are copied from
+% jev_bench/data/medqa_usmle/phrases_no_exclude_test.jsonl and
+% jev_bench/data/cases/previews/medqa_usmle.json; long values are elided.
+\begin{tikzpicture}[
+  font=\footnotesize,
+  field/.style={draw=tdline, fill=#1, text width=6.2cm, align=left,
+                inner sep=3pt, anchor=north west},
+  panel/.style={draw=tdline, rounded corners=2pt, fill=#1, text width=6.4cm,
+                align=left, inner sep=4pt, anchor=west},
+  arr/.style={-{Stealth[length=2mm]}, semithick, draw=tdline},
+  head/.style={font=\small\bfseries, anchor=south west},
+]
+  % ---- the raw dataset row --------------------------------------------------
+  \node[head] at (0,0.05) {Dataset row (MedQA-USMLE)};
+  \node[field=tdvis] (f1) at (0,0)
+    {\texttt{question}\quad A junior orthopaedic surgery resident \dots\ Which
+     of the following is the correct next action for the resident to take?};
+  \node[field=tdvis] (f2) at ([yshift=-1pt]f1.south west)
+    {\texttt{options}\quad A: Disclose the error to the patient \dots;
+     B: Tell the attending that he cannot fail to disclose \dots;
+     C: Report the physician to the ethics committee;
+     D: Refuse to dictate the operative report};
+  \node[field=tdhid] (f3) at ([yshift=-6pt]f2.south west)
+    {\texttt{answer}\quad Tell the attending that he cannot fail to disclose
+     this mistake};
+  \node[field=tdhid] (f4) at ([yshift=-1pt]f3.south west)
+    {\texttt{answer\_idx}\quad B};
+  \node[field=tdhid] (f5) at ([yshift=-1pt]f4.south west)
+    {\texttt{meta\_info}\quad step1};
+  \node[field=tdhid] (f6) at ([yshift=-1pt]f5.south west)
+    {\texttt{metamap\_phrases}\quad [junior orthopaedic surgery resident,
+     completing, carpal tunnel repair, \dots]};
+
+  \node[fit=(f1)(f2), inner sep=0pt] (vis) {};
+  \node[fit=(f3)(f6), inner sep=0pt] (hid) {};
+
+  % ---- what the adapter produces -------------------------------------------
+  \coordinate (rc) at (8.0,0);
+  \node[panel=tdreq] (req) at (vis.east -| rc)
+    {\textbf{Request sent to the model}\\[2pt]
+     \texttt{state.vignette}\quad A junior orthopaedic surgery resident \dots\\
+     \texttt{type}\quad \texttt{choice}\\
+     \texttt{instructions}\quad A clinical vignette is supplied in the state.
+     Select the single best answer.\\
+     \texttt{criteria}\quad \texttt{a}--\texttt{d}, the four options};
+  \node[panel=tdkey] (key) at (hid.east -| rc)
+    {\textbf{Answer key, used only by the scorer}\\[2pt]
+     \texttt{gold}\quad \texttt{b}};
+
+  \draw[arr] (vis.east) -- node[above, font=\scriptsize, text=tdmuted] {visible} (req.west);
+  \draw[arr] (hid.east) -- node[above, font=\scriptsize, text=tdmuted] {withheld} (key.west);
+\end{tikzpicture}

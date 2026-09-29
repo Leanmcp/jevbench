@@ -1,0 +1,186 @@
+\section{The TDBench framework}
+\label{sec:benchmark}
+
+TDBench turns rows of public datasets into typed-decision requests, sends the same
+requests to every model under test, and scores the returned probability vectors
+against answers the models never see. Figure~\ref{fig:pipeline} shows the
+pipeline. This section describes the datasets, what a single case looks like, how
+answers are kept out of the request, and how cases are sampled.
+
+\begin{figure}[t]
+\centering
+\input{figures/fig_pipeline}
+\caption{The TDBench pipeline. An adapter splits each dataset row into a request,
+which is sent to the model, and an answer key, which only the scorer reads. For
+set-of-choices slices, every request also has a reordered twin with the options
+shuffled (Section~\ref{sec:sampling}).}
+\label{fig:pipeline}
+\end{figure}
+
+\subsection{Datasets}
+\label{sec:datasets}
+
+The text suite has 12 slices built from eleven public datasets, and two further
+slices test image input. Table~\ref{tab:datasets} lists them with the fields the
+model sees. The Hugging Face repository, pinned revision and licence of each
+source are in Appendix~\ref{app:provenance}.
+
+\paragraph{Medical and examination questions (\textsc{choice}).} MedMCQA
+\citep{pal2022medmcqa} contains four-option questions from Indian medical
+entrance examinations. MedQA-USMLE \citep{jin2020disease} contains clinical
+vignettes in the style of the United States Medical Licensing Examination: a
+paragraph describes a patient or a clinical situation and asks for the best
+diagnosis or next step, with four options. MMLU-Pro \citep{wang2024mmlupro}
+extends the MMLU knowledge benchmark to 14 subject areas with up to ten options
+per question. PubMedQA \citep{jin2019pubmedqa} pairs a research question with the
+abstract of a biomedical paper, conclusion removed, and asks whether the evidence
+answers it with yes, no or maybe; we use its expert-labelled subset. ScienceQA
+\citep{lu2022scienceqa} contains school science questions with two to five
+options; rows without an image form the text slice.
+
+\paragraph{Customer intent (\textsc{choice}, 77 options).} BANKING77
+\citep{casanueva2020banking77} contains single messages from customers of a
+digital bank, each labelled with one of 77 intents such as \texttt{card\_arrival}
+or \texttt{card\_delivery\_estimate}. Many intents are close neighbours, so this
+slice has the largest set of choices in the suite.
+
+\paragraph{Sentiment (\textsc{score}).} SST-5 \citep{socher2013sst} contains
+sentences from movie reviews rated on a five-level scale from very negative to
+very positive. It is the only ordinal slice.
+
+\paragraph{Safety of prompts, responses and agents (\textsc{binary}).} Five
+slices ask whether a piece of content is harmful. Aegis~2.0
+\citep{ghosh2025aegis2} is a content-safety dataset released by NVIDIA: prompts
+written to a chatbot and, where available, the chatbot's reply, each annotated
+as safe or unsafe under a taxonomy of hazard categories. We score the prompt and
+the response as two separate slices. ATBench \citep{li2026atbench} contains
+trajectories of tool-using AI agents: the tools available to the agent, the
+user's request, and the sequence of tool calls and tool results that followed,
+labelled safe or unsafe as a whole. Its trajectories are long, about 1{,}500
+tokens on average according to the dataset card. The deepset prompt-injection
+dataset \citep{deepset2023promptinjections} contains short multilingual texts
+labelled by whether they try to override the instructions of the system that
+receives them. The jailbreak classification dataset
+\citep{jackhhao2023jailbreak} labels prompts as jailbreak attempts, which try to
+talk a model out of its safety rules, or as benign.
+
+\paragraph{Images.} ScienceQA rows that include an image form an image slice, and
+VQA-RAD \citep{lau2018vqarad} pairs radiology images with clinicians' questions,
+of which we keep the closed yes/no ones. Only djev-0.1 accepts images, so these
+slices are reported separately in Section~\ref{sec:images}.
+
+\begin{table}[t]
+\centering
+\caption{Slices in the suite. \textsc{State fields} are the only dataset fields
+sent to the model. $K$ is the number of options. \textsc{Cases} for
+set-of-choices slices marked $^{\ddagger}$ include one reordered twin per
+question. Text slices total 8{,}016 cases.}
+\label{tab:datasets}
+\small
+\begin{tabular}{@{}l p{4.9cm} p{3.2cm} l r r@{}}
+\toprule
+Slice & Task & State fields & Type & $K$ & Cases \\
+\midrule
+\texttt{medmcqa}           & Medical entrance-exam question & question & choice & 4 & 1{,}000$^{\ddagger}$ \\
+\texttt{medqa\_usmle}      & US licensing-exam clinical vignette & vignette & choice & 4 & 1{,}000$^{\ddagger}$ \\
+\texttt{mmlu\_pro}         & Exam question, 14 subject areas & question & choice & 4--10 & 1{,}000$^{\ddagger}$ \\
+\texttt{pubmedqa}          & Does the abstract answer the research question? & question, abstract & choice & 3 & 500 \\
+\texttt{scienceqa\_text}   & School science question without an image & question, hint & choice & 2--5 & 1{,}000$^{\ddagger}$ \\
+\texttt{banking77}         & Intent of a bank customer's message & customer message & choice & 77 & 1{,}000$^{\ddagger}$ \\
+\texttt{sst5}              & Sentiment of a movie-review sentence & sentence & score & 5 & 500 \\
+\texttt{atbench500}        & Is the agent's trajectory unsafe? & tools, trajectory & binary & 2 & 500 \\
+\texttt{aegis2}            & Is the user's prompt unsafe? & user prompt & binary & 2 & 500 \\
+\texttt{aegis2\_response}  & Is the chatbot's response unsafe? & user prompt, response & binary & 2 & 500 \\
+\texttt{prompt\_injections}& Does the text try to override instructions? & input text & binary & 2 & 116 \\
+\texttt{jailbreak\_class.} & Is the prompt a jailbreak attempt? & user prompt & binary & 2 & 400 \\
+\midrule
+\texttt{scienceqa\_image}  & School science question with an image & image, question, hint & choice & 2--5 & 500 \\
+\texttt{vqa\_rad}          & Yes/no question about a radiology image & image, question & binary & 2 & 251 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Some of these datasets may have been seen by the models in training. BANKING77
+and SST-5 appear in a published training recipe for this model family, and
+MMLU-Pro, MedQA and ScienceQA are likely to appear in the pretraining data of any
+large base model. A high score on these slices measures in-domain performance,
+and results should not be averaged across exposed and unexposed slices.
+Appendix~\ref{app:provenance} records the exposure status of every source.
+
+\subsection{From a dataset row to a request}
+\label{sec:adapters}
+
+A dataset row usually stores the answer next to the question, often together
+with text that gives the answer away. MedQA-USMLE stores the answer twice, as a
+letter and as the option text. MedMCQA stores a written explanation of the
+answer, and MMLU-Pro a worked chain of reasoning. ATBench records the risk
+source and failure mode behind each unsafe label, and Aegis~2.0 the hazard
+categories that each unsafe item violates. If any of these fields reached the
+model, it could read off the answer instead of solving the task. We call this
+\emph{leakage}.
+
+TDBench prevents leakage with one adapter per dataset. The adapter lists the
+fields the model may see, builds the state from those fields alone, and writes
+the answer to a separate answer key that only the scorer reads.
+Figure~\ref{fig:anatomy} shows this for one MedQA-USMLE row. The adapter also
+writes the typed question: a one-sentence instruction and the declared options.
+We wrote this wording ourselves (Section~\ref{sec:limitations}).
+Figure~\ref{fig:types} shows one request of each type with the probabilities the
+commercial model returned.
+
+\begin{figure}[t]
+\centering
+\input{figures/fig_case_anatomy}
+\caption{From dataset row to request, for the first row of MedQA-USMLE. Green
+fields are sent to the model; red fields contain or reveal the answer and are
+withheld. The answer key is read only by the scorer. Long values are
+abbreviated.}
+\label{fig:anatomy}
+\end{figure}
+
+\begin{figure}[t]
+\centering
+\input{figures/fig_types}
+\caption{One request of each question type, with the probabilities returned by
+Jev~1.13. The correct answer is drawn in green. The dashed line in the binary
+panel marks the conventional 0.5 threshold.}
+\label{fig:types}
+\end{figure}
+
+Before any model is run, a verification pass checks every case: the correct
+answer must be among the presented options, the request must be within the size
+limit, and no withheld field may appear in the state. A second check runs in the
+reverse direction and searches the state for text copied from withheld fields.
+On ScienceQA it raised 33 flags, all of which we inspected and found to be false
+positives. The dataset's explanation field (\texttt{solution}) begins by quoting
+the question, and its background field (\texttt{lecture}) is copied into the
+visible \texttt{hint} field by the dataset itself. Discarding such cases as leaks
+would remove valid items.
+
+\subsection{Sampling and the reordered twin}
+\label{sec:sampling}
+
+Cases are drawn deterministically under a fixed seed. Sampling is stratified by
+class or subject with at least one case per class, so a 500-question sample of
+BANKING77 still covers all 77 intents. For the five set-of-choices slices marked
+in Table~\ref{tab:datasets}, every question also has a \emph{reordered twin}:
+the same question with its options shuffled, so the correct answer moves to a
+different position. A question and its twin form a \emph{family} and are
+resampled together in the bootstrap. Figure~\ref{fig:reorder} shows a family on
+which the commercial model's correctness flips. The text suite contains 8{,}016
+cases in 5{,}516 families.
+
+\begin{figure}[t]
+\centering
+\input{figures/fig_reorder}
+\caption{A reordered-twin family from MedQA-USMLE. The options and the question
+are identical; only their order differs. Jev~1.13 selects position \texttt{a}
+both times, which is wrong in the original order and right in the twin. Option
+texts are abbreviated; the correct option is drawn in green.}
+\label{fig:reorder}
+\end{figure}
+
+\subsection{Evaluation protocol}
+
+One typed question per request, so one decision per case. This simplifies scoring and makes per-decision latency comparable across slices. It also forgoes the batching regime in which this model class is reported to be fastest, which we record as a limitation in Section~\ref{sec:limitations}. States are capped at 12{,}000 characters and every truncated case is flagged; 34 ATBench cases and one jailbreak case were truncated by this cap.
+

@@ -1,0 +1,19 @@
+\section{Introduction}
+
+Most evaluation of language models assumes a generative interface. A model is prompted, it produces tokens, and the tokens are parsed. A different interface has become commercially significant: the model is given a state and a typed question, and returns a decision directly by reading the probabilities of the allowed labels. Three question types cover the products we examined: a single probability for a yes/no question, a distribution over a set of choices, and an expected index over an ordered rubric.
+
+This interface is worth evaluating separately for three reasons. The output is a distribution, so calibration is a first-class property. The latency profile is different, since there is no autoregressive decode. And the deployment pattern is different: these models sit in front of other systems as routers, guards and classifiers, where a miscalibrated probability directly produces a wrong action.
+
+Public evidence about these models comes predominantly from their vendors or from single-implementation harnesses. Vendor evaluations derive reference answers from consensus among larger models, and they do not hold reasoning budgets equal across compared systems. Independent harnesses exist but have covered one implementation at a time, with sealed items that cannot be locally reproduced.
+
+We make four contributions.
+
+\begin{enumerate}
+  \item \textbf{An open evaluation framework.} TDBench runs any typed-decision model on 12 slices (8{,}016 text cases) of eleven public datasets pinned to exact commit hashes. A single adapter per question type guarantees that every model receives byte-identical inputs.
+  \item \textbf{A measurement of interface fragility.} By constructing a reordered twin of every set-of-choices case, we separate positional preference from task competence, and find that it differs by an order of magnitude across implementations.
+  \item \textbf{A measurement of the operating-point problem.} We show that the 0.5 threshold, which is the natural reading of a probability and the one every default integration uses, is wrong for all three models, and we quantify the accuracy left on the table.
+  \item \textbf{Released predictions.} We release all 24{,}818 decisions with their full probability vectors. Anyone can recompute calibration, risk--coverage curves and agreement between models from these files, and test new metrics on them, without access to the models or a GPU.
+\end{enumerate}
+
+Our aim is diagnostic. We do not claim to rank these systems for production use, and Section~\ref{sec:limitations} sets out why the results should not be read that way.
+

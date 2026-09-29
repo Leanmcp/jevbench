@@ -1,0 +1,38 @@
+% Figure: the TDBench pipeline, from a public dataset row to scored metrics.
+% Included from main.tex with \input{figures/fig_pipeline}. Colours and TikZ
+% libraries are set in the main.tex preamble.
+\begin{tikzpicture}[
+  font=\small,
+  box/.style={draw=tdline, rounded corners=2pt, align=center, inner sep=4pt,
+              minimum height=1.05cm, fill=#1},
+  box/.default=white,
+  arr/.style={-{Stealth[length=2mm]}, semithick, draw=tdline},
+  note/.style={font=\scriptsize, text=tdmuted, align=center},
+]
+  \node[box=tdsrc,   text width=2.0cm] (src) at (0,0)
+    {Public dataset\\[-1pt]{\scriptsize one row}};
+  \node[box=tdadapt, text width=2.0cm] (ad)  at (2.9,0)
+    {Adapter\\[-1pt]{\scriptsize field allowlist}};
+  \node[box=tdreq,   text width=2.5cm] (req) at (6.0,1.0)
+    {Request\\[-1pt]{\scriptsize state + typed question}};
+  \node[box=tdkey,   text width=2.5cm] (key) at (6.0,-1.0)
+    {Answer key\\[-1pt]{\scriptsize never sent to the model}};
+  \node[box=tdmodel, text width=2.3cm] (mod) at (9.2,1.0)
+    {Model under test\\[-1pt]{\scriptsize Jev, djev or Laya}};
+  \node[box=tdscore, text width=2.3cm] (sc)  at (9.2,-1.0)
+    {Scorer};
+  \node[box, text width=2.5cm] (met) at (12.5,-1.0)
+    {\scriptsize accuracy, AUROC, ECE,\\ flip rate, paired bootstrap};
+  \node[box, dashed, text width=2.5cm, minimum height=0.8cm] (twin) at (6.0,2.55)
+    {\scriptsize reordered twin\\(set-of-choices slices)};
+
+  \draw[arr] (src) -- (ad);
+  \draw[arr] (ad.east) -- ++(0.25,0) |- (req.west);
+  \draw[arr] (ad.east) -- ++(0.25,0) |- (key.west);
+  \draw[arr] (req) -- (mod);
+  \draw[arr, dashed] (req) -- (twin);
+  \draw[arr, dashed] (twin.east) -| (mod.north);
+  \draw[arr] (mod) -- node[note, right] {probability\\vector} (sc);
+  \draw[arr] (key) -- (sc);
+  \draw[arr] (sc) -- (met);
+\end{tikzpicture}

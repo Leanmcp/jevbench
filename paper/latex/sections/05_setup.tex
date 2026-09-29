@@ -1,0 +1,23 @@
+\section{Experimental setup}
+\label{sec:setup}
+
+\begin{table}[t]
+\centering
+\caption{Evaluated systems. Serving conditions differ and are not matched; see Section~\ref{sec:limitations}.}
+\label{tab:systems}
+\small
+\begin{tabular}{p{2.4cm}p{5.2cm}p{5.6cm}}
+\toprule
+System & Description & Serving \\
+\midrule
+Jev 1.13.0 & Hosted commercial typed-decision model & Vendor HTTP API \\
+djev-0.1 & Open typed-decision layer over DiffusionGemma 26B-A4B via vLLM, source revision \texttt{3ce907e}, one denoising step & One NVIDIA A100-SXM4-80GB, driver 580.178.04, \texttt{max\_model\_len} 8192, \texttt{gpu\_memory\_utilization} 0.85, BF16 weights and KV cache, seed 0, samples 1 \\
+Laya 421M (English) & Local non-autoregressive decision model & Apple M3 Pro, MPS, 512-token default context \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Identical case files were sent to all three. djev requests pinned \texttt{seed=0} and \texttt{samples=1}; the hosted API exposes no equivalent control. Predictions record the decision, the full probability vector, latency, token usage and error state. They exclude the state text, so the released predictions remain publishable for sources whose text cannot be redistributed.
+
+\paragraph{Cost and duration.} The djev text suite completed 8{,}016 cases in 19.4 minutes with zero errors at concurrency 6, consuming 51 minutes of A100 time in total including model startup. The hosted API consumed 6.03M input tokens.
+

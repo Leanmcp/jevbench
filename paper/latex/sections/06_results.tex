@@ -1,0 +1,159 @@
+\section{Results}
+\label{sec:results}
+
+\subsection{Main results}
+
+\begin{table}[t]
+\centering
+\caption{Accuracy with 95\% percentile bootstrap intervals over 2{,}000 resamples grouped by family. SST-5 reports mean absolute error on the expected level, where lower is better. \textsc{Chance} is the mean per-case random-guess rate, accounting for varying option counts.}
+\label{tab:main}
+\small
+\begin{tabular}{lrrrrr}
+\toprule
+Slice & $n$ & Chance & Laya 421M & djev-0.1 & Jev 1.13 \\
+\midrule
+\texttt{jailbreak\_class.}   & 400  & 35.2 & 93.0 \small{[90.3, 95.5]} & 96.5 \small{[94.5, 98.3]} & \textbf{97.5} \small{[96.0, 98.8]} \\
+\texttt{scienceqa\_text}     & 1000 & 43.4 & 53.4 \small{[50.0, 56.9]} & 84.7 \small{[82.0, 87.3]} & \textbf{95.7} \small{[93.9, 97.2]} \\
+\texttt{atbench500}          & 500  & 50.0 & 65.4 \small{[61.0, 69.4]} & 75.8 \small{[71.8, 79.6]} & \textbf{93.0} \small{[90.8, 95.2]} \\
+\texttt{medqa\_usmle}        & 1000 & 25.0 & 26.1 \small{[22.9, 29.4]} & 71.2 \small{[67.5, 74.8]} & \textbf{87.3} \small{[84.4, 90.0]} \\
+\texttt{aegis2}              & 500  & 50.0 & 54.2 \small{[49.6, 58.8]} & 81.0 \small{[77.4, 84.2]} & \textbf{82.8} \small{[79.4, 86.2]} \\
+\texttt{banking77}           & 1000 & 1.3  & 36.3 \small{[32.6, 40.1]} & 71.4 \small{[67.8, 75.0]} & \textbf{81.3} \small{[78.0, 84.5]} \\
+\texttt{aegis2\_response}    & 500  & 50.0 & 52.8 \small{[48.6, 57.2]} & 69.2 \small{[65.2, 73.0]} & \textbf{81.2} \small{[77.8, 84.8]} \\
+\texttt{mmlu\_pro}           & 1000 & 11.1 & 12.5 \small{[10.2, 15.1]} & 42.3 \small{[38.5, 45.9]} & \textbf{80.6} \small{[77.3, 83.8]} \\
+\texttt{medmcqa}             & 1000 & 25.0 & 26.9 \small{[23.6, 30.4]} & 53.8 \small{[50.1, 57.4]} & \textbf{78.1} \small{[74.5, 81.5]} \\
+\texttt{prompt\_injections}  & 116  & 51.7 & \textbf{81.0} \small{[73.3, 87.9]} & 64.7 \small{[56.0, 73.3]} & 73.3 \small{[64.7, 81.0]} \\
+\texttt{pubmedqa}            & 500  & 33.3 & 32.8 \small{[28.8, 37.2]} & 62.2 \small{[58.2, 66.4]} & \textbf{70.6} \small{[66.6, 74.6]} \\
+\midrule
+\texttt{sst5} (MAE $\downarrow$) & 500 & n/a & 0.849 \small{[0.796, 0.905]} & 0.544 \small{[0.501, 0.588]} & \textbf{0.507} \small{[0.464, 0.551]} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Table~\ref{tab:main} reports accuracy on every text slice. Appendix~\ref{app:paired} repeats each pairwise comparison as a paired bootstrap over shared cases, which is the stronger test because all three models answered byte-identical items.
+
+\paragraph{Four slices are at chance for the 421M model.} MedMCQA 26.9 against 25.0, MedQA 26.1 against 25.0, MMLU-Pro 12.5 against 11.1, and PubMedQA 32.8 against 33.3, which is below chance. The same model reaches 93.0\% on jailbreak classification, so its competence varies sharply across slices.
+
+\subsection{Decision threshold and calibration}
+\label{sec:threshold}
+
+\begin{table}[t]
+\centering
+\caption{Binary slices at the conventional 0.5 threshold, at the accuracy-maximising threshold, and threshold-free. Accuracy at the best threshold is selected on the data it scores and is therefore optimistic; we report it as a diagnostic of available headroom.}
+\label{tab:threshold}
+\small
+\begin{tabular}{llrrrrr}
+\toprule
+Slice & Model & Acc @0.5 & Best thr. & Acc at best & AUROC & ECE \\
+\midrule
+\texttt{prompt\_injections} & Jev  & 73.3 & 0.07  & \textbf{94.8} & 0.978 & 0.162 \\
+\texttt{prompt\_injections} & djev & 64.7 & 0.002 & \textbf{83.6} & 0.880 & 0.333 \\
+\texttt{prompt\_injections} & Laya & 81.0 & 0.253 & 85.3 & 0.922 & 0.056 \\
+\texttt{aegis2\_response}   & djev & 69.2 & 0.005 & \textbf{81.0} & 0.879 & 0.267 \\
+\texttt{atbench500}         & Jev  & 93.0 & 0.33  & 97.0 & 0.993 & 0.139 \\
+\texttt{atbench500}         & djev & 75.8 & 0.147 & 80.6 & 0.855 & 0.190 \\
+\texttt{aegis2}             & djev & 81.0 & 0.007 & 84.2 & 0.914 & 0.168 \\
+\texttt{jailbreak\_class.}  & Laya & 93.0 & 0.963 & 99.5 & 0.998 & 0.012 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Two observations follow. \textbf{The commercial model's worst slice is a threshold effect.} Its AUROC on prompt injection is 0.978, meaning it separates the classes almost perfectly; its accuracy at 0.5 is 73.3\% because its probabilities sit below the threshold. \textbf{djev-0.1 is more severely affected}, with optimal thresholds between 0.002 and 0.147 and expected calibration error up to 0.333. Laya shows the opposite sign on jailbreak classification, with an optimal threshold of 0.963.
+
+The direction and magnitude of the offset differ by implementation and by slice, so there is no single correction. The practical consequence is that any comparison of these systems at a fixed 0.5 threshold measures probability placement as much as decision quality, and every accuracy figure in Table~\ref{tab:main} understates the model that produced it.
+
+\subsection{Option-order sensitivity}
+\label{sec:position}
+
+\begin{table}[t]
+\centering
+\caption{Fraction (\%) of matched families whose correctness changed when options were reordered. Reordering does not change the question, so any value materially above zero is positional preference.}
+\label{tab:position}
+\small
+\begin{tabular}{lrrr}
+\toprule
+Slice & Jev 1.13 & djev-0.1 & Laya 421M \\
+\midrule
+\texttt{banking77}       & 2.6 & 12.0 & 16.2 \\
+\texttt{medqa\_usmle}    & 3.8 & 14.4 & 20.6 \\
+\texttt{scienceqa\_text} & 3.4 & 15.4 & 33.6 \\
+\texttt{mmlu\_pro}       & 5.2 & 20.6 & 13.0 \\
+\texttt{medmcqa}         & 5.4 & 26.4 & 21.8 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+An order of magnitude separates the commercial model from the other two. For djev and Laya this places a floor on interpretation: differences of a few points between multi-option slices are within the noise introduced by option placement alone.
+
+For Laya the mechanism is direct. On MedMCQA it selected the first option 431 times out of 1{,}000 while the gold answer was in first position 267 times, and on MMLU-Pro it selected the first option 247 times against a gold frequency of 100. The commercial model's selections tracked the gold distribution closely (274/272/236/218 against 267/260/248/225). Near-chance accuracy combined with order-driven answers indicates no measurable task competence on these slices.
+
+\subsection{Effect of context budget}
+
+\begin{table}[t]
+\centering
+\caption{The same 500 ATBench trajectories, input tokens as reported by each serving stack.}
+\label{tab:context}
+\small
+\begin{tabular}{lrr}
+\toprule
+Model & Mean input tokens & Accuracy \\
+\midrule
+Laya 421M & \textbf{512} & 65.4 \\
+djev-0.1  & 1{,}988 & 75.8 \\
+Jev 1.13  & 2{,}253 & 93.0 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Laya's figure is exactly its context limit on every case, meaning the trajectories were internally truncated. Our own truncation flag did not catch this, because it tracks only the harness's character cap. Part of Laya's deficit on this slice is therefore a budget difference rather than a capability difference, and we do not attempt to attribute the split. djev at 8192 tokens saw substantially complete inputs, so its 17-point gap to the commercial model on the same slice is not explained by truncation.
+
+Benchmarks comparing models with different context budgets should report per-case input tokens as measured by each serving stack. Tokenizer differences alone do not account for gaps of this size: on MedMCQA the same cases were 79 tokens for Laya against 386 for the commercial model.
+
+\subsection{Probability mass on the gold option}
+\label{sec:zeromass}
+
+\begin{table}[t]
+\centering
+\caption{Count of cases where the correct option received exactly zero probability.}
+\label{tab:zeromass}
+\small
+\begin{tabular}{lrrr}
+\toprule
+Slice & Jev 1.13 & djev-0.1 & Laya 421M \\
+\midrule
+\texttt{banking77} (77 options) & 59 & \textbf{0} & 349 \\
+\texttt{pubmedqa}  & 27 & \textbf{0} & 0 \\
+\texttt{mmlu\_pro} & 17 & \textbf{0} & 0 \\
+\texttt{medmcqa}   &  8 & \textbf{0} & 0 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+djev assigned non-zero mass to the correct option in every one of 4{,}500 multi-option cases, including all 1{,}000 at 77 options. This is consistent with its documented mechanism of reading the probabilities of the allowed label tokens directly rather than relying on the answer appearing in a truncated top-$k$ list. Laya failed this on more than a third of BANKING77 cases. Any evaluation relying on the log-likelihood of the gold option must report this count, since a single zero makes the average infinite and clipping conceals it.
+
+\subsection{Image-grounded decisions}
+\label{sec:images}
+
+We evaluated the image path of the open implementation. Neither of the other systems could be evaluated here: the commercial API route available to us has no image input, and the 421M model is text-only.
+
+\begin{table}[t]
+\centering
+\caption{Image-grounded decisions, djev-0.1. The ScienceQA pair is a controlled comparison: identical model, adapter and dataset, differing only in whether the answer requires the image.}
+\label{tab:images}
+\small
+\begin{tabular}{lrrl}
+\toprule
+Slice & $n$ & Accuracy & Notes \\
+\midrule
+\texttt{scienceqa\_image} & 500  & 82.8 \small{[79.6, 86.2]} & macro-F1 0.825, ECE 0.086 \\
+\texttt{scienceqa\_text}  & 1000 & 84.7 \small{[82.0, 87.3]} & same dataset, rows without images \\
+\texttt{vqa\_rad}         & 251  & 78.1 \small{[72.9, 83.3]} & base rate 47\%, AUROC 0.884 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The 1.9-point difference between the image and text rows of ScienceQA has overlapping intervals.
+
+\paragraph{Verification that the image is consumed.} Sending 12 VQA-RAD cases twice, identical except for the image, every pair increased input tokens by 254 to 274 with no exceptions, and 3 of 12 decisions changed. With the image removed the model answered ``no'' to all 12 cases, producing varied answers only when the image was present. Accuracy with the image on that small sample was lower than without (66.7\% against 75.0\%), but the no-image condition is a degenerate always-negative predictor and 9 of the 12 golds were negative; we report it to forestall the misreading.
+
+\paragraph{Latency.} Image decisions cost 1{,}633\,ms (VQA-RAD) and 1{,}913\,ms (ScienceQA) at the median against 781\,ms for text on the same hardware.
+

@@ -1,0 +1,34 @@
+\section{Limitations}
+\label{sec:limitations}
+
+\begin{enumerate}
+  \item \textbf{The commercial system is a black box.} We reach Jev~1.13.0 only
+  through its HTTP API. Its architecture, parameter count, tokenizer, training
+  data and serving configuration are unpublished. The only version
+  identifier available is the returned model string, so we cannot exclude
+  server-side changes between our run and a replication. We also cannot determine
+  whether any slice appears in its training data, which is why its exposure flags
+  read \texttt{unknown} and not absent. Every comparison in this paper is
+  therefore between deployed systems as a customer reaches them, and a difference
+  we attribute to one model may come from its serving stack.
+  \item \textbf{The commercial training method is undocumented.} The vendor
+  describes its training as RLCD, Reinforcement Learning for Calibrated Decisions,
+  and states that it optimises for ``epistemically honest probabilities''
+  \citep{typesafe2026jev}. No paper, technical specification, objective function,
+  reward definition or training data description has been published, and we have
+  not reproduced the method. We therefore cannot test whether the calibration
+  behaviour we measure follows from this objective, and we attribute no measured
+  behaviour to a training method.
+  \item \textbf{Prompt wording is ours.} We wrote the instructions and criteria ourselves; no vendor supplied them. A different phrasing is a different benchmark. We release the exact adapters so the wording is inspectable.
+  \item \textbf{One question per request.} This model class is reported to be fastest when many questions share one state. That regime is not measured here, so our latency figures should not be read as the best these systems can do.
+  \item \textbf{Serving conditions are not matched.} The commercial model is remote, so its latency includes a network round trip; the open implementation is on a local A100 behind an SSH tunnel, and the 421M model is on a laptop. Latency comparisons are system comparisons.
+  \item \textbf{Sampling controls are not matched.} djev requests pinned seed and sample count; the hosted API exposes no equivalent, so its variance is unmeasured and single-run.
+  \item \textbf{Training exposure.} Five slices are flagged \texttt{reported} or \texttt{likely}. Results must not be averaged across that flag.
+  \item \textbf{Truncation.} 34 ATBench and one jailbreak case exceeded the harness cap. Separately, Laya internally truncated every ATBench case to 512 tokens, which our flag did not detect.
+  \item \textbf{Balanced slices do not estimate deployment incident rates.} A prevalence-matched evaluation is required for that claim and is not included.
+  \item \textbf{Best-threshold accuracy is optimistic}, chosen on the data it scores.
+  \item \textbf{Label polarity is assumed for two sources} whose cards do not state it. We report accuracy under both polarities; in every case the assumed direction was the higher one.
+  \item \textbf{Single run per model.} No seed variation is reported for the hosted model, and the open implementation was run at a single fixed seed.
+  \item \textbf{\texttt{prompt\_injections} has only 116 cases}, giving intervals roughly 8 points wide. Conclusions drawn from it, including the threshold finding, are correspondingly weaker than those from the 1{,}000-case slices.
+\end{enumerate}
+

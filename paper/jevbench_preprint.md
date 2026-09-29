@@ -24,7 +24,7 @@ Public evidence about these models comes predominantly from their vendors or fro
 
 We make four contributions.
 
-1. **An open evaluation framework.** TDBench runs any typed-decision model on 12 slices (8,016 text cases) of eight public datasets pinned to exact commit hashes. A single adapter per question type guarantees that every model receives byte-identical inputs.
+1. **An open evaluation framework.** TDBench runs any typed-decision model on 12 slices (8,016 text cases) of eleven public datasets pinned to exact commit hashes. A single adapter per question type guarantees that every model receives byte-identical inputs.
 2. **A measurement of interface fragility.** By constructing a reordered twin of every set-of-choices case, we separate positional preference from task competence, and find that it differs by an order of magnitude across implementations.
 3. **A measurement of the operating-point problem.** We show that the 0.5 threshold, which is the natural reading of a probability and the one every default integration uses, is wrong for all three models, and we quantify the accuracy left on the table.
 4. **Released predictions.** We release all 24,818 decisions with their full probability vectors. Anyone can recompute calibration, risk-coverage curves and agreement between models from these files, and test new metrics on them, without access to the models or a GPU.

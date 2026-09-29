@@ -23,14 +23,12 @@ Peter McCullagh.
   (Methodological)}, 42\penalty0 (2):\penalty0 109--127, 1980.
 \newblock \doi{10.1111/j.2517-6161.1980.tb01109.x}.
 
-\bibitem[Yang et~al.(2024)Yang, Klein, Celikyilmaz, Peng, and
-  Tian]{yang2024rlcd}
-Kevin Yang, Dan Klein, Asli Celikyilmaz, Nanyun Peng, and Yuandong Tian.
-\newblock {RLCD}: Reinforcement learning from contrast distillation for
-  language model alignment.
-\newblock In \emph{International Conference on Learning Representations
-  (ICLR)}, 2024.
-\newblock arXiv:2307.12950.
+\bibitem[Almeida(2026)]{typesafe2026jev}
+Diogo Almeida.
+\newblock Introducing system one models and jev.
+\newblock TypeSafe AI blog,
+  \url{https://typesafe.ai/blog/introducing-system-one-models-and-jev}, 2026.
+\newblock Published 28 September 2026. Accessed 29 September 2026.
 
 \bibitem[Casanueva et~al.(2020)Casanueva, Tem{\v{c}}inas, Gerz, Henderson, and
   Vuli{\'c}]{casanueva2020banking77}

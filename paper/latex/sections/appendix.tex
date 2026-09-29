@@ -102,3 +102,51 @@ Slice & $n$ & $\Delta$ & 95\% paired CI & Excludes 0 & A only / B only \\
 \end{tabular}
 \end{table}
 
+
+\section{Dataset provenance}
+\label{app:provenance}
+
+Every source is pinned to a commit of its Hugging Face repository, recorded in
+the released manifest (\texttt{sources.json}) with its full 40-character
+revision hash, the exact files read, the fields sent to the model and the fields
+withheld. The pins were read from the Hugging Face API on 26 September 2026. Row
+counts were measured from the downloaded files. Table~\ref{tab:provenance} gives
+the first ten characters of each revision.
+
+\textsc{Exposure} records whether a source may have been seen in training:
+\texttt{reported} means it appears in a published training recipe for this model
+family, \texttt{likely} means it is near-certain to appear in the pretraining of
+any large base model, and \texttt{unknown} means we could not determine either.
+For the commercial model, whose training data is unpublished, no source can be
+marked as unseen.
+
+\begin{table}[h]
+\centering
+\caption{Pinned sources. Aegis~2.0 supplies two slices (prompt and response);
+ScienceQA supplies the text and image slices.}
+\label{tab:provenance}
+\small
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{@{}l l l l l l@{}}
+\toprule
+Source & Hugging Face repository & Split & Revision & Licence & Exposure \\
+\midrule
+MedMCQA        & \texttt{openlifescienceai/medmcqa}                   & validation  & \texttt{91c6572c45} & apache-2.0   & unknown \\
+MedQA-USMLE    & \texttt{GBaker/MedQA-USMLE-4-options}                & test        & \texttt{0fb93dd23a} & cc-by-4.0    & likely \\
+MMLU-Pro       & \texttt{TIGER-Lab/MMLU-Pro}                          & test        & \texttt{b189ec765a} & mit          & likely \\
+PubMedQA       & \texttt{qiaojin/PubMedQA}                            & pqa\_labeled & \texttt{9001f2853f} & mit         & unknown \\
+ScienceQA      & \texttt{derek-thomas/ScienceQA}                      & test        & \texttt{f18b0a7035} & cc-by-sa-4.0 & likely \\
+BANKING77      & \texttt{mteb/banking77}                              & test        & \texttt{18072d2685} & mit$^{*}$    & reported \\
+SST-5          & \texttt{SetFit/sst5}                                 & test        & \texttt{e51bdcd8cd} & unspecified  & reported \\
+ATBench        & \texttt{AI45Research/ATBench}                        & ATBench500  & \texttt{4476ef92ed} & apache-2.0   & unknown \\
+Aegis 2.0      & \texttt{nvidia/Aegis-AI-Content-Safety-Dataset-2.0}  & test        & \texttt{d86bb8bedf} & cc-by-4.0    & unknown \\
+Prompt injections & \texttt{deepset/prompt-injections}                & test        & \texttt{4f61ecb038} & apache-2.0   & unknown \\
+Jailbreak class. & \texttt{jackhhao/jailbreak-classification}         & test        & \texttt{2f2ceeb396} & apache-2.0   & unknown \\
+VQA-RAD        & \texttt{flaviagiammarino/vqa-rad}                    & test        & \texttt{bcf91e7654} & cc0-1.0      & unknown \\
+\bottomrule
+\end{tabular}}
+\\[2pt]
+\footnotesize $^{*}$\texttt{mteb/banking77} redistributes PolyAI's CC-BY-4.0
+corpus as Parquet; the original repository ships only a loading script. We cite
+the original \citep{casanueva2020banking77}.
+\end{table}

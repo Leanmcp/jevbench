@@ -9,8 +9,8 @@
 # First run on a fresh clone needs the style file once:
 #   bash fetch_template.sh
 #
-# Sources: main.tex is the spine; section_typed.tex, section_related.tex and
-# section_appendix.tex are \input from it; references.bib is the bibliography;
+# Sources: main.tex is the spine and \input s every file in sections/ (one per
+# paper section) and figures/ (one TikZ file per figure); references.bib is the bibliography;
 # arxiv.sty is the vendored preprint style.
 set -Eeuo pipefail
 cd "$(dirname "${BASH_SOURCE[0]}")"
@@ -56,7 +56,7 @@ if [ "$QUIET" -eq 0 ]; then
   n_cite=$(grep -c 'LaTeX Warning: Citation'  build3.log || true)
   n_ref=$( grep -c 'LaTeX Warning: Reference' build3.log || true)
   n_over=$(grep -c 'Overfull \\hbox'          build3.log || true)
-  n_draft=$(grep -c '\\draftnote{'            main.tex section_*.tex 2>/dev/null | awk -F: '{s+=$2} END{print s+0}')
+  n_draft=$(grep -c '\\draftnote{'            main.tex sections/*.tex 2>/dev/null | awk -F: '{s+=$2} END{print s+0}')
   n_bib=$(grep -c '^\\bibitem' main.bbl 2>/dev/null || echo 0)
   n_memory=$(grep -c '^% \[memory\]' references.bib || true)
   echo
@@ -70,7 +70,7 @@ if [ "$QUIET" -eq 0 ]; then
   if [ "${n_draft:-0}" -gt 0 ]; then
     echo
     echo "  remaining draft markers:"
-    grep -n '\\draftnote{' main.tex section_*.tex 2>/dev/null | sed 's/\\draftnote{/ -> /' | cut -c1-110 | sed 's/^/    /'
+    grep -n '\\draftnote{' main.tex sections/*.tex 2>/dev/null | sed 's/\\draftnote{/ -> /' | cut -c1-110 | sed 's/^/    /'
   fi
 fi
 
