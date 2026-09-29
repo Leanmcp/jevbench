@@ -224,3 +224,8 @@ jev_bench/release/
 
 # Local cloud configuration (see jev_bench/.env.example)
 .env
+
+# Third-party source checkouts (cloned locally; see README for upstream links)
+Laya_Architecture/source/
+model_workspace/djev-source/
+quick_benchmark/rjudge-source/

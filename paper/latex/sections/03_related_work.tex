@@ -69,14 +69,18 @@ VQA-RAD \citep{lau2018vqarad}. Agent-trajectory safety comes from ATBench
 \citep{ghosh2025aegis2}. None of these was designed for the typed-decision
 interface; Section~\ref{sec:benchmark} states the adaptation for each.
 
-Evaluations specific to this model class exist but are narrow. The commercial
-vendor publishes a four-workflow evaluation whose reference answers come from
-agreement among larger models. Independent harnesses have covered one
-implementation at a time, with sealed items that cannot be reproduced locally, and
-a separate paired study compares the commercial model against one small local
-model on synthetic items. What none of them provides is the gap this paper fills:
-one set of inputs sent to independently developed implementations of the same
-interface, with the full probability vectors released.
+Two evaluations target this model class directly. The commercial vendor
+publishes an evaluation over four business workflows, scored against consensus
+labels \citep{typesafe2026evals}. Benchmark Heaven's JevBench, an independent
+project that shares our name, maintains a public leaderboard of Jev-class
+models ranked by a composite score over accuracy, calibration, speed and cost
+\citep{standhartinger2026jevbench}. It includes a sealed, held-out item set of
+which only aggregate statistics are published. Our framework differs in
+purpose. It builds its cases from existing public datasets pinned to exact
+revisions, sends byte-identical inputs to every model, and releases every case
+and every full probability vector, so that each measurement in this paper,
+including calibration and option-order sensitivity, can be recomputed from the
+released files.
 
 \subsection{Calibration and multiple-choice robustness}
 

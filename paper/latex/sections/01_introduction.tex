@@ -4,7 +4,7 @@ Most evaluation of language models assumes a generative interface. A model is pr
 
 This interface is worth evaluating separately for three reasons. The output is a distribution, so calibration is a first-class property. The latency profile is different, since there is no autoregressive decode. And the deployment pattern is different: these models sit in front of other systems as routers, guards and classifiers, where a miscalibrated probability directly produces a wrong action.
 
-Public evidence about these models comes predominantly from their vendors or from single-implementation harnesses. Vendor evaluations derive reference answers from consensus among larger models, and they do not hold reasoning budgets equal across compared systems. Independent harnesses exist but have covered one implementation at a time, with sealed items that cannot be locally reproduced.
+Public evidence about these models comes mainly from their vendors and from leaderboards. The vendor's own evaluation scores models against consensus labels, with each model at its provider's default reasoning setting \citep{typesafe2026evals}. An independent leaderboard ranks many such models on a composite score and publishes only aggregate statistics for its held-out items \citep{standhartinger2026jevbench}. We complement both with a framework in which every case and every full probability vector is released, so that any number we report can be recomputed.
 
 We make four contributions.
 
