@@ -1,42 +1,45 @@
 % Figure: a reordered-twin family on which Jev 1.13's correctness flips.
 % Cases medqa_usmle-0-none and medqa_usmle-0-permuted, run
-% jev-1.13.0-20260926T133639. Option texts are abbreviated. Bars to scale:
-% 1.0 = 2.2 cm. The correct option is drawn in the tdok colour.
+% jev-1.13.0-20260926T133639. One row per answer option (by content); the two
+% columns give that option's position letter and probability in each ordering.
+% Bars to scale: 1.0 = 2.6 cm. Green = correct option; outlined = Jev's pick.
 \begin{tikzpicture}[
   font=\footnotesize,
   head/.style={font=\small\bfseries, anchor=west},
-  opt/.style={anchor=west, text width=3.9cm},
+  pos/.style={anchor=east, font=\ttfamily},
   val/.style={anchor=west, font=\scriptsize},
+  pick/.style={draw=tdline, line width=0.9pt},
 ]
-  % ---- original order ---------------------------------------------------------
-  \node[head] at (0,0.55) {Original order};
-  \foreach \yy/\ltr/\txt/\pr/\col in {
-      0/a/{Disclose the error to the patient}/0.65/tdbar,
-      -0.5/b/{Tell the attending he must disclose}/0.32/tdok,
-      -1.0/c/{Report to the ethics committee}/0.01/tdbar,
-      -1.5/d/{Refuse to dictate the report}/0.02/tdbar} {
-    \node[anchor=west, font=\ttfamily] at (0,\yy) {\ltr};
-    \node[opt] at (0.3,\yy) {\txt};
-    \fill[\col] (4.35,\yy-0.12) rectangle ++(\pr*2.2,0.24);
-    \node[val] at ({4.4+\pr*2.2},\yy) {\pr};
-  }
-  \node[anchor=west, font=\scriptsize] at (0,-2.1)
-    {Jev selects \texttt{a}: \textbf{incorrect}.};
+  \def\colA{7.0}   % x of the first bar column
+  \def\colB{11.0}  % x of the second bar column
+  \def\barlen{2.6}     % bar length for probability 1.0
 
-  % ---- reordered twin ---------------------------------------------------------
-  \begin{scope}[xshift=8.3cm]
-    \node[head] at (0,0.55) {Reordered twin};
-    \foreach \yy/\ltr/\txt/\pr/\col in {
-        0/a/{Tell the attending he must disclose}/0.51/tdok,
-        -0.5/b/{Report to the ethics committee}/0.01/tdbar,
-        -1.0/c/{Refuse to dictate the report}/0.05/tdbar,
-        -1.5/d/{Disclose the error to the patient}/0.43/tdbar} {
-      \node[anchor=west, font=\ttfamily] at (0,\yy) {\ltr};
-      \node[opt] at (0.3,\yy) {\txt};
-      \fill[\col] (4.35,\yy-0.12) rectangle ++(\pr*2.2,0.24);
-      \node[val] at ({4.4+\pr*2.2},\yy) {\pr};
-    }
-    \node[anchor=west, font=\scriptsize] at (0,-2.1)
-      {Jev selects \texttt{a}: \textbf{correct}.};
-  \end{scope}
+  \node[head] at (0,0.6) {Answer option};
+  \node[head] at ({\colA-0.45},0.6) {Original order};
+  \node[head] at ({\colB-0.45},0.6) {Reordered twin};
+  \draw[tdline, thin] (0,0.3) -- ({\colB+\barlen+0.6},0.3);
+
+  % y / option text / pos,prob in original / pos,prob in twin / colour / picked in A / picked in B
+  \foreach \yy/\txt/\la/\pa/\lb/\pb/\col/\ka/\kb in {
+      0/{Tell the attending he must disclose}/b/0.32/a/0.51/tdok/0/1,
+      -0.5/{Disclose the error to the patient}/a/0.65/d/0.43/tdbar/1/0,
+      -1.0/{Report to the ethics committee}/c/0.01/b/0.01/tdbar/0/0,
+      -1.5/{Refuse to dictate the report}/d/0.02/c/0.05/tdbar/0/0} {
+    \node[anchor=west] at (0,\yy) {\txt};
+    % original order
+    \node[pos] at ({\colA-0.1},\yy) {\la};
+    \fill[\col] (\colA,\yy-0.13) rectangle ++(\pa*\barlen,0.26);
+    \ifnum\ka=1 \draw[pick] (\colA,\yy-0.13) rectangle ++(\pa*\barlen,0.26); \fi
+    \node[val] at ({\colA+\pa*\barlen+0.05},\yy) {\pa};
+    % reordered twin
+    \node[pos] at ({\colB-0.1},\yy) {\lb};
+    \fill[\col] (\colB,\yy-0.13) rectangle ++(\pb*\barlen,0.26);
+    \ifnum\kb=1 \draw[pick] (\colB,\yy-0.13) rectangle ++(\pb*\barlen,0.26); \fi
+    \node[val] at ({\colB+\pb*\barlen+0.05},\yy) {\pb};
+  }
+
+  \draw[tdline, thin] (0,-1.85) -- ({\colB+\barlen+0.6},-1.85);
+  \node[anchor=west] at (0,-2.15) {Jev's selection};
+  \node[anchor=west] at ({\colA-0.45},-2.15) {\texttt{a}, \textbf{incorrect}};
+  \node[anchor=west] at ({\colB-0.45},-2.15) {\texttt{a}, \textbf{correct}};
 \end{tikzpicture}

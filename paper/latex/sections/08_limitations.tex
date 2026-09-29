@@ -22,13 +22,13 @@
   \item \textbf{Prompt wording is ours.} We wrote the instructions and criteria ourselves; no vendor supplied them. A different phrasing is a different benchmark. We release the exact adapters so the wording is inspectable.
   \item \textbf{One question per request.} This model class is reported to be fastest when many questions share one state. That regime is not measured here, so our latency figures should not be read as the best these systems can do.
   \item \textbf{Serving conditions are not matched.} The commercial model is remote, so its latency includes a network round trip; the open implementation is on a local A100 behind an SSH tunnel, and the 421M model is on a laptop. Latency comparisons are system comparisons.
-  \item \textbf{Sampling controls are not matched.} djev requests pinned seed and sample count; the hosted API exposes no equivalent, so its variance is unmeasured and single-run.
+  \item \textbf{Run-to-run variance is unmeasured.} Each system was run once. Language-model inference is not deterministic by default: even at temperature zero, GPU kernel results depend on how many requests are batched together, which varies with server load \citep{he2025nondeterminism}. We pinned djev to \texttt{seed=0} and \texttt{samples=1}, but it served six requests at a time, and the hosted API exposes no seed or sampling control. Differences smaller than this unmeasured variance should not be interpreted.
   \item \textbf{Training exposure.} Five slices are flagged \texttt{reported} or \texttt{likely}. Results must not be averaged across that flag.
-  \item \textbf{Truncation.} 34 ATBench and one jailbreak case exceeded the harness cap. Separately, Laya internally truncated every ATBench case to 512 tokens, which our flag did not detect.
+  \item \textbf{Truncation.} 34 ATBench cases and one jailbreak case exceeded the harness cap of 12{,}000 characters and were truncated.
   \item \textbf{Balanced slices do not estimate deployment incident rates.} A prevalence-matched evaluation is required for that claim and is not included.
   \item \textbf{Best-threshold accuracy is optimistic}, chosen on the data it scores.
   \item \textbf{Label polarity is assumed for two sources} whose cards do not state it. We report accuracy under both polarities; in every case the assumed direction was the higher one.
-  \item \textbf{Single run per model.} No seed variation is reported for the hosted model, and the open implementation was run at a single fixed seed.
   \item \textbf{\texttt{prompt\_injections} has only 116 cases}, giving intervals roughly 8 points wide. Conclusions drawn from it, including the threshold finding, are correspondingly weaker than those from the 1{,}000-case slices.
+  \item \textbf{Laya saw only the first 512 tokens of each ATBench trajectory.} Laya's default context is 512 tokens, and it truncated every ATBench case internally; our truncation flag, which tracks only the harness's own character cap, did not detect this. ATBench trajectories average about 1{,}500 tokens, so Laya's 65.4\% on this slice (Table~\ref{tab:main}) reflects a truncated input and is not directly comparable with the other two systems, which received substantially longer inputs (Table~\ref{tab:context}).
 \end{enumerate}
 

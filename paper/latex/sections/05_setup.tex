@@ -1,23 +1,68 @@
 \section{Experimental setup}
 \label{sec:setup}
 
+We evaluate three systems that expose the typed-decision interface. They differ
+in architecture, in how much of them is public, and in where they run.
+Table~\ref{tab:systems} summarises them.
+
 \begin{table}[t]
 \centering
-\caption{Evaluated systems. Serving conditions differ and are not matched; see Section~\ref{sec:limitations}.}
+\caption{Evaluated systems. Serving conditions differ and are not matched; see
+Section~\ref{sec:limitations}. The full serving configuration of djev-0.1 is
+released with the artifacts.}
 \label{tab:systems}
 \small
-\begin{tabular}{p{2.4cm}p{5.2cm}p{5.6cm}}
+\begin{tabular}{@{}p{2.0cm}p{2.6cm}p{4.6cm}p{5.0cm}@{}}
 \toprule
-System & Description & Serving \\
+System & Access & Model & Serving \\
 \midrule
-Jev 1.13.0 & Hosted commercial typed-decision model & Vendor HTTP API \\
-djev-0.1 & Open typed-decision layer over DiffusionGemma 26B-A4B via vLLM, source revision \texttt{3ce907e}, one denoising step & One NVIDIA A100-SXM4-80GB, driver 580.178.04, \texttt{max\_model\_len} 8192, \texttt{gpu\_memory\_utilization} 0.85, BF16 weights and KV cache, seed 0, samples 1 \\
-Laya 421M (English) & Local non-autoregressive decision model & Apple M3 Pro, MPS, 512-token default context \\
+Jev 1.13.0 & Closed; vendor HTTP API only & Unpublished & Hosted by the vendor \\
+djev-0.1 & Open source, revision \texttt{3ce907e} & DiffusionGemma 26B-A4B, a text diffusion language model (mixture of experts, 3.8B active parameters); one denoising step & One NVIDIA A100 80\,GB, vLLM, BF16, \texttt{max\_model\_len} 8192, seed 0, samples 1 \\
+Laya 421M & Open source, Apache 2.0 & ModernBERT-large encoder with decision heads; not generative & Apple M3 Pro laptop (MPS), 512-token context \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-Identical case files were sent to all three. djev requests pinned \texttt{seed=0} and \texttt{samples=1}; the hosted API exposes no equivalent control. Predictions record the decision, the full probability vector, latency, token usage and error state. They exclude the state text, so the released predictions remain publishable for sources whose text cannot be redistributed.
+\paragraph{Jev 1.13 (closed source).} Jev is a commercial typed-decision model
+from TypeSafe AI \citep{typesafe2026jev}. It is available only through the
+vendor's HTTP API. Its weights, architecture, parameter count and training data
+are not published, and no open-source version exists. We therefore treat it as a
+black box: every result we report for Jev describes the deployed service, as a
+customer reaches it, under the version string \texttt{jev-1.13.0}.
 
-\paragraph{Cost and duration.} The djev text suite completed 8{,}016 cases in 19.4 minutes with zero errors at concurrency 6, consuming 51 minutes of A100 time in total including model startup. The hosted API consumed 6.03M input tokens.
+\paragraph{djev-0.1 (open source, diffusion language model).} djev is an
+open-source server that implements the typed-decision interface on top of a
+general-purpose language model \citep{djev2026}. Its backbone is DiffusionGemma
+26B-A4B \citep{diffusiongemma2026}, an open-weight text diffusion language model
+from Google DeepMind. A diffusion language model does not generate one token at a
+time; it starts from a block of masked tokens and refines the whole block in
+parallel over several denoising steps. DiffusionGemma is a mixture-of-experts
+model with 25.2B total and 3.8B active parameters, and it accepts text and
+images. djev serves it with vLLM \citep{kwon2023vllm}, runs a single denoising
+step per request, and reads the probabilities of the declared labels at the
+answer position, as in Equation~\eqref{eq:restricted}. We pinned the djev source
+at revision \texttt{3ce907e} and ran it on one NVIDIA A100 80\,GB GPU.
 
+\paragraph{Laya 421M (open source, encoder).} Laya \citep{laya2026} is an
+open-source decision model of about 421M parameters. It is not a generative
+language model. A ModernBERT-large encoder \citep{warner2024modernbert} reads the
+question, the options and the state as one sequence, two further transformer
+layers follow, and a scorer assigns one logit per option; a softmax over these
+logits gives the returned distribution. We ran the English checkpoint locally on
+an Apple M3 Pro laptop, where its default context is 512 tokens.
+
+\paragraph{Identical inputs.} All three systems received the same case files,
+built once by the adapters of Section~\ref{sec:adapters}, with one typed question
+per request. For every case we record the decision, the full probability vector,
+latency, input and output token counts, and any error. The records exclude the
+state text, so the released predictions remain publishable for sources whose
+text cannot be redistributed.
+
+\paragraph{Sampling controls.} For djev we fixed \texttt{seed=0} and
+\texttt{samples=1} and sent requests six at a time. The Jev API exposes no seed
+or sampling control. Each system was run once; Section~\ref{sec:limitations}
+discusses the resulting run-to-run variance.
+
+\paragraph{Cost and duration.} The djev text suite completed 8{,}016 cases in
+19.4 minutes with zero errors, using 51 minutes of A100 time in total including
+model startup. The hosted API consumed 6.03M input tokens.

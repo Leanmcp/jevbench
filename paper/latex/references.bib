@@ -3,10 +3,9 @@
 % Provenance of every entry is recorded so a co-author can re-check it:
 %   [card]   BibTeX copied verbatim from the dataset's own Hugging Face card
 %   [search] venue, year and identifier confirmed against arXiv / ACL Anthology / PMLR
-%   [memory] canonical reference written from memory, STILL TO VERIFY before submission
-% Nothing here was invented. Entries marked [memory] must be checked against the
-% primary source; they are well-known papers but the author lists and page numbers
-% have not been confirmed.
+%   [repo]   confirmed from the repository or API of the cited artifact
+% As of 2026-09-29 every entry has been checked against a primary source; no
+% [memory] entries remain.
 
 % ---------------------------------------------------------------- datasets
 
@@ -96,12 +95,16 @@
   doi     = {10.48550/arXiv.2604.02022}
 }
 
-% [memory] SST / SST-5. VERIFY pages and exact title.
+% [search] title, authors and pages confirmed at aclanthology.org/D13-1170.
 @inproceedings{socher2013sst,
   title     = {Recursive Deep Models for Semantic Compositionality Over a Sentiment Treebank},
   author    = {Socher, Richard and Perelygin, Alex and Wu, Jean and Chuang, Jason and Manning, Christopher D and Ng, Andrew and Potts, Christopher},
   booktitle = {Proceedings of the 2013 Conference on Empirical Methods in Natural Language Processing},
-  year      = {2013}
+  pages     = {1631--1642},
+  address   = {Seattle, Washington, USA},
+  publisher = {Association for Computational Linguistics},
+  year      = {2013},
+  url       = {https://aclanthology.org/D13-1170/}
 }
 
 % ---------------------------------------------------------------- methods
@@ -125,7 +128,8 @@
   year    = {2023}
 }
 
-% [search] arXiv 2309.03882; ICLR 2024 Spotlight. VERIFY the author list.
+% [search] arXiv 2309.03882; ICLR 2024 Spotlight (openreview.net/forum?id=shr9PXz7T0).
+% Author list confirmed against arXiv and the official repository.
 @inproceedings{zheng2024mcqbias,
   title     = {Large Language Models Are Not Robust Multiple Choice Selectors},
   author    = {Zheng, Chujie and Zhou, Hao and Meng, Fandong and Zhou, Jie and Huang, Minlie},
@@ -134,20 +138,28 @@
   note      = {arXiv:2309.03882}
 }
 
-% [memory] modern-network calibration and temperature scaling. VERIFY.
+% [search] confirmed at proceedings.mlr.press/v70/guo17a.html.
 @inproceedings{guo2017calibration,
   title     = {On Calibration of Modern Neural Networks},
   author    = {Guo, Chuan and Pleiss, Geoff and Sun, Yu and Weinberger, Kilian Q},
-  booktitle = {International Conference on Machine Learning (ICML)},
+  booktitle = {Proceedings of the 34th International Conference on Machine Learning},
+  series    = {Proceedings of Machine Learning Research},
+  volume    = {70},
+  pages     = {1321--1330},
+  publisher = {PMLR},
   year      = {2017}
 }
 
-% [memory] the ECE binning estimator. VERIFY.
+% [search] confirmed at ojs.aaai.org/index.php/AAAI/article/view/9602.
 @inproceedings{naeini2015ece,
   title     = {Obtaining Well Calibrated Probabilities Using Bayesian Binning},
   author    = {Naeini, Mahdi Pakdaman and Cooper, Gregory F and Hauskrecht, Milos},
-  booktitle = {AAAI Conference on Artificial Intelligence},
-  year      = {2015}
+  booktitle = {Proceedings of the AAAI Conference on Artificial Intelligence},
+  volume    = {29},
+  number    = {1},
+  pages     = {2901--2907},
+  year      = {2015},
+  doi       = {10.1609/aaai.v29i1.9602}
 }
 
 % [search] the Brier score; volume, issue and pages confirmed (journals.ametsoc.org).
@@ -161,7 +173,7 @@
   year    = {1950}
 }
 
-% [memory] proper scoring rules. VERIFY.
+% [search] volume, pages and DOI confirmed (author PDF at stat.washington.edu).
 @article{gneiting2007scoring,
   title   = {Strictly Proper Scoring Rules, Prediction, and Estimation},
   author  = {Gneiting, Tilmann and Raftery, Adrian E},
@@ -169,17 +181,21 @@
   volume  = {102},
   number  = {477},
   pages   = {359--378},
-  year    = {2007}
+  year    = {2007},
+  doi     = {10.1198/016214506000001437}
 }
 
 % ---------------------------------------------------------------- systems
 
-% [memory] vLLM, the serving stack behind the open implementation. VERIFY.
+% [search] authors, pages and DOI confirmed at dl.acm.org and dblp.
 @inproceedings{kwon2023vllm,
   title     = {Efficient Memory Management for Large Language Model Serving with {PagedAttention}},
   author    = {Kwon, Woosuk and Li, Zhuohan and Zhuang, Siyuan and Sheng, Ying and Zheng, Lianmin and Yu, Cody Hao and Gonzalez, Joseph E and Zhang, Hao and Stoica, Ion},
   booktitle = {Proceedings of the 29th Symposium on Operating Systems Principles (SOSP)},
-  year      = {2023}
+  pages     = {611--626},
+  publisher = {ACM},
+  year      = {2023},
+  doi       = {10.1145/3600006.3613165}
 }
 
 % [card] BibTeX copied verbatim from the Contrastive-LM/CLM GitHub README.
@@ -233,8 +249,8 @@
   doi     = {10.1111/j.2517-6161.1980.tb01109.x}
 }
 
-% [manifest] repository pinned in jev_bench/sources.json (revision 4f61ecb038).
-% No accompanying paper. Year from the repository creation date: VERIFY.
+% [search] no accompanying paper. Author and creation date (2023-05-17) confirmed
+% via the Hugging Face API on 2026-09-29. Pinned revision 4f61ecb038.
 @misc{deepset2023promptinjections,
   title        = {prompt-injections},
   author       = {{deepset}},
@@ -242,11 +258,62 @@
   year         = {2023}
 }
 
-% [manifest] repository pinned in jev_bench/sources.json (revision 2f2ceeb396).
-% No accompanying paper. Year from the repository creation date: VERIFY.
+% [search] no accompanying paper. Creation date (2023-09-30) confirmed via the
+% Hugging Face API; owner's name (Jack Hao) from the GitHub profile of the same
+% handle, 2026-09-29. Pinned revision 2f2ceeb396.
 @misc{jackhhao2023jailbreak,
   title        = {jailbreak-classification},
-  author       = {{jackhhao}},
+  author       = {Hao, Jack},
   howpublished = {Hugging Face dataset, \url{https://huggingface.co/datasets/jackhhao/jailbreak-classification}},
   year         = {2023}
+}
+
+% ---------------------------------------------------------------- systems
+
+% [search] official BibTeX copied from the post, fetched 2026-09-29.
+@article{he2025nondeterminism,
+  author  = {Horace He and Thinking Machines Lab},
+  title   = {Defeating Nondeterminism in {LLM} Inference},
+  journal = {Thinking Machines Lab: Connectionism},
+  year    = {2025},
+  note    = {\url{https://thinkingmachines.ai/blog/defeating-nondeterminism-in-llm-inference/}},
+  doi     = {10.64434/tml.20250910}
+}
+
+% [search] model card fetched 2026-09-29 (25.2B total / 3.8B active, MoE, text
+% diffusion, Apache 2.0). No paper exists for this model as of that date.
+@misc{diffusiongemma2026,
+  title        = {{DiffusionGemma} 26B-A4B-it Model Card},
+  author       = {{Google DeepMind}},
+  howpublished = {\url{https://huggingface.co/google/diffusiongemma-26B-A4B-it}},
+  year         = {2026}
+}
+
+% [search] arXiv 2412.13663; full author list not transcribed, hence "and others".
+@article{warner2024modernbert,
+  title   = {Smarter, Better, Faster, Longer: A Modern Bidirectional Encoder for Fast, Memory Efficient, and Long Context Finetuning and Inference},
+  author  = {Warner, Benjamin and others},
+  journal = {arXiv preprint arXiv:2412.13663},
+  year    = {2024}
+}
+
+% [search] GitHub API 2026-09-29: owner Davipar (David Villal\'on), created
+% 2026-09-19, Apache-2.0; title is the repository description. Pinned revision
+% 3ce907e.
+@misc{djev2026,
+  title        = {djev: Structured Decisions with {DiffusionGemma} and {vLLM}},
+  author       = {Villal{\'o}n, David},
+  howpublished = {\url{https://github.com/Davipar/djev-dev}},
+  year         = {2026}
+}
+
+% [search] GitHub API 2026-09-29: owner NandhaKishorM (Nandakishor, ConvAI
+% Innovations), created 2026-09-18, Apache-2.0; weights on Hugging Face under
+% convaiinnovations, created 2026-09-18. Title is the repository description.
+% Code commit 4066d5d.
+@misc{laya2026,
+  title        = {Laya: Non-Autoregressive System 1 Decision Engine},
+  author       = {Nandakishor},
+  howpublished = {\url{https://github.com/NandhaKishorM/laya}; weights at \url{https://huggingface.co/convaiinnovations/laya}},
+  year         = {2026}
 }
