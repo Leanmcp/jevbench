@@ -6,7 +6,7 @@
 \begin{tikzpicture}[
   font=\footnotesize,
   head/.style={font=\small\bfseries, anchor=west},
-  pos/.style={anchor=east, font=\ttfamily},
+  posletter/.style={anchor=east, font=\ttfamily},
   val/.style={anchor=west, font=\scriptsize},
   pick/.style={draw=tdline, line width=0.9pt},
 ]
@@ -27,12 +27,12 @@
       -1.5/{Refuse to dictate the report}/d/0.02/c/0.05/tdbar/0/0} {
     \node[anchor=west] at (0,\yy) {\txt};
     % original order
-    \node[pos] at ({\colA-0.1},\yy) {\la};
+    \node[posletter] at ({\colA-0.1},\yy) {\la};
     \fill[\col] (\colA,\yy-0.13) rectangle ++(\pa*\barlen,0.26);
     \ifnum\ka=1 \draw[pick] (\colA,\yy-0.13) rectangle ++(\pa*\barlen,0.26); \fi
     \node[val] at ({\colA+\pa*\barlen+0.05},\yy) {\pa};
     % reordered twin
-    \node[pos] at ({\colB-0.1},\yy) {\lb};
+    \node[posletter] at ({\colB-0.1},\yy) {\lb};
     \fill[\col] (\colB,\yy-0.13) rectangle ++(\pb*\barlen,0.26);
     \ifnum\kb=1 \draw[pick] (\colB,\yy-0.13) rectangle ++(\pb*\barlen,0.26); \fi
     \node[val] at ({\colB+\pb*\barlen+0.05},\yy) {\pb};

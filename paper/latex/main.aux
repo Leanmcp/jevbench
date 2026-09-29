@@ -84,77 +84,101 @@
 \newlabel{fig:types}{{3}{7}{One request of each question type, with the probabilities returned by Jev~1.13. The correct answer is drawn in green. The dashed line in the binary panel marks the conventional 0.5 threshold}{figure.3}{}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {4.3}Sampling and the reordered twin}{7}{subsection.4.3}\protected@file@percent }
 \newlabel{sec:sampling}{{4.3}{7}{Sampling and the reordered twin}{subsection.4.3}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces A reordered-twin family from MedQA-USMLE. The options and the question are identical; only their order differs. Jev~1.13 selects position \texttt  {a} both times, which is wrong in the original order and right in the twin. Option texts are abbreviated; the correct option is drawn in green.}}{8}{figure.4}\protected@file@percent }
-\newlabel{fig:reorder}{{4}{8}{A reordered-twin family from MedQA-USMLE. The options and the question are identical; only their order differs. Jev~1.13 selects position \texttt {a} both times, which is wrong in the original order and right in the twin. Option texts are abbreviated; the correct option is drawn in green}{figure.4}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces Evaluated systems. Serving conditions differ and are not matched; see Section~\ref {sec:limitations}.}}{8}{table.2}\protected@file@percent }
-\newlabel{tab:systems}{{2}{8}{Evaluated systems. Serving conditions differ and are not matched; see Section~\ref {sec:limitations}}{table.2}{}}
+\citation{typesafe2026jev}
+\citation{djev2026}
+\citation{diffusiongemma2026}
+\citation{kwon2023vllm}
+\citation{laya2026}
+\citation{warner2024modernbert}
+\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces A reordered-twin family from MedQA-USMLE. The options and the question are identical; only their order differs. Jev~1.13 selects position \texttt  {a} both times, which is wrong in the original order and right in the twin. Each row is one answer option; the columns give its position letter and probability in each ordering. The correct option is green and Jev's selection is outlined. Option texts are abbreviated.}}{8}{figure.4}\protected@file@percent }
+\newlabel{fig:reorder}{{4}{8}{A reordered-twin family from MedQA-USMLE. The options and the question are identical; only their order differs. Jev~1.13 selects position \texttt {a} both times, which is wrong in the original order and right in the twin. Each row is one answer option; the columns give its position letter and probability in each ordering. The correct option is green and Jev's selection is outlined. Option texts are abbreviated}{figure.4}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces Evaluated systems. Serving conditions differ and are not matched; see Section~\ref {sec:limitations}. The full serving configuration of djev-0.1 is released with the artifacts.}}{8}{table.2}\protected@file@percent }
+\newlabel{tab:systems}{{2}{8}{Evaluated systems. Serving conditions differ and are not matched; see Section~\ref {sec:limitations}. The full serving configuration of djev-0.1 is released with the artifacts}{table.2}{}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {4.4}Evaluation protocol}{8}{subsection.4.4}\protected@file@percent }
 \@writefile{toc}{\contentsline {section}{\numberline {5}Experimental setup}{8}{section.5}\protected@file@percent }
 \newlabel{sec:setup}{{5}{8}{Experimental setup}{section.5}{}}
-\@writefile{toc}{\contentsline {paragraph}{Cost and duration.}{8}{section*.13}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {6}Results}{8}{section.6}\protected@file@percent }
-\newlabel{sec:results}{{6}{8}{Results}{section.6}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {6.1}Main results}{8}{subsection.6.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Four slices are at chance for the 421M model.}{8}{section*.14}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {6.2}Decision threshold and calibration}{8}{subsection.6.2}\protected@file@percent }
-\newlabel{sec:threshold}{{6.2}{8}{Decision threshold and calibration}{subsection.6.2}{}}
+\@writefile{toc}{\contentsline {paragraph}{Jev 1.13 (closed source).}{8}{section*.13}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{djev-0.1 (open source, diffusion language model).}{8}{section*.14}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Laya 421M (open source, encoder).}{8}{section*.15}\protected@file@percent }
 \@writefile{lot}{\contentsline {table}{\numberline {3}{\ignorespaces Accuracy with 95\% percentile bootstrap intervals over 2{,}000 resamples grouped by family. SST-5 reports mean absolute error on the expected level, where lower is better. \textsc  {Chance} is the mean per-case random-guess rate, accounting for varying option counts.}}{9}{table.3}\protected@file@percent }
 \newlabel{tab:main}{{3}{9}{Accuracy with 95\% percentile bootstrap intervals over 2{,}000 resamples grouped by family. SST-5 reports mean absolute error on the expected level, where lower is better. \textsc {Chance} is the mean per-case random-guess rate, accounting for varying option counts}{table.3}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {4}{\ignorespaces Binary slices at the conventional 0.5 threshold, at the accuracy-maximising threshold, and threshold-free. Accuracy at the best threshold is selected on the data it scores and is therefore optimistic; we report it as a diagnostic of available headroom.}}{9}{table.4}\protected@file@percent }
-\newlabel{tab:threshold}{{4}{9}{Binary slices at the conventional 0.5 threshold, at the accuracy-maximising threshold, and threshold-free. Accuracy at the best threshold is selected on the data it scores and is therefore optimistic; we report it as a diagnostic of available headroom}{table.4}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {6.3}Option-order sensitivity}{9}{subsection.6.3}\protected@file@percent }
-\newlabel{sec:position}{{6.3}{9}{Option-order sensitivity}{subsection.6.3}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {6.4}Effect of context budget}{9}{subsection.6.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Identical inputs.}{9}{section*.16}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Sampling controls.}{9}{section*.17}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Cost and duration.}{9}{section*.18}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {6}Results}{9}{section.6}\protected@file@percent }
+\newlabel{sec:results}{{6}{9}{Results}{section.6}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.1}Main results}{9}{subsection.6.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Four slices are at chance for the 421M model.}{9}{section*.19}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.2}Decision threshold and calibration}{9}{subsection.6.2}\protected@file@percent }
+\newlabel{sec:threshold}{{6.2}{9}{Decision threshold and calibration}{subsection.6.2}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {4}{\ignorespaces Binary slices at the conventional 0.5 threshold, at the accuracy-maximising threshold, and threshold-free. Accuracy at the best threshold is selected on the data it scores and is therefore optimistic; we report it as a diagnostic of available headroom.}}{10}{table.4}\protected@file@percent }
+\newlabel{tab:threshold}{{4}{10}{Binary slices at the conventional 0.5 threshold, at the accuracy-maximising threshold, and threshold-free. Accuracy at the best threshold is selected on the data it scores and is therefore optimistic; we report it as a diagnostic of available headroom}{table.4}{}}
 \@writefile{lot}{\contentsline {table}{\numberline {5}{\ignorespaces Fraction (\%) of matched families whose correctness changed when options were reordered. Reordering does not change the question, so any value materially above zero is positional preference.}}{10}{table.5}\protected@file@percent }
 \newlabel{tab:position}{{5}{10}{Fraction (\%) of matched families whose correctness changed when options were reordered. Reordering does not change the question, so any value materially above zero is positional preference}{table.5}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {6}{\ignorespaces The same 500 ATBench trajectories, input tokens as reported by each serving stack.}}{10}{table.6}\protected@file@percent }
-\newlabel{tab:context}{{6}{10}{The same 500 ATBench trajectories, input tokens as reported by each serving stack}{table.6}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.3}Option-order sensitivity}{10}{subsection.6.3}\protected@file@percent }
+\newlabel{sec:position}{{6.3}{10}{Option-order sensitivity}{subsection.6.3}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.4}Effect of context budget}{10}{subsection.6.4}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {6.5}Probability mass on the gold option}{10}{subsection.6.5}\protected@file@percent }
 \newlabel{sec:zeromass}{{6.5}{10}{Probability mass on the gold option}{subsection.6.5}{}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {6.6}Image-grounded decisions}{10}{subsection.6.6}\protected@file@percent }
 \newlabel{sec:images}{{6.6}{10}{Image-grounded decisions}{subsection.6.6}{}}
-\@writefile{toc}{\contentsline {paragraph}{Verification that the image is consumed.}{10}{section*.15}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Latency.}{10}{section*.16}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {7}Discussion}{10}{section.7}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Calibration is the binding constraint.}{10}{section*.17}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{The interface admits non-overlapping competence.}{10}{section*.18}\protected@file@percent }
 \citation{typesafe2026jev}
+\@writefile{lot}{\contentsline {table}{\numberline {6}{\ignorespaces The same 500 ATBench trajectories, input tokens as reported by each serving stack.}}{11}{table.6}\protected@file@percent }
+\newlabel{tab:context}{{6}{11}{The same 500 ATBench trajectories, input tokens as reported by each serving stack}{table.6}{}}
 \@writefile{lot}{\contentsline {table}{\numberline {7}{\ignorespaces Count of cases where the correct option received exactly zero probability.}}{11}{table.7}\protected@file@percent }
 \newlabel{tab:zeromass}{{7}{11}{Count of cases where the correct option received exactly zero probability}{table.7}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {8}{\ignorespaces Image-grounded decisions, djev-0.1. The ScienceQA pair is a controlled comparison: identical model, adapter and dataset, differing only in whether the answer requires the image.}}{11}{table.8}\protected@file@percent }
-\newlabel{tab:images}{{8}{11}{Image-grounded decisions, djev-0.1. The ScienceQA pair is a controlled comparison: identical model, adapter and dataset, differing only in whether the answer requires the image}{table.8}{}}
-\@writefile{toc}{\contentsline {paragraph}{Reading a question and choosing among options is the discriminating capability.}{11}{section*.19}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Verification that the image is consumed.}{11}{section*.20}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Latency.}{11}{section*.21}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {7}Discussion}{11}{section.7}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Calibration is the binding constraint.}{11}{section*.22}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{The interface admits non-overlapping competence.}{11}{section*.23}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Reading a question and choosing among options is the discriminating capability.}{11}{section*.24}\protected@file@percent }
 \@writefile{toc}{\contentsline {section}{\numberline {8}Limitations}{11}{section.8}\protected@file@percent }
 \newlabel{sec:limitations}{{8}{11}{Limitations}{section.8}{}}
+\citation{he2025nondeterminism}
+\@writefile{lot}{\contentsline {table}{\numberline {8}{\ignorespaces Image-grounded decisions, djev-0.1. The ScienceQA pair is a controlled comparison: identical model, adapter and dataset, differing only in whether the answer requires the image.}}{12}{table.8}\protected@file@percent }
+\newlabel{tab:images}{{8}{12}{Image-grounded decisions, djev-0.1. The ScienceQA pair is a controlled comparison: identical model, adapter and dataset, differing only in whether the answer requires the image}{table.8}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {9}Reproducibility and artifacts}{12}{section.9}\protected@file@percent }
+\citation{casanueva2020banking77}
 \bibstyle{unsrtnat}
 \bibdata{references}
 \bibcite{brier1950}{{1}{1950}{{Brier}}{{}}}
+\@writefile{lot}{\contentsline {table}{\numberline {9}{\ignorespaces Paired bootstrap. $\Delta $ is A minus B, where A is Jev 1.13 and B is djev-0.1. A positive value favours A.}}{13}{table.9}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {A}Paired bootstrap over shared cases}{13}{appendix.A}\protected@file@percent }
+\newlabel{app:paired}{{A}{13}{Paired bootstrap over shared cases}{appendix.A}{}}
+\@writefile{toc}{\contentsline {paragraph}{Three differences do not survive the paired test.}{13}{section*.26}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {B}Dataset provenance}{13}{appendix.B}\protected@file@percent }
+\newlabel{app:provenance}{{B}{13}{Dataset provenance}{appendix.B}{}}
 \bibcite{mcfadden1974conditional}{{2}{1974}{{McFadden}}{{}}}
 \bibcite{mccullagh1980ordinal}{{3}{1980}{{McCullagh}}{{}}}
 \bibcite{typesafe2026jev}{{4}{2026}{{Almeida}}{{}}}
 \bibcite{casanueva2020banking77}{{5}{2020}{{Casanueva et~al.}}{{Casanueva, Tem{\v {c}}inas, Gerz, Henderson, and Vuli{\'c}}}}
-\@writefile{toc}{\contentsline {section}{\numberline {9}Reproducibility and artifacts}{12}{section.9}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {A}Paired bootstrap over shared cases}{12}{appendix.A}\protected@file@percent }
-\newlabel{app:paired}{{A}{12}{Paired bootstrap over shared cases}{appendix.A}{}}
-\@writefile{toc}{\contentsline {paragraph}{Three differences do not survive the paired test.}{12}{section*.21}\protected@file@percent }
 \bibcite{willard2023outlines}{{6}{2023}{{Willard and Louf}}{{}}}
 \bibcite{kwon2023vllm}{{7}{2023}{{Kwon et~al.}}{{Kwon, Li, Zhuang, Sheng, Zheng, Yu, Gonzalez, Zhang, and Stoica}}}
 \bibcite{jin2019pubmedqa}{{8}{2019}{{Jin et~al.}}{{Jin, Dhingra, Liu, Cohen, and Lu}}}
 \bibcite{socher2013sst}{{9}{2013}{{Socher et~al.}}{{Socher, Perelygin, Wu, Chuang, Manning, Ng, and Potts}}}
+\@writefile{lot}{\contentsline {table}{\numberline {10}{\ignorespaces Paired bootstrap. $\Delta $ is A minus B, where A is Jev 1.13 and B is Laya 421M. A positive value favours A.}}{14}{table.10}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {11}{\ignorespaces Paired bootstrap. $\Delta $ is A minus B, where A is djev-0.1 and B is Laya 421M. A positive value favours A.}}{14}{table.11}\protected@file@percent }
 \bibcite{pal2022medmcqa}{{10}{2022}{{Pal et~al.}}{{Pal, Umapathi, and Sankarasubbu}}}
-\bibcite{jin2020disease}{{11}{2020}{{Jin et~al.}}{{Jin, Pan, Oufattole, Weng, Fang, and Szolovits}}}
-\bibcite{wang2024mmlupro}{{12}{2024}{{Wang et~al.}}{{Wang, Ma, Zhang, Ni, Chandra, Guo, Ren, Arulraj, He, Jiang, et~al.}}}
+\bibcite{jin2020disease}{{11}{2021}{{Jin et~al.}}{{Jin, Pan, Oufattole, Weng, Fang, and Szolovits}}}
+\bibcite{wang2024mmlupro}{{12}{2024}{{Wang et~al.}}{{Wang, Ma, Zhang, Ni, Chandra, Guo, Ren, Arulraj, He, Jiang, Li, Ku, Wang, Zhuang, Fan, Yue, and Chen}}}
 \bibcite{lu2022scienceqa}{{13}{2022}{{Lu et~al.}}{{Lu, Mishra, Xia, Qiu, Chang, Zhu, Tafjord, Clark, and Kalyan}}}
-\@writefile{lot}{\contentsline {table}{\numberline {9}{\ignorespaces Paired bootstrap. $\Delta $ is A minus B, where A is Jev 1.13 and B is djev-0.1. A positive value favours A.}}{13}{table.9}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {10}{\ignorespaces Paired bootstrap. $\Delta $ is A minus B, where A is Jev 1.13 and B is Laya 421M. A positive value favours A.}}{13}{table.10}\protected@file@percent }
 \bibcite{lau2018vqarad}{{14}{2018}{{Lau et~al.}}{{Lau, Gayen, Ben~Abacha, and Demner-Fushman}}}
 \bibcite{li2026atbench}{{15}{2026}{{Li et~al.}}{{Li, Luo, Xie, Fu, Yang, Shao, Ren, Qu, Fu, Yang, Shao, Hu, and Liu}}}
 \bibcite{ghosh2025aegis2}{{16}{2025}{{Ghosh et~al.}}{{Ghosh, Varshney, Sreedhar, Padmakumar, Rebedea, Varghese, and Parisien}}}
 \bibcite{gneiting2007scoring}{{17}{2007}{{Gneiting and Raftery}}{{}}}
-\bibcite{naeini2015ece}{{18}{2015}{{Naeini et~al.}}{{Naeini, Cooper, and Hauskrecht}}}
+\@writefile{lot}{\contentsline {table}{\numberline {12}{\ignorespaces Pinned sources. Aegis~2.0 supplies two slices (prompt and response); ScienceQA supplies the text and image slices.}}{15}{table.12}\protected@file@percent }
+\newlabel{tab:provenance}{{12}{15}{Pinned sources. Aegis~2.0 supplies two slices (prompt and response); ScienceQA supplies the text and image slices}{table.12}{}}
+\bibcite{naeini2015ece}{{18}{2015}{{Pakdaman~Naeini et~al.}}{{Pakdaman~Naeini, Cooper, and Hauskrecht}}}
 \bibcite{guo2017calibration}{{19}{2017}{{Guo et~al.}}{{Guo, Pleiss, Sun, and Weinberger}}}
 \bibcite{zheng2024mcqbias}{{20}{2024}{{Zheng et~al.}}{{Zheng, Zhou, Meng, Zhou, and Huang}}}
 \bibcite{zheng2026pagrpo}{{21}{2026}{{Zheng et~al.}}{{Zheng, Yuan, Yao, Gu, Zheng, and He}}}
 \bibcite{tamba2026positionbias}{{22}{2026}{{Tamba}}{{}}}
-\@writefile{lot}{\contentsline {table}{\numberline {11}{\ignorespaces Paired bootstrap. $\Delta $ is A minus B, where A is djev-0.1 and B is Laya 421M. A positive value favours A.}}{14}{table.11}\protected@file@percent }
-\gdef \@abspage@last{14}
+\bibcite{deepset2023promptinjections}{{23}{2023}{{deepset}}{{}}}
+\bibcite{jackhhao2023jailbreak}{{24}{2023}{{Hao}}{{}}}
+\bibcite{djev2026}{{25}{2026}{{Villal{\'o}n}}{{}}}
+\bibcite{diffusiongemma2026}{{26}{2026}{{Google DeepMind}}{{}}}
+\bibcite{laya2026}{{27}{2026}{{Nandakishor}}{{}}}
+\bibcite{warner2024modernbert}{{28}{2024}{{Warner et~al.}}{{Warner, Chaffin, Clavi{\'e}, Weller, Hallstr{\"o}m, Taghadouini, Gallagher, Biswas, Ladhak, Aarsen, Cooper, Adams, Howard, and Poli}}}
+\bibcite{he2025nondeterminism}{{29}{2025}{{He and Lab}}{{}}}
+\gdef \@abspage@last{16}

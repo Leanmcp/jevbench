@@ -1,117 +1,176 @@
-% jev-bench bibliography.
+% TDBench bibliography.
 %
-% Provenance of every entry is recorded so a co-author can re-check it:
-%   [card]   BibTeX copied verbatim from the dataset's own Hugging Face card
-%   [search] venue, year and identifier confirmed against arXiv / ACL Anthology / PMLR
-%   [repo]   confirmed from the repository or API of the cited artifact
-% As of 2026-09-29 every entry has been checked against a primary source; no
-% [memory] entries remain.
+% Every entry below was taken from an official record on 2026-09-29. The tag on
+% each entry says which one:
+%   [crossref] BibTeX returned by doi.org content negotiation (the publisher's
+%              registered metadata); Unicode converted to LaTeX, en dashes to --
+%   [datacite] BibTeX returned by doi.org for an arXiv DOI (10.48550/arXiv.*)
+%   [anthology] BibTeX downloaded from aclanthology.org/<id>.bib
+%   [pmlr]     BibTeX shown on the proceedings.mlr.press paper page
+%   [neurips]  BibTeX downloaded from proceedings.neurips.cc (-Bibtex.bib)
+%   [authors]  citation block published by the authors (README or article page)
+%   [api]      no paper exists; fields read from the GitHub / Hugging Face API
+% Fields that are absent from the official record (for example page numbers
+% that Crossref does not register) are deliberately left out, not filled in.
+% Citation keys are ours and are kept stable so the text does not change.
 
 % ---------------------------------------------------------------- datasets
 
-% [card] openlifescienceai/medmcqa card has no BibTeX; venue confirmed [search]
+% [pmlr] proceedings.mlr.press/v174/pal22a.html
 @inproceedings{pal2022medmcqa,
-  title     = {{MedMCQA}: A Large-scale Multi-Subject Multi-Choice Dataset for Medical Domain Question Answering},
+  title     = {{MedMCQA}: A Large-scale Multi-Subject Multi-Choice Dataset for Medical domain Question Answering},
   author    = {Pal, Ankit and Umapathi, Logesh Kumar and Sankarasubbu, Malaikannan},
   booktitle = {Proceedings of the Conference on Health, Inference, and Learning},
-  series    = {Proceedings of Machine Learning Research},
-  volume    = {174},
   pages     = {248--260},
   year      = {2022},
-  publisher = {PMLR}
+  editor    = {Flores, Gerardo and Chen, George H and Pollard, Tom and Ho, Joyce C and Naumann, Tristan},
+  volume    = {174},
+  series    = {Proceedings of Machine Learning Research},
+  month     = {07--08 Apr},
+  publisher = {PMLR},
+  url       = {https://proceedings.mlr.press/v174/pal22a.html}
 }
 
-% [card] GBaker/MedQA-USMLE-4-options
+% [crossref] doi.org/10.3390/app11146421. The journal version of arXiv:2009.13081
+% (MedQA); the key keeps its original name.
 @article{jin2020disease,
-  title   = {What Disease does this Patient Have? A Large-scale Open Domain Question Answering Dataset from Medical Exams},
-  author  = {Jin, Di and Pan, Eileen and Oufattole, Nassim and Weng, Wei-Hung and Fang, Hanyi and Szolovits, Peter},
-  journal = {arXiv preprint arXiv:2009.13081},
-  year    = {2020}
+  title     = {What Disease Does This Patient Have? A Large-Scale Open Domain Question Answering Dataset from Medical Exams},
+  author    = {Jin, Di and Pan, Eileen and Oufattole, Nassim and Weng, Wei-Hung and Fang, Hanyi and Szolovits, Peter},
+  journal   = {Applied Sciences},
+  volume    = {11},
+  number    = {14},
+  pages     = {6421},
+  year      = {2021},
+  publisher = {MDPI AG},
+  doi       = {10.3390/app11146421}
 }
 
-% [search] arXiv 2406.01574; also NeurIPS 2024 Datasets and Benchmarks
-@article{wang2024mmlupro,
-  title   = {{MMLU-Pro}: A More Robust and Challenging Multi-Task Language Understanding Benchmark},
-  author  = {Wang, Yubo and Ma, Xueguang and Zhang, Ge and Ni, Yuansheng and Chandra, Abhranil and Guo, Shiguang and Ren, Weiming and Arulraj, Aaran and He, Xuan and Jiang, Ziyan and others},
-  journal = {arXiv preprint arXiv:2406.01574},
-  year    = {2024}
+% [neurips] proceedings.neurips.cc/paper_files/paper/2024/file/ad236edc564f3e3156e1b2feafb99a24-Bibtex.bib
+@inproceedings{wang2024mmlupro,
+  title     = {{MMLU-Pro}: A More Robust and Challenging Multi-Task Language Understanding Benchmark},
+  author    = {Wang, Yubo and Ma, Xueguang and Zhang, Ge and Ni, Yuansheng and Chandra, Abhranil and Guo, Shiguang and Ren, Weiming and Arulraj, Aaran and He, Xuan and Jiang, Ziyan and Li, Tianle and Ku, Max and Wang, Kai and Zhuang, Alex and Fan, Rongqi and Yue, Xiang and Chen, Wenhu},
+  booktitle = {Advances in Neural Information Processing Systems},
+  editor    = {A. Globerson and L. Mackey and D. Belgrave and A. Fan and U. Paquet and J. Tomczak and C. Zhang},
+  pages     = {95266--95290},
+  publisher = {Curran Associates, Inc.},
+  volume    = {37},
+  year      = {2024},
+  doi       = {10.52202/079017-3018},
+  url       = {https://proceedings.neurips.cc/paper_files/paper/2024/file/ad236edc564f3e3156e1b2feafb99a24-Paper-Datasets_and_Benchmarks_Track.pdf}
 }
 
-% [search] ACL Anthology D19-1259
+% [anthology] aclanthology.org/D19-1259.bib
 @inproceedings{jin2019pubmedqa,
-  title     = {{PubMedQA}: A Dataset for Biomedical Research Question Answering},
+  title     = {{P}ub{M}ed{QA}: A Dataset for Biomedical Research Question Answering},
   author    = {Jin, Qiao and Dhingra, Bhuwan and Liu, Zhengping and Cohen, William and Lu, Xinghua},
+  editor    = {Inui, Kentaro and Jiang, Jing and Ng, Vincent and Wan, Xiaojun},
   booktitle = {Proceedings of the 2019 Conference on Empirical Methods in Natural Language Processing and the 9th International Joint Conference on Natural Language Processing (EMNLP-IJCNLP)},
-  pages     = {2567--2577},
-  year      = {2019}
+  month     = nov,
+  year      = {2019},
+  address   = {Hong Kong, China},
+  publisher = {Association for Computational Linguistics},
+  url       = {https://aclanthology.org/D19-1259/},
+  doi       = {10.18653/v1/D19-1259},
+  pages     = {2567--2577}
 }
 
-% [card] mteb/banking77 (upstream corpus is PolyAI's)
+% [crossref] doi.org/10.18653/v1/2020.nlp4convai-1.5. Upstream corpus of
+% mteb/banking77 (PolyAI).
 @inproceedings{casanueva2020banking77,
   title     = {Efficient Intent Detection with Dual Sentence Encoders},
   author    = {Casanueva, I{\~n}igo and Tem{\v{c}}inas, Tadas and Gerz, Daniela and Henderson, Matthew and Vuli{\'c}, Ivan},
   booktitle = {Proceedings of the 2nd Workshop on Natural Language Processing for Conversational AI},
+  publisher = {Association for Computational Linguistics},
+  pages     = {38--45},
   year      = {2020},
   doi       = {10.18653/v1/2020.nlp4convai-1.5}
 }
 
-% [card] derek-thomas/ScienceQA
+% [neurips] proceedings.neurips.cc/paper_files/paper/2022/file/11332b6b6cf4485b84afadb1352d3a9a-Bibtex.bib
 @inproceedings{lu2022scienceqa,
   title     = {Learn to Explain: Multimodal Reasoning via Thought Chains for Science Question Answering},
-  author    = {Lu, Pan and Mishra, Swaroop and Xia, Tony and Qiu, Liang and Chang, Kai-Wei and Zhu, Song-Chun and Tafjord, Oyvind and Clark, Peter and Kalyan, Ashwin},
-  booktitle = {Advances in Neural Information Processing Systems (NeurIPS)},
-  year      = {2022}
+  author    = {Lu, Pan and Mishra, Swaroop and Xia, Tanglin and Qiu, Liang and Chang, Kai-Wei and Zhu, Song-Chun and Tafjord, Oyvind and Clark, Peter and Kalyan, Ashwin},
+  booktitle = {Advances in Neural Information Processing Systems},
+  editor    = {S. Koyejo and S. Mohamed and A. Agarwal and D. Belgrave and K. Cho and A. Oh},
+  pages     = {2507--2521},
+  publisher = {Curran Associates, Inc.},
+  volume    = {35},
+  year      = {2022},
+  doi       = {10.52202/068431-0182},
+  url       = {https://proceedings.neurips.cc/paper_files/paper/2022/file/11332b6b6cf4485b84afadb1352d3a9a-Paper-Conference.pdf}
 }
 
-% [card] flaviagiammarino/vqa-rad
+% [crossref] doi.org/10.1038/sdata.2018.251. Crossref registers no page range.
 @article{lau2018vqarad,
   title     = {A dataset of clinically generated visual questions and answers about radiology images},
-  author    = {Lau, Jason J and Gayen, Soumya and Ben Abacha, Asma and Demner-Fushman, Dina},
+  author    = {Lau, Jason J. and Gayen, Soumya and Ben Abacha, Asma and Demner-Fushman, Dina},
   journal   = {Scientific Data},
   volume    = {5},
   number    = {1},
-  pages     = {1--10},
   year      = {2018},
-  publisher = {Nature Publishing Group}
+  month     = nov,
+  publisher = {Springer Science and Business Media LLC},
+  doi       = {10.1038/sdata.2018.251}
 }
 
-% [card] nvidia/Aegis-AI-Content-Safety-Dataset-2.0
+% [crossref] doi.org/10.18653/v1/2025.naacl-long.306
 @inproceedings{ghosh2025aegis2,
   title     = {{AEGIS}2.0: A Diverse {AI} Safety Dataset and Risks Taxonomy for Alignment of {LLM} Guardrails},
   author    = {Ghosh, Shaona and Varshney, Prasoon and Sreedhar, Makesh Narsimhan and Padmakumar, Aishwarya and Rebedea, Traian and Varghese, Jibin Rajan and Parisien, Christopher},
-  booktitle = {Proceedings of the 2025 Conference of the Nations of the Americas Chapter of the Association for Computational Linguistics: Human Language Technologies},
+  booktitle = {Proceedings of the 2025 Conference of the Nations of the Americas Chapter of the Association for Computational Linguistics: Human Language Technologies (Volume 1: Long Papers)},
+  publisher = {Association for Computational Linguistics},
   pages     = {5992--6026},
   year      = {2025},
-  publisher = {Association for Computational Linguistics},
   doi       = {10.18653/v1/2025.naacl-long.306}
 }
 
-% [card] AI45Research/ATBench
-@article{li2026atbench,
-  title   = {{ATBench}: A Diverse and Realistic Agent Trajectory Benchmark for Safety Evaluation and Diagnosis},
-  author  = {Li, Yu and Luo, Haoyu and Xie, Yuejin and Fu, Yuqian and Yang, Zhonghao and Shao, Shuai and Ren, Qihan and Qu, Wanying and Fu, Yanwei and Yang, Yujiu and Shao, Jing and Hu, Xia and Liu, Dongrui},
-  journal = {arXiv preprint arXiv:2604.02022},
-  year    = {2026},
-  doi     = {10.48550/arXiv.2604.02022}
+% [datacite] doi.org/10.48550/arXiv.2604.02022
+@misc{li2026atbench,
+  title     = {{ATBench}: A Diverse and Realistic Agent Trajectory Benchmark for Safety Evaluation and Diagnosis},
+  author    = {Li, Yu and Luo, Haoyu and Xie, Yuejin and Fu, Yuqian and Yang, Zhonghao and Shao, Shuai and Ren, Qihan and Qu, Wanying and Fu, Yanwei and Yang, Yujiu and Shao, Jing and Hu, Xia and Liu, Dongrui},
+  publisher = {arXiv},
+  year      = {2026},
+  doi       = {10.48550/arXiv.2604.02022},
+  url       = {https://arxiv.org/abs/2604.02022}
 }
 
-% [search] title, authors and pages confirmed at aclanthology.org/D13-1170.
+% [anthology] aclanthology.org/D13-1170.bib
 @inproceedings{socher2013sst,
   title     = {Recursive Deep Models for Semantic Compositionality Over a Sentiment Treebank},
-  author    = {Socher, Richard and Perelygin, Alex and Wu, Jean and Chuang, Jason and Manning, Christopher D and Ng, Andrew and Potts, Christopher},
+  author    = {Socher, Richard and Perelygin, Alex and Wu, Jean and Chuang, Jason and Manning, Christopher D. and Ng, Andrew and Potts, Christopher},
+  editor    = {Yarowsky, David and Baldwin, Timothy and Korhonen, Anna and Livescu, Karen and Bethard, Steven},
   booktitle = {Proceedings of the 2013 Conference on Empirical Methods in Natural Language Processing},
-  pages     = {1631--1642},
+  month     = oct,
+  year      = {2013},
   address   = {Seattle, Washington, USA},
   publisher = {Association for Computational Linguistics},
-  year      = {2013},
-  url       = {https://aclanthology.org/D13-1170/}
+  url       = {https://aclanthology.org/D13-1170/},
+  pages     = {1631--1642}
+}
+
+% [api] Hugging Face API: author deepset, created 2023-05-17. No paper.
+% Pinned revision 4f61ecb038.
+@misc{deepset2023promptinjections,
+  title        = {prompt-injections},
+  author       = {{deepset}},
+  howpublished = {Hugging Face dataset, \url{https://huggingface.co/datasets/deepset/prompt-injections}},
+  year         = {2023}
+}
+
+% [api] Hugging Face API: created 2023-09-30; the owner's name (Jack Hao) is
+% from the GitHub profile of the same handle. No paper. Pinned revision 2f2ceeb396.
+@misc{jackhhao2023jailbreak,
+  title        = {jailbreak-classification},
+  author       = {Hao, Jack},
+  howpublished = {Hugging Face dataset, \url{https://huggingface.co/datasets/jackhhao/jailbreak-classification}},
+  year         = {2023}
 }
 
 % ---------------------------------------------------------------- methods
 
-% [search] vendor announcement; RLCD expansion, quote, author and date confirmed
-% from the page on 2026-09-29. Not to be confused with Yang et al. (ICLR 2024),
-% an unrelated alignment method that shares the acronym.
+% [authors] vendor announcement by Diogo Almeida, published 2026-09-28. RLCD here
+% is "Reinforcement Learning for Calibrated Decisions", unrelated to Yang et al.
+% (ICLR 2024), which shares the acronym.
 @misc{typesafe2026jev,
   title        = {Introducing System One Models and Jev},
   author       = {Almeida, Diogo},
@@ -120,112 +179,106 @@
   note         = {Published 28 September 2026. Accessed 29 September 2026}
 }
 
-% [search] arXiv 2307.09702. The Outlines library.
-@article{willard2023outlines,
-  title   = {Efficient Guided Generation for Large Language Models},
-  author  = {Willard, Brandon T and Louf, R{\'e}mi},
-  journal = {arXiv preprint arXiv:2307.09702},
-  year    = {2023}
+% [datacite] doi.org/10.48550/arXiv.2307.09702 (the Outlines library)
+@misc{willard2023outlines,
+  title     = {Efficient Guided Generation for Large Language Models},
+  author    = {Willard, Brandon T. and Louf, R{\'e}mi},
+  publisher = {arXiv},
+  year      = {2023},
+  doi       = {10.48550/arXiv.2307.09702},
+  url       = {https://arxiv.org/abs/2307.09702}
 }
 
-% [search] arXiv 2309.03882; ICLR 2024 Spotlight (openreview.net/forum?id=shr9PXz7T0).
-% Author list confirmed against arXiv and the official repository.
+% [authors] citation block in the README of github.com/chujiezheng/LLM-MCQ-Bias
+% (ICLR 2024 Spotlight).
 @inproceedings{zheng2024mcqbias,
   title     = {Large Language Models Are Not Robust Multiple Choice Selectors},
-  author    = {Zheng, Chujie and Zhou, Hao and Meng, Fandong and Zhou, Jie and Huang, Minlie},
-  booktitle = {International Conference on Learning Representations (ICLR)},
+  author    = {Chujie Zheng and Hao Zhou and Fandong Meng and Jie Zhou and Minlie Huang},
+  booktitle = {The Twelfth International Conference on Learning Representations},
   year      = {2024},
-  note      = {arXiv:2309.03882}
+  url       = {https://openreview.net/forum?id=shr9PXz7T0}
 }
 
-% [search] confirmed at proceedings.mlr.press/v70/guo17a.html.
+% [pmlr] proceedings.mlr.press/v70/guo17a.html
 @inproceedings{guo2017calibration,
   title     = {On Calibration of Modern Neural Networks},
-  author    = {Guo, Chuan and Pleiss, Geoff and Sun, Yu and Weinberger, Kilian Q},
+  author    = {Chuan Guo and Geoff Pleiss and Yu Sun and Kilian Q. Weinberger},
   booktitle = {Proceedings of the 34th International Conference on Machine Learning},
-  series    = {Proceedings of Machine Learning Research},
-  volume    = {70},
   pages     = {1321--1330},
+  year      = {2017},
+  editor    = {Precup, Doina and Teh, Yee Whye},
+  volume    = {70},
+  series    = {Proceedings of Machine Learning Research},
+  month     = {06--11 Aug},
   publisher = {PMLR},
-  year      = {2017}
+  url       = {https://proceedings.mlr.press/v70/guo17a.html}
 }
 
-% [search] confirmed at ojs.aaai.org/index.php/AAAI/article/view/9602.
-@inproceedings{naeini2015ece,
+% [crossref] doi.org/10.1609/aaai.v29i1.9602. Crossref registers no page range.
+@article{naeini2015ece,
   title     = {Obtaining Well Calibrated Probabilities Using Bayesian Binning},
-  author    = {Naeini, Mahdi Pakdaman and Cooper, Gregory F and Hauskrecht, Milos},
-  booktitle = {Proceedings of the AAAI Conference on Artificial Intelligence},
+  author    = {Pakdaman Naeini, Mahdi and Cooper, Gregory and Hauskrecht, Milos},
+  journal   = {Proceedings of the AAAI Conference on Artificial Intelligence},
   volume    = {29},
   number    = {1},
-  pages     = {2901--2907},
   year      = {2015},
+  month     = feb,
+  publisher = {Association for the Advancement of Artificial Intelligence (AAAI)},
   doi       = {10.1609/aaai.v29i1.9602}
 }
 
-% [search] the Brier score; volume, issue and pages confirmed (journals.ametsoc.org).
+% [crossref] doi.org/10.1175/1520-0493(1950)078<0001:VOFEIT>2.0.CO;2. Crossref
+% stores the title and author in capitals, as printed in 1950; set in title case.
 @article{brier1950,
-  title   = {Verification of Forecasts Expressed in Terms of Probability},
-  author  = {Brier, Glenn W},
-  journal = {Monthly Weather Review},
-  volume  = {78},
-  number  = {1},
-  pages   = {1--3},
-  year    = {1950}
+  title     = {Verification of Forecasts Expressed in Terms of Probability},
+  author    = {Brier, Glenn W.},
+  journal   = {Monthly Weather Review},
+  volume    = {78},
+  number    = {1},
+  pages     = {1--3},
+  year      = {1950},
+  month     = jan,
+  publisher = {American Meteorological Society},
+  doi       = {10.1175/1520-0493(1950)078<0001:VOFEIT>2.0.CO;2}
 }
 
-% [search] volume, pages and DOI confirmed (author PDF at stat.washington.edu).
+% [crossref] doi.org/10.1198/016214506000001437
 @article{gneiting2007scoring,
-  title   = {Strictly Proper Scoring Rules, Prediction, and Estimation},
-  author  = {Gneiting, Tilmann and Raftery, Adrian E},
-  journal = {Journal of the American Statistical Association},
-  volume  = {102},
-  number  = {477},
-  pages   = {359--378},
-  year    = {2007},
-  doi     = {10.1198/016214506000001437}
+  title     = {Strictly Proper Scoring Rules, Prediction, and Estimation},
+  author    = {Gneiting, Tilmann and Raftery, Adrian E},
+  journal   = {Journal of the American Statistical Association},
+  volume    = {102},
+  number    = {477},
+  pages     = {359--378},
+  year      = {2007},
+  month     = mar,
+  publisher = {Informa UK Limited},
+  doi       = {10.1198/016214506000001437}
 }
 
-% ---------------------------------------------------------------- systems
-
-% [search] authors, pages and DOI confirmed at dl.acm.org and dblp.
-@inproceedings{kwon2023vllm,
-  title     = {Efficient Memory Management for Large Language Model Serving with {PagedAttention}},
-  author    = {Kwon, Woosuk and Li, Zhuohan and Zhuang, Siyuan and Sheng, Ying and Zheng, Lianmin and Yu, Cody Hao and Gonzalez, Joseph E and Zhang, Hao and Stoica, Ion},
-  booktitle = {Proceedings of the 29th Symposium on Operating Systems Principles (SOSP)},
-  pages     = {611--626},
-  publisher = {ACM},
-  year      = {2023},
-  doi       = {10.1145/3600006.3613165}
+% [datacite] doi.org/10.48550/arXiv.2607.20864
+@misc{tamba2026positionbias,
+  title     = {Position Bias is Hidden Behind Ceiling Effects: A Permutation Diagnostic for {LLM} Benchmarks},
+  author    = {Tamba, Hiroki},
+  publisher = {arXiv},
+  year      = {2026},
+  doi       = {10.48550/arXiv.2607.20864},
+  url       = {https://arxiv.org/abs/2607.20864}
 }
 
-% [card] BibTeX copied verbatim from the Contrastive-LM/CLM GitHub README.
-% Note: this is a Notion blog post, not a peer-reviewed paper.
-@misc{kwok2026clm,
-  title  = {Contrastive Language Models},
-  author = {Kwok, Jacky and Kang, Hangoo and Suresh, Tarun and Saad-Falcon, Jon and Pavone, Marco and R{\'e}, Christopher and Mirhoseini, Azalia},
-  year   = {2026},
-  note   = {Notion Blog}
+% [datacite] doi.org/10.48550/arXiv.2603.21016. This paper does not discuss tool
+% calling; do not cite it for that claim.
+@misc{zheng2026pagrpo,
+  title     = {Mitigating Selection Bias in Large Language Models via Permutation-Aware {GRPO}},
+  author    = {Zheng, Jinquan and Yuan, Jia and Yao, Jiacheng and Gu, Chenyang and Zheng, Pujun and He, Guoxiu},
+  publisher = {arXiv},
+  year      = {2026},
+  doi       = {10.48550/arXiv.2603.21016},
+  url       = {https://arxiv.org/abs/2603.21016}
 }
 
-% [search+fetch] arXiv:2607.20864, 23 July 2026. Single author confirmed on the abs page.
-@article{tamba2026positionbias,
-  title   = {Position Bias is Hidden Behind Ceiling Effects: A Permutation Diagnostic for {LLM} Benchmarks},
-  author  = {Tamba, Hiroki},
-  journal = {arXiv preprint arXiv:2607.20864},
-  year    = {2026}
-}
-
-% [search+fetch] arXiv:2603.21016, 22 March 2026. Author list confirmed on the abs page.
-% NOTE: this paper does NOT discuss tool calling; do not cite it for that claim.
-@article{zheng2026pagrpo,
-  title   = {Mitigating Selection Bias in Large Language Models via Permutation-Aware {GRPO}},
-  author  = {Zheng, Jinquan and Yuan, Jia and Yao, Jiacheng and Gu, Chenyang and Zheng, Pujun and He, Guoxiu},
-  journal = {arXiv preprint arXiv:2603.21016},
-  year    = {2026}
-}
-
-% [search] discrete choice; chapter and pages confirmed (EconBiz, bibbase). Some
-% sources date the volume 1973; the published volume is 1974.
+% Book chapter; no DOI exists. Chapter, editor, publisher and pages confirmed in
+% the EconBiz catalogue record. Some catalogues date the volume 1973.
 @incollection{mcfadden1974conditional,
   title     = {Conditional Logit Analysis of Qualitative Choice Behavior},
   author    = {McFadden, Daniel},
@@ -237,40 +290,38 @@
   year      = {1974}
 }
 
-% [search] ordinal regression; confirmed at doi.org/10.1111/j.2517-6161.1980.tb01109.x
+% [crossref] doi.org/10.1111/j.2517-6161.1980.tb01109.x. The journal name is the
+% one Crossref registers today.
 @article{mccullagh1980ordinal,
-  title   = {Regression Models for Ordinal Data},
-  author  = {McCullagh, Peter},
-  journal = {Journal of the Royal Statistical Society: Series B (Methodological)},
-  volume  = {42},
-  number  = {2},
-  pages   = {109--127},
-  year    = {1980},
-  doi     = {10.1111/j.2517-6161.1980.tb01109.x}
-}
-
-% [search] no accompanying paper. Author and creation date (2023-05-17) confirmed
-% via the Hugging Face API on 2026-09-29. Pinned revision 4f61ecb038.
-@misc{deepset2023promptinjections,
-  title        = {prompt-injections},
-  author       = {{deepset}},
-  howpublished = {Hugging Face dataset, \url{https://huggingface.co/datasets/deepset/prompt-injections}},
-  year         = {2023}
-}
-
-% [search] no accompanying paper. Creation date (2023-09-30) confirmed via the
-% Hugging Face API; owner's name (Jack Hao) from the GitHub profile of the same
-% handle, 2026-09-29. Pinned revision 2f2ceeb396.
-@misc{jackhhao2023jailbreak,
-  title        = {jailbreak-classification},
-  author       = {Hao, Jack},
-  howpublished = {Hugging Face dataset, \url{https://huggingface.co/datasets/jackhhao/jailbreak-classification}},
-  year         = {2023}
+  title     = {Regression Models for Ordinal Data},
+  author    = {McCullagh, Peter},
+  journal   = {Journal of the Royal Statistical Society Series B: Statistical Methodology},
+  volume    = {42},
+  number    = {2},
+  pages     = {109--127},
+  year      = {1980},
+  month     = jan,
+  publisher = {Oxford University Press (OUP)},
+  doi       = {10.1111/j.2517-6161.1980.tb01109.x}
 }
 
 % ---------------------------------------------------------------- systems
 
-% [search] official BibTeX copied from the post, fetched 2026-09-29.
+% [crossref] doi.org/10.1145/3600006.3613165
+@inproceedings{kwon2023vllm,
+  title     = {Efficient Memory Management for Large Language Model Serving with {PagedAttention}},
+  author    = {Kwon, Woosuk and Li, Zhuohan and Zhuang, Siyuan and Sheng, Ying and Zheng, Lianmin and Yu, Cody Hao and Gonzalez, Joseph and Zhang, Hao and Stoica, Ion},
+  booktitle = {Proceedings of the 29th Symposium on Operating Systems Principles},
+  series    = {SOSP '23},
+  pages     = {611--626},
+  year      = {2023},
+  month     = oct,
+  publisher = {ACM},
+  doi       = {10.1145/3600006.3613165}
+}
+
+% [authors] BibTeX published on the article page. (doi.org returns malformed
+% author metadata for this DOI, so the article's own block is used.)
 @article{he2025nondeterminism,
   author  = {Horace He and Thinking Machines Lab},
   title   = {Defeating Nondeterminism in {LLM} Inference},
@@ -280,8 +331,8 @@
   doi     = {10.64434/tml.20250910}
 }
 
-% [search] model card fetched 2026-09-29 (25.2B total / 3.8B active, MoE, text
-% diffusion, Apache 2.0). No paper exists for this model as of that date.
+% [api] Hugging Face model card, fetched 2026-09-29. No paper exists for this
+% model as of that date.
 @misc{diffusiongemma2026,
   title        = {{DiffusionGemma} 26B-A4B-it Model Card},
   author       = {{Google DeepMind}},
@@ -289,17 +340,18 @@
   year         = {2026}
 }
 
-% [search] arXiv 2412.13663; full author list not transcribed, hence "and others".
-@article{warner2024modernbert,
-  title   = {Smarter, Better, Faster, Longer: A Modern Bidirectional Encoder for Fast, Memory Efficient, and Long Context Finetuning and Inference},
-  author  = {Warner, Benjamin and others},
-  journal = {arXiv preprint arXiv:2412.13663},
-  year    = {2024}
+% [datacite] doi.org/10.48550/arXiv.2412.13663 (ModernBERT)
+@misc{warner2024modernbert,
+  title     = {Smarter, Better, Faster, Longer: A Modern Bidirectional Encoder for Fast, Memory Efficient, and Long Context Finetuning and Inference},
+  author    = {Warner, Benjamin and Chaffin, Antoine and Clavi{\'e}, Benjamin and Weller, Orion and Hallstr{\"o}m, Oskar and Taghadouini, Said and Gallagher, Alexis and Biswas, Raja and Ladhak, Faisal and Aarsen, Tom and Cooper, Nathan and Adams, Griffin and Howard, Jeremy and Poli, Iacopo},
+  publisher = {arXiv},
+  year      = {2024},
+  doi       = {10.48550/arXiv.2412.13663},
+  url       = {https://arxiv.org/abs/2412.13663}
 }
 
-% [search] GitHub API 2026-09-29: owner Davipar (David Villal\'on), created
-% 2026-09-19, Apache-2.0; title is the repository description. Pinned revision
-% 3ce907e.
+% [api] GitHub API: owner Davipar (David Villal\'on), created 2026-09-19,
+% Apache-2.0. Title is the repository description. Pinned revision 3ce907e.
 @misc{djev2026,
   title        = {djev: Structured Decisions with {DiffusionGemma} and {vLLM}},
   author       = {Villal{\'o}n, David},
@@ -307,13 +359,21 @@
   year         = {2026}
 }
 
-% [search] GitHub API 2026-09-29: owner NandhaKishorM (Nandakishor, ConvAI
-% Innovations), created 2026-09-18, Apache-2.0; weights on Hugging Face under
-% convaiinnovations, created 2026-09-18. Title is the repository description.
-% Code commit 4066d5d.
+% [api] GitHub API: owner NandhaKishorM (Nandakishor, ConvAI Innovations),
+% created 2026-09-18, Apache-2.0; weights under convaiinnovations on Hugging
+% Face. Title is the repository description. Code commit 4066d5d.
 @misc{laya2026,
   title        = {Laya: Non-Autoregressive System 1 Decision Engine},
   author       = {Nandakishor},
   howpublished = {\url{https://github.com/NandhaKishorM/laya}; weights at \url{https://huggingface.co/convaiinnovations/laya}},
   year         = {2026}
+}
+
+% Not cited in the current text. [authors] BibTeX from the Contrastive-LM/CLM
+% GitHub README; a Notion blog post, not a peer-reviewed paper.
+@misc{kwok2026clm,
+  title  = {Contrastive Language Models},
+  author = {Kwok, Jacky and Kang, Hangoo and Suresh, Tarun and Saad-Falcon, Jon and Pavone, Marco and R{\'e}, Christopher and Mirhoseini, Azalia},
+  year   = {2026},
+  note   = {Notion Blog}
 }
