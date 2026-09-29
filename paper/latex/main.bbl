@@ -1,9 +1,23 @@
-\begin{thebibliography}{29}
+\begin{thebibliography}{31}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
   \providecommand{\doi}[1]{doi: #1}\else
   \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[{TypeSafe AI}(2026)]{typesafe2026evals}
+{TypeSafe AI}.
+\newblock Workflow evals.
+\newblock \url{https://evals.typesafe.ai/}, 2026.
+\newblock Accessed 29 September 2026.
+
+\bibitem[Standhartinger(2026)]{standhartinger2026jevbench}
+Florian Standhartinger.
+\newblock {JevBench} by benchmark heaven: a benchmark for jev-class decision
+  models.
+\newblock \url{https://github.com/fstandhartinger/jevbench}; leaderboard at
+  \url{https://benchmarkheaven.com/jev-models}, 2026.
+\newblock Accessed 29 September 2026.
 
 \bibitem[Brier(1950)]{brier1950}
 Glenn~W. Brier.
