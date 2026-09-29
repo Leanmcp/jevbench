@@ -1,3 +1,159 @@
-\begin{thebibliography}{}
+\begin{thebibliography}{20}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Yang et~al.(2024)Yang, Klein, Celikyilmaz, Peng, and
+  Tian]{yang2024rlcd}
+Kevin Yang, Dan Klein, Asli Celikyilmaz, Nanyun Peng, and Yuandong Tian.
+\newblock {RLCD}: Reinforcement learning from contrast distillation for
+  language model alignment.
+\newblock In \emph{International Conference on Learning Representations
+  (ICLR)}, 2024.
+\newblock arXiv:2307.12950.
+
+\bibitem[Casanueva et~al.(2020)Casanueva, Tem{\v{c}}inas, Gerz, Henderson, and
+  Vuli{\'c}]{casanueva2020banking77}
+I{\~n}igo Casanueva, Tadas Tem{\v{c}}inas, Daniela Gerz, Matthew Henderson, and
+  Ivan Vuli{\'c}.
+\newblock Efficient intent detection with dual sentence encoders.
+\newblock In \emph{Proceedings of the 2nd Workshop on Natural Language
+  Processing for Conversational AI}, 2020.
+\newblock \doi{10.18653/v1/2020.nlp4convai-1.5}.
+
+\bibitem[Willard and Louf(2023)]{willard2023outlines}
+Brandon~T Willard and R{\'e}mi Louf.
+\newblock Efficient guided generation for large language models.
+\newblock \emph{arXiv preprint arXiv:2307.09702}, 2023.
+
+\bibitem[Kwon et~al.(2023)Kwon, Li, Zhuang, Sheng, Zheng, Yu, Gonzalez, Zhang,
+  and Stoica]{kwon2023vllm}
+Woosuk Kwon, Zhuohan Li, Siyuan Zhuang, Ying Sheng, Lianmin Zheng, Cody~Hao Yu,
+  Joseph~E Gonzalez, Hao Zhang, and Ion Stoica.
+\newblock Efficient memory management for large language model serving with
+  {PagedAttention}.
+\newblock In \emph{Proceedings of the 29th Symposium on Operating Systems
+  Principles (SOSP)}, 2023.
+
+\bibitem[Jin et~al.(2019)Jin, Dhingra, Liu, Cohen, and Lu]{jin2019pubmedqa}
+Qiao Jin, Bhuwan Dhingra, Zhengping Liu, William Cohen, and Xinghua Lu.
+\newblock {PubMedQA}: A dataset for biomedical research question answering.
+\newblock In \emph{Proceedings of the 2019 Conference on Empirical Methods in
+  Natural Language Processing and the 9th International Joint Conference on
+  Natural Language Processing (EMNLP-IJCNLP)}, pages 2567--2577, 2019.
+
+\bibitem[Socher et~al.(2013)Socher, Perelygin, Wu, Chuang, Manning, Ng, and
+  Potts]{socher2013sst}
+Richard Socher, Alex Perelygin, Jean Wu, Jason Chuang, Christopher~D Manning,
+  Andrew Ng, and Christopher Potts.
+\newblock Recursive deep models for semantic compositionality over a sentiment
+  treebank.
+\newblock In \emph{Proceedings of the 2013 Conference on Empirical Methods in
+  Natural Language Processing}, 2013.
+
+\bibitem[Pal et~al.(2022)Pal, Umapathi, and Sankarasubbu]{pal2022medmcqa}
+Ankit Pal, Logesh~Kumar Umapathi, and Malaikannan Sankarasubbu.
+\newblock {MedMCQA}: A large-scale multi-subject multi-choice dataset for
+  medical domain question answering.
+\newblock In \emph{Proceedings of the Conference on Health, Inference, and
+  Learning}, volume 174 of \emph{Proceedings of Machine Learning Research},
+  pages 248--260. PMLR, 2022.
+
+\bibitem[Jin et~al.(2020)Jin, Pan, Oufattole, Weng, Fang, and
+  Szolovits]{jin2020disease}
+Di~Jin, Eileen Pan, Nassim Oufattole, Wei-Hung Weng, Hanyi Fang, and Peter
+  Szolovits.
+\newblock What disease does this patient have? a large-scale open domain
+  question answering dataset from medical exams.
+\newblock \emph{arXiv preprint arXiv:2009.13081}, 2020.
+
+\bibitem[Wang et~al.(2024)Wang, Ma, Zhang, Ni, Chandra, Guo, Ren, Arulraj, He,
+  Jiang, et~al.]{wang2024mmlupro}
+Yubo Wang, Xueguang Ma, Ge~Zhang, Yuansheng Ni, Abhranil Chandra, Shiguang Guo,
+  Weiming Ren, Aaran Arulraj, Xuan He, Ziyan Jiang, et~al.
+\newblock {MMLU-Pro}: A more robust and challenging multi-task language
+  understanding benchmark.
+\newblock \emph{arXiv preprint arXiv:2406.01574}, 2024.
+
+\bibitem[Lu et~al.(2022)Lu, Mishra, Xia, Qiu, Chang, Zhu, Tafjord, Clark, and
+  Kalyan]{lu2022scienceqa}
+Pan Lu, Swaroop Mishra, Tony Xia, Liang Qiu, Kai-Wei Chang, Song-Chun Zhu,
+  Oyvind Tafjord, Peter Clark, and Ashwin Kalyan.
+\newblock Learn to explain: Multimodal reasoning via thought chains for science
+  question answering.
+\newblock In \emph{Advances in Neural Information Processing Systems
+  (NeurIPS)}, 2022.
+
+\bibitem[Lau et~al.(2018)Lau, Gayen, Ben~Abacha, and
+  Demner-Fushman]{lau2018vqarad}
+Jason~J Lau, Soumya Gayen, Asma Ben~Abacha, and Dina Demner-Fushman.
+\newblock A dataset of clinically generated visual questions and answers about
+  radiology images.
+\newblock \emph{Scientific Data}, 5\penalty0 (1):\penalty0 1--10, 2018.
+
+\bibitem[Li et~al.(2026)Li, Luo, Xie, Fu, Yang, Shao, Ren, Qu, Fu, Yang, Shao,
+  Hu, and Liu]{li2026atbench}
+Yu~Li, Haoyu Luo, Yuejin Xie, Yuqian Fu, Zhonghao Yang, Shuai Shao, Qihan Ren,
+  Wanying Qu, Yanwei Fu, Yujiu Yang, Jing Shao, Xia Hu, and Dongrui Liu.
+\newblock {ATBench}: A diverse and realistic agent trajectory benchmark for
+  safety evaluation and diagnosis.
+\newblock \emph{arXiv preprint arXiv:2604.02022}, 2026.
+\newblock \doi{10.48550/arXiv.2604.02022}.
+
+\bibitem[Ghosh et~al.(2025)Ghosh, Varshney, Sreedhar, Padmakumar, Rebedea,
+  Varghese, and Parisien]{ghosh2025aegis2}
+Shaona Ghosh, Prasoon Varshney, Makesh~Narsimhan Sreedhar, Aishwarya
+  Padmakumar, Traian Rebedea, Jibin~Rajan Varghese, and Christopher Parisien.
+\newblock {AEGIS}2.0: A diverse {AI} safety dataset and risks taxonomy for
+  alignment of {LLM} guardrails.
+\newblock In \emph{Proceedings of the 2025 Conference of the Nations of the
+  Americas Chapter of the Association for Computational Linguistics: Human
+  Language Technologies}, pages 5992--6026. Association for Computational
+  Linguistics, 2025.
+\newblock \doi{10.18653/v1/2025.naacl-long.306}.
+
+\bibitem[Brier(1950)]{brier1950}
+Glenn~W Brier.
+\newblock Verification of forecasts expressed in terms of probability.
+\newblock \emph{Monthly Weather Review}, 78\penalty0 (1):\penalty0 1--3, 1950.
+
+\bibitem[Gneiting and Raftery(2007)]{gneiting2007scoring}
+Tilmann Gneiting and Adrian~E Raftery.
+\newblock Strictly proper scoring rules, prediction, and estimation.
+\newblock \emph{Journal of the American Statistical Association}, 102\penalty0
+  (477):\penalty0 359--378, 2007.
+
+\bibitem[Naeini et~al.(2015)Naeini, Cooper, and Hauskrecht]{naeini2015ece}
+Mahdi~Pakdaman Naeini, Gregory~F Cooper, and Milos Hauskrecht.
+\newblock Obtaining well calibrated probabilities using bayesian binning.
+\newblock In \emph{AAAI Conference on Artificial Intelligence}, 2015.
+
+\bibitem[Guo et~al.(2017)Guo, Pleiss, Sun, and Weinberger]{guo2017calibration}
+Chuan Guo, Geoff Pleiss, Yu~Sun, and Kilian~Q Weinberger.
+\newblock On calibration of modern neural networks.
+\newblock In \emph{International Conference on Machine Learning (ICML)}, 2017.
+
+\bibitem[Zheng et~al.(2024)Zheng, Zhou, Meng, Zhou, and
+  Huang]{zheng2024mcqbias}
+Chujie Zheng, Hao Zhou, Fandong Meng, Jie Zhou, and Minlie Huang.
+\newblock Large language models are not robust multiple choice selectors.
+\newblock In \emph{International Conference on Learning Representations
+  (ICLR)}, 2024.
+\newblock arXiv:2309.03882.
+
+\bibitem[Zheng et~al.(2026)Zheng, Yuan, Yao, Gu, Zheng, and
+  He]{zheng2026pagrpo}
+Jinquan Zheng, Jia Yuan, Jiacheng Yao, Chenyang Gu, Pujun Zheng, and Guoxiu He.
+\newblock Mitigating selection bias in large language models via
+  permutation-aware {GRPO}.
+\newblock \emph{arXiv preprint arXiv:2603.21016}, 2026.
+
+\bibitem[Tamba(2026)]{tamba2026positionbias}
+Hiroki Tamba.
+\newblock Position bias is hidden behind ceiling effects: A permutation
+  diagnostic for {LLM} benchmarks.
+\newblock \emph{arXiv preprint arXiv:2607.20864}, 2026.
 
 \end{thebibliography}

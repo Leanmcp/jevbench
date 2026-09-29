@@ -76,6 +76,8 @@ def main() -> int:
                     help="what to record as the model in meta.json, when it differs from what is sent (e.g. djev-0.1)")
     ap.add_argument("--seed", type=int, default=None, help="djev options.seed. Pass 0 for a reproducible run.")
     ap.add_argument("--samples", type=int, default=None, help="djev options.samples, 1-4. Averages independent one-step reads.")
+    ap.add_argument("--save-raw", action="store_true",
+                    help="also write the exact request and response body per case to raw.jsonl, for tracing and audit")
     args = ap.parse_args()
 
     options: dict = {}
@@ -195,6 +197,19 @@ def main() -> int:
             payload = result["response"]
             rec.update(C.parse_answer(payload, case["question_key"], case["task_type"]))
             rec.update(C.usage_of(payload))
+        if args.save_raw:
+            # Full request and response, so a disputed number can be traced to the
+            # exact bytes that produced it. Kept in a separate file because it is
+            # large and contains state text.
+            C.jsonl_append(run_dir / "raw.jsonl", [{
+                "case_id": case["case_id"],
+                "endpoint": endpoint,
+                "request": client.build_request(C.attach_images(case)),
+                "response": result.get("response"),
+                "error": rec.get("error"),
+                "latency_ms": rec.get("latency_ms"),
+                "ts": rec["ts"],
+            }])
         with lock:
             C.jsonl_append(pred_path, [rec])
             state["done"] += 1

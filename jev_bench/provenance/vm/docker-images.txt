@@ -1,4 +1,4 @@
-djev-local:latest <none> 30.7GB
-djev-v1:local sha256:84504cd395144f52a8b88f98f256bd87601575fad3e1d485f64158193cf931b1 30.7GB
-vllm/vllm-openai:nightly-dee37d89115db4c94a820a79a78a7828e141c910 sha256:dea7fa047caa114167efccdeb42321b12d2c11da1add8728aa2662cb8d6b8cd5 30.6GB
-ubuntu:22.04 sha256:b8b6ee6aa931ecd9d0d952abc34dc0e5f7c6a30c6bb71b079fe399fde0329c02 119MB
+djev-local:latest <none>
+djev-v1:local sha256:84504cd395144f52a8b88f98f256bd87601575fad3e1d485f64158193cf931b1
+vllm/vllm-openai:nightly-dee37d89115db4c94a820a79a78a7828e141c910 sha256:dea7fa047caa114167efccdeb42321b12d2c11da1add8728aa2662cb8d6b8cd5
+ubuntu:22.04 sha256:b8b6ee6aa931ecd9d0d952abc34dc0e5f7c6a30c6bb71b079fe399fde0329c02

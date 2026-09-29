@@ -33,7 +33,61 @@ Our aim is diagnostic rather than competitive. We do not claim to rank these sys
 
 ---
 
-## 2 Related work
+## 2 What a typed decision is
+
+The research literature has no settled name for the interface this paper evaluates, so we define it before measuring it. Readers familiar with classification heads, constrained decoding or reranking will recognise pieces of each; Section 3 says where the differences lie.
+
+### 2.1 The interface, informally
+
+A caller supplies a **state**, which is any text or JSON describing a situation, together with one or more **typed questions**. Each question declares its answer space up front. The model returns a distribution over exactly that declared space and nothing else. It emits no prose, and there is nothing to parse.
+
+Three question types cover every product we examined. The examples below are real requests from our suite with the probabilities the commercial model actually returned.
+
+**Noul, a yes/no probability.** An agent trajectory is supplied as state, and the question asks whether the agent behaved unsafely. The answer is one number, 0.90, which the application compares against a threshold of its own choosing. Nothing in the protocol says what that threshold should be, which turns out to matter a great deal (Section 6.2).
+
+**Choice, a distribution over named options.** A medical examination question is supplied as state, with four options declared as criteria. The returned distribution was `{a: 0.01, b: 0.00, c: 0.99, d: 0.00}` and the correct option was `c`. The caller receives the full vector, not just the argmax, which is what makes calibration measurable at all.
+
+**Score, an expected level on an ordered rubric.** A sentence is supplied as state and the rubric is declared as an ordered list, here `["very negative", "negative", "neutral", "positive", "very positive"]`. The model returned level probabilities (0.99, 0.01, 0, 0, 0) and the answer 0.01, which is the *expected* level index, not the most likely one. The distinction is not cosmetic: a distribution (0.2, 0.5, 0.3) yields an expected level of 1.1 while its mode is 1, so evaluation code that rounds the expected value and evaluation code that takes the mode are measuring different quantities.
+
+A single request may carry many questions against one state, and the vendors' latency claims are strongest in that regime. We deliberately send one question per request throughout, for the reasons in Section 8.
+
+### 2.2 The interface, formally
+
+Let `s` be a state and `q` a question with type `τ(q) ∈ {noul, choice, score}` and a caller-declared, ordered label set `L_q = (l_1, ..., l_K)`. A typed-decision model defines a conditional distribution supported on that declared set:
+
+> `p_θ(· | s, q) ∈ Δ^{K-1}`, where `Δ^{K-1} = { p ∈ R^K_{≥0} : Σ_j p_j = 1 }`
+
+The three types differ only in how a decision is read from `p_θ`:
+
+| type | read | note |
+|---|---|---|
+| noul, K=2 | `π = p_θ(true | s,q)`, decision `d_γ(π) = 1[π ≥ γ]` | not a decision until a threshold γ is supplied from outside the model |
+| choice | `ĵ = argmax_j p_j` | full vector also returned |
+| score, levels 0..K-1 | `E[Y] = Σ_k k·p_k ∈ [0, K-1]` | the expected level, not the mode |
+
+The convention `γ = 0.5` is an assumption of the integrator, not a property of the model, and Section 6.2 shows it is the wrong assumption for every system we tested.
+
+**Label-restricted reading.** The implementations we study do not sample a string and parse it. Let `z = f_θ(s,q) ∈ R^|V|` be the logits at a designated answer position over vocabulary `V`, and let `t_j ∈ V` identify label `l_j`. The returned distribution is the softmax restricted and renormalised over the declared labels alone:
+
+> `p_j = exp(z_{t_j}) / Σ_{k=1..K} exp(z_{t_k})`
+
+Two consequences are worth stating because both are measurable. Every declared label receives positive mass by construction, so a faithful implementation cannot assign zero probability to the correct option; Section 6.5 reports one implementation achieving exactly that across 4,500 multi-option cases and another failing it on more than a third of a 77-option slice. And the cost is one forward pass regardless of K, rather than one pass per candidate token.
+
+**Calibration.** A model is calibrated if its numbers mean what they say: for all `v ∈ [0,1]` and all labels `l`,
+
+> `Pr(Y = l | p_θ(l | s,q) = v) = v`
+
+Calibration is distinct from **discrimination**, which concerns only the ranking that `p_θ` induces and is measured threshold-free by AUROC. The distinction is the backbone of Section 6.2, where we exhibit a model with AUROC 0.978 and accuracy 73.3% at γ = 0.5: its ordering is nearly perfect while its absolute values are displaced downward.
+
+**Order invariance.** For a permutation σ of `{1..K}`, write `σq` for the question with its labels reordered. Reordering options does not change what was asked, so a model that reads the question rather than the layout should satisfy
+
+> `p_θ(l_{σ(j)} | s, σq) = p_θ(l_j | s, q)` for all j
+
+We measure the **flip rate**: the fraction of matched pairs `(q, σq)` whose correctness differs. It bounds how much of a reported accuracy is attributable to label position rather than to the task. One caution: a model at chance accuracy has a high expected flip rate mechanically, so the flip rate is interpretable only alongside an accuracy above chance.
+
+**Confidence is not a probability of correctness.** These implementations also return a scalar derived from the concentration of `p`, for instance `1 - H(p)/log K` with `H` the Shannon entropy. It is a property of the output distribution and carries no calibration guarantee. We never use it as a correctness estimate, and report AUROC and expected calibration error instead.
+
+## 3 Related work
 
 *Citations in this section are placeholders to be completed and verified against primary sources before submission. No reference below should be included without checking the exact venue, year and author list. This draft deliberately does not fabricate bibliography entries.*
 
@@ -47,7 +101,7 @@ Our aim is diagnostic rather than competitive. We do not claim to rank these sys
 
 ---
 
-## 3 Benchmark construction
+## 4 Benchmark construction
 
 ### 3.1 Sources
 
@@ -89,7 +143,7 @@ States are capped at 12,000 characters and every truncated case is flagged. 34 A
 
 ---
 
-## 4 Experimental setup
+## 5 Experimental setup
 
 | System | Description | Serving |
 |---|---|---|
@@ -103,7 +157,7 @@ Identical case files were sent to all three. djev requests pinned `seed=0` and `
 
 ---
 
-## 5 Results
+## 6 Results
 
 ### 5.1 Main comparison
 
@@ -212,7 +266,7 @@ The ScienceQA pair is a controlled comparison: identical model, identical adapte
 
 ---
 
-## 6 Discussion
+## 7 Discussion
 
 **Calibration, not accuracy, is the binding constraint.** The largest single improvement available to any model in this study is not a better model but a better threshold: 21.5 points for the commercial model on prompt injection, 18.9 for the open reimplementation on Aegis responses. Since these systems are deployed as gates whose threshold determines an action, this is an operational finding, not a scoring technicality. Threshold selection belongs on a calibration split, and vendors should publish a recommended operating point rather than leaving integrators to assume 0.5.
 
@@ -222,7 +276,7 @@ The ScienceQA pair is a controlled comparison: identical model, identical adapte
 
 ---
 
-## 7 Limitations
+## 8 Limitations
 
 1. **Prompt wording is ours.** Instructions and criteria were written by us, not by any vendor. A different phrasing is a different benchmark. We release the exact adapters so this is inspectable rather than assumed.
 2. **One question per request.** This model class is reported to be fastest when many questions share one state. That regime is not measured here, so our latency figures should not be read as the best these systems can do.
@@ -238,7 +292,7 @@ The ScienceQA pair is a controlled comparison: identical model, identical adapte
 
 ---
 
-## 8 Reproducibility and artifacts
+## 9 Reproducibility and artifacts
 
 Released: the pinned source manifest with commit hashes, licences and exposure flags; the download and verification scripts; the adapters; all built cases; and 24,818 predictions with full probability vectors, latency and token usage. Also released is the serving provenance for the open implementation: the exact vLLM command line, the container log, the pinned source revision and the live capability configuration.
 
@@ -246,7 +300,7 @@ Predictions carry no source text, keyed instead by case identifier, which allows
 
 ---
 
-## 9 Use of AI assistance
+## 10 Use of AI assistance
 
 This work used an AI coding assistant for harness implementation, data inspection and drafting of this manuscript. All experimental results were produced by the released code. Numerical claims were read from the released artifacts rather than transcribed. The authors are responsible for all content and have verified the claims against the artifacts. This disclosure is provided in line with ACL policy on AI writing assistance; the exact wording should be adapted to the target venue's current requirements before submission.
 

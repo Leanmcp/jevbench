@@ -1,0 +1,121 @@
+\section{Related work}
+\label{sec:related}
+
+\subsection{Training compact decision models}
+
+The training recipes behind this model class are only partly public. The
+best-documented ingredient is RLCD, Reinforcement Learning from Contrast
+Distillation \citep{yang2024rlcd}, which builds preference pairs without human
+annotation and without a post-hoc judge: for a prompt $x$, a positive variant
+$x^+$ steers generation toward the target attribute and a negative variant $x^-$
+steers it away, continuations are sampled from each, and the pair is labelled by
+the construction that produced it. The signal is generative. RLAIF and
+constitutional methods instead need a judge that can rank two finished outputs,
+so the judge's errors enter the training data.
+
+We flag one attribution carefully. The commercial vendor uses the term RLCD in
+public material describing its model, but publishes no specification, and we have
+not reproduced its method. We therefore do not attribute any behaviour we measure
+to a training objective, and Section~\ref{sec:limitations} records this as a
+limitation.
+
+A second ingredient is distillation of a teacher's full output distribution into a
+small model. Soft targets matter more here than for generative models: the product
+of a typed-decision model is the distribution itself, so a student that matches
+only the teacher's argmax reproduces the decision and discards the calibration.
+
+The baseline this model class displaces is a fine-tuned encoder classifier, one
+per task. BANKING77 was introduced as an intent-detection benchmark for exactly
+that setting \citep{casanueva2020banking77}. We note in
+Section~\ref{sec:limitations} that our suite lacks such a baseline, which leaves
+open whether a task-specific classifier would beat all three systems on the
+slices where they look strongest.
+
+\subsection{Constrained decoding, and why typed decisions differ}
+
+A reader may reasonably ask why a separate interface is needed when constrained
+decoding already forces a model's output into a declared shape. Grammar-guided
+methods compile a regular expression or context-free grammar into a finite-state
+machine and mask the logits at each step to the tokens that keep the string inside
+the language \citep{willard2023outlines}; the same masking is integrated into
+serving stacks including the one the open implementation we evaluate is built on
+\citep{kwon2023vllm}, and providers expose it as JSON and function-calling modes.
+
+Constrained decoding guarantees the syntax of the output. It does not by itself
+produce a normalised distribution over a declared label set, and the difference is
+mechanical. If label $l_j$ tokenises as $t_{j,1},\dots,t_{j,m_j}$, its sequence
+probability under an autoregressive model is $\prod_{i=1}^{m_j} p(t_{j,i} \mid
+\cdot)$. Three consequences follow. The quantity is length-biased, so
+\texttt{card\_arrival} and \texttt{top\_up\_by\_bank\_transfer\_charge} are scored
+on unequal footing. It requires an explicit renormalisation over $L_q$ to become a
+distribution, which integrations frequently omit. And obtaining it costs
+$\max_j m_j$ forward passes, or a truncated top-$k$ list in which a rare label may
+be absent. The label-restricted read of Equation~\eqref{eq:restricted} has none of
+these properties: one pass, exact token identities, renormalised by construction,
+independent of label length. Section~\ref{sec:zeromass} measures the consequence
+directly at 77 options.
+
+The two approaches solve different problems. Constrained decoding handles
+arbitrary grammars, nested objects and free-text fields, none of which a typed
+decision can express. Typed decisions give a calibrated distribution over a fixed
+declared set. Our slices measure the second.
+
+\subsection{Benchmarks for decision-shaped tasks}
+
+Our slices are adapted from datasets built for other purposes, and we group them
+by the decision shape each contributes. Fine-grained intent classification over a
+large fixed label set comes from BANKING77 \citep{casanueva2020banking77}.
+Passage-grounded answering with an explicit abstention class comes from PubMedQA
+\citep{jin2019pubmedqa}. Ordinal sentiment comes from the Stanford Sentiment
+Treebank \citep{socher2013sst}. Knowledge multiple choice comes from MedMCQA
+\citep{pal2022medmcqa}, MedQA \citep{jin2020disease}, MMLU-Pro
+\citep{wang2024mmlupro}, and ScienceQA \citep{lu2022scienceqa}, the last of which
+also supplies image-grounded items. Image-grounded clinical questions come from
+VQA-RAD \citep{lau2018vqarad}. Agent-trajectory safety comes from ATBench
+\citep{li2026atbench} and content safety from AEGIS~2.0
+\citep{ghosh2025aegis2}. None of these was designed for the typed-decision
+interface; Section~\ref{sec:benchmark} states the adaptation for each.
+
+Evaluations specific to this model class exist but are narrow. The commercial
+vendor publishes a four-workflow evaluation whose reference answers come from
+agreement among larger models. Independent harnesses have covered one
+implementation at a time, with sealed items that cannot be reproduced locally, and
+a separate paired study compares the commercial model against one small local
+model on synthetic items. What none of them provides is the gap this paper fills:
+one set of inputs sent to independently developed implementations of the same
+interface, with the full probability vectors released.
+
+\subsection{Calibration and multiple-choice robustness}
+
+Our metrics are standard proper scoring rules. The Brier score
+\citep{brier1950} and the framework of strictly proper scoring rules
+\citep{gneiting2007scoring} underpin the distributional measurements we report;
+expected calibration error follows the binning estimator of
+\citet{naeini2015ece}. We report Brier, negative log-likelihood and AUROC
+alongside ECE because ECE is sensitive to the bin count and tolerates an
+uninformative base-rate predictor, so a low value alone establishes little. The
+observation that modern networks are systematically overconfident, and that a
+single temperature parameter fitted on held-out data removes much of the
+miscalibration \citep{guo2017calibration}, is what motivates our recommendation
+of a calibration split in Section~\ref{sec:threshold}.
+
+Sensitivity of multiple-choice answers to option order and option labelling is
+documented for generative models, where it is attributed to a token-level
+selection bias over option identifiers \citep{zheng2024mcqbias}. Our flip-rate
+measurement is the analogue for a model that returns a distribution over named
+options instead of emitting an identifier, and Section~\ref{sec:position} shows
+that it separates implementations of the same interface by an order of magnitude.
+The bias is persistent enough that recent work makes permutation consistency a
+training objective \citep{zheng2026pagrpo}.
+
+One finding in this line bears directly on how our own flip rates should be read.
+\citet{tamba2026positionbias} runs exhaustive option permutations across vendors
+and reports that position bias is statistically detectable only inside a roughly
+60 to 95 percent base-accuracy band: below it, general processing difficulty
+dominates the signal, and above it ceiling effects compress the variance that the
+diagnostic depends on. Our three systems straddle that band. Jev sits at or above
+its upper edge on most multi-option slices, so part of its low flip rate may be
+ceiling compression instead of genuine robustness, and Laya sits below the lower
+edge on four slices where it is at chance. We therefore read the flip rate as a
+bound on how finely accuracies can be compared, and we do not treat a low value
+as established evidence of order invariance.
