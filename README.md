@@ -16,10 +16,6 @@ prediction is released, so each number in the paper can be recomputed.
   [huggingface.co/datasets/Leanmcp/jevbench](https://huggingface.co/datasets/Leanmcp/jevbench)
   (tag `v0.1`)
 
-This project is independent of, and not to be confused with, Benchmark Heaven's
-[JevBench leaderboard](https://github.com/fstandhartinger/jevbench), which ranks
-Jev-class models on a composite score.
-
 ## What it measures
 
 Three systems on 12 text slices from eleven public datasets (medicine,

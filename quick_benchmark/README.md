@@ -5,16 +5,14 @@ paper's results.
 
 ## `data/jevbench_easy_48.jsonl`
 
-48 typed-decision cases from the public easy tier of Benchmark Heaven's JevBench
-([fstandhartinger/jevbench](https://github.com/fstandhartinger/jevbench), commit
-`1bcc55eb6c8cffde2306b3db03ede39b61c6152a`), an independent project that shares
-this repository's name. The file is redistributed under that project's MIT
-Licence; its copyright notice is in
+48 typed-decision cases from the public easy tier of
+[fstandhartinger/jevbench](https://github.com/fstandhartinger/jevbench) (commit
+`1bcc55eb6c8cffde2306b3db03ede39b61c6152a`). The file is redistributed under
+that project's MIT Licence; its copyright notice is in
 [`data/LICENSE-fstandhartinger-jevbench`](data/LICENSE-fstandhartinger-jevbench).
 
 Each row includes `expected` answers and provenance. Send only the task state and
-question to a model, never the whole row. A score on this subset is not
-comparable with Benchmark Heaven's official JevBench score.
+question to a model, never the whole row.
 
 ## R-Judge
 

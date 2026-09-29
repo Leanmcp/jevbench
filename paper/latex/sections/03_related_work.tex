@@ -71,16 +71,10 @@ interface; Section~\ref{sec:benchmark} states the adaptation for each.
 
 Two evaluations target this model class directly. The commercial vendor
 publishes an evaluation over four business workflows, scored against consensus
-labels \citep{typesafe2026evals}. Benchmark Heaven's JevBench, an independent
-project that shares our name, maintains a public leaderboard of Jev-class
-models ranked by a composite score over accuracy, calibration, speed and cost
-\citep{standhartinger2026jevbench}. It includes a sealed, held-out item set of
-which only aggregate statistics are published. Our framework differs in
-purpose. It builds its cases from existing public datasets pinned to exact
-revisions, sends byte-identical inputs to every model, and releases every case
-and every full probability vector, so that each measurement in this paper,
-including calibration and option-order sensitivity, can be recomputed from the
-released files.
+labels \citep{typesafe2026evals}, and a public leaderboard ranks Jev-class
+models on a composite score \citep{standhartinger2026jevbench}. Our framework
+builds its cases from public datasets pinned to exact revisions and releases
+every case and full probability vector.
 
 \subsection{Calibration and multiple-choice robustness}
 

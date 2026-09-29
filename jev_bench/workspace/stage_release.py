@@ -156,10 +156,7 @@ size_categories:
 # JevBench
 
 Cases and predictions for *JevBench: An Open Evaluation Framework for Typed
-Decision Models*. The evaluation code is on GitHub: {code_url}
-
-This dataset is independent of Benchmark Heaven's JevBench leaderboard
-(github.com/fstandhartinger/jevbench), which shares the name. JevBench evaluates models that return typed decisions
+Decision Models*. The evaluation code is on GitHub: {code_url} JevBench evaluates models that return typed decisions
 (a yes/no probability, a distribution over a set of choices, or an expected
 level on an ordered rubric) on identical inputs built from public datasets.
 
