@@ -1,7 +1,7 @@
-\section{The TDBench framework}
+\section{The JevBench framework}
 \label{sec:benchmark}
 
-TDBench turns rows of public datasets into typed-decision requests, sends the same
+JevBench turns rows of public datasets into typed-decision requests, sends the same
 requests to every model under test, and scores the returned probability vectors
 against answers the models never see. Figure~\ref{fig:pipeline} shows the
 pipeline. This section describes the datasets, what a single case looks like, how
@@ -10,7 +10,7 @@ answers are kept out of the request, and how cases are sampled.
 \begin{figure}[t]
 \centering
 \input{figures/fig_pipeline}
-\caption{The TDBench pipeline. An adapter splits each dataset row into a request,
+\caption{The JevBench pipeline. An adapter splits each dataset row into a request,
 which is sent to the model, and an answer key, which only the scorer reads. For
 set-of-choices slices, every request also has a reordered twin with the options
 shuffled (Section~\ref{sec:sampling}).}
@@ -119,12 +119,12 @@ categories that each unsafe item violates. If any of these fields reached the
 model, it could read off the answer instead of solving the task. We call this
 \emph{leakage}.
 
-TDBench prevents leakage with one adapter per dataset. The adapter lists the
+JevBench prevents leakage with one adapter per dataset. The adapter lists the
 fields the model may see, builds the state from those fields alone, and writes
 the answer to a separate answer key that only the scorer reads.
 Figure~\ref{fig:anatomy} shows this for one MedQA-USMLE row. The adapter also
 writes the typed question: a one-sentence instruction and the declared options.
-We wrote this wording ourselves (Section~\ref{sec:limitations}).
+The full wording for every slice is in Appendix~\ref{app:prompts}.
 Figure~\ref{fig:types} shows one request of each type with the probabilities the
 commercial model returned.
 

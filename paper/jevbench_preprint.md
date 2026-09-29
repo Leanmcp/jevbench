@@ -1,4 +1,4 @@
-# TDBench: An Open Evaluation Framework for Typed Decision Models
+# JevBench: An Open Evaluation Framework for Typed Decision Models
 
 **Draft preprint, 26 September 2026.** Author list, affiliations and acknowledgements to be completed. All numbers reported here were produced by the runs described in Section 5 and are reproducible from the released artifacts.
 
@@ -6,11 +6,11 @@
 
 ## Abstract
 
-A class of compact models does not generate text but returns typed decisions: a probability for a yes/no question, a distribution over a set of choices, or an expected level on an ordered rubric. These models are marketed on latency and calibration, and they are evaluated almost entirely by their own vendors. We present TDBench, an open evaluation framework that runs any model exposing this interface on identical inputs, and apply it to 12 slices of existing public datasets covering medicine, examinations, banking intent, sentiment and agent safety. We evaluate three typed-decision models: Jev 1.13, a hosted commercial model; djev-0.1, an open model on a DiffusionGemma 26B-A4B backbone; and Laya, a 421M-parameter local model. We collect 24,818 decisions with full probability vectors.
+A class of compact models does not generate text but returns typed decisions: a probability for a yes/no question, a distribution over a set of choices, or an expected level on an ordered rubric. These models are marketed on latency and calibration, and they are evaluated almost entirely by their own vendors. We present JevBench, an open evaluation framework that runs any model exposing this interface on identical inputs, and apply it to 12 slices of existing public datasets covering medicine, examinations, banking intent, sentiment and agent safety. We evaluate three typed-decision models: Jev 1.13, a hosted commercial model; djev-0.1, an open model on a DiffusionGemma 26B-A4B backbone; and Laya, a 421M-parameter local model. We collect 24,799 decisions with full probability vectors.
 
 Three findings hold across the suite. First, the models rank inputs well, but their probabilities sit away from the default 0.5 threshold, so much of their measured error comes from the threshold rather than the model. On prompt-injection detection the commercial model reaches an AUROC of 0.978 yet only 73.3% accuracy at 0.5; moving the threshold alone raises this to 94.8%, and raises djev-0.1 from 64.7% to 83.6%, with best thresholds as low as 0.002. These thresholds are chosen on the scored data, so the gains mark the headroom a calibration split can recover, and accuracy at 0.5 understates every model we tested. Second, sensitivity to option order differs by an order of magnitude: 2.6-5.4% of matched items flip under reordering for the commercial model, against 12.0-33.6% for the other two, which limits how finely set-of-choices results can be interpreted. Third, the 421M model is statistically indistinguishable from random guessing on four of six set-of-choices slices, yet outperforms djev-0.1 on prompt-injection detection at the default threshold, so no single quality ordering holds across the three models.
 
-We additionally report the first evaluation we are aware of for the image path of an open typed-decision model, and show by controlled ablation that its accuracy on image-grounded multiple choice (82.8%) is close to its accuracy on the text-only rows of the same dataset (84.7%). We release the framework, its dataset adapters, and all 24,818 predictions with their complete probability vectors.
+We additionally report the first evaluation we are aware of for the image path of an open typed-decision model, and show by controlled ablation that its accuracy on image-grounded multiple choice (82.8%) is close to its accuracy on the text-only rows of the same dataset (84.7%). We release the framework, its dataset adapters, and all 24,799 predictions with their complete probability vectors.
 
 ---
 
@@ -24,10 +24,10 @@ Public evidence about these models comes predominantly from their vendors or fro
 
 We make four contributions.
 
-1. **An open evaluation framework.** TDBench runs any typed-decision model on 12 slices (8,016 text cases) of eleven public datasets pinned to exact commit hashes. A single adapter per question type guarantees that every model receives byte-identical inputs.
+1. **An open evaluation framework.** JevBench runs any typed-decision model on 12 slices (8,016 text cases) of eleven public datasets pinned to exact commit hashes. A single adapter per question type guarantees that every model receives byte-identical inputs.
 2. **A measurement of interface fragility.** By constructing a reordered twin of every set-of-choices case, we separate positional preference from task competence, and find that it differs by an order of magnitude across implementations.
 3. **A measurement of the operating-point problem.** We show that the 0.5 threshold, which is the natural reading of a probability and the one every default integration uses, is wrong for all three models, and we quantify the accuracy left on the table.
-4. **Released predictions.** We release all 24,818 decisions with their full probability vectors. Anyone can recompute calibration, risk-coverage curves and agreement between models from these files, and test new metrics on them, without access to the models or a GPU.
+4. **Released predictions.** We release all 24,799 decisions with their full probability vectors. Anyone can recompute calibration, risk-coverage curves and agreement between models from these files, and test new metrics on them, without access to the models or a GPU.
 
 Our aim is diagnostic rather than competitive. We do not claim to rank these systems for production use, and Section 8 sets out why the results should not be read that way.
 
@@ -101,7 +101,7 @@ We measure the **flip rate**: the fraction of matched pairs `(q, σq)` whose cor
 
 ---
 
-## 4 The TDBench framework
+## 4 The JevBench framework
 
 ### 4.1 Data sources
 
@@ -295,7 +295,7 @@ The ScienceQA pair is a controlled comparison: identical model, identical adapte
 
 ## 9 Reproducibility and artifacts
 
-Released: the pinned source manifest with commit hashes, licences and exposure flags; the download and verification scripts; the adapters; all built cases; and 24,818 predictions with full probability vectors, latency and token usage. Also released is the serving provenance for the open implementation: the exact vLLM command line, the container log, the pinned source revision and the live capability configuration.
+Released: the pinned source manifest with commit hashes, licences and exposure flags; the download and verification scripts; the adapters; all built cases; and 24,799 predictions with full probability vectors, latency and token usage. Also released is the serving provenance for the open implementation: the exact vLLM command line, the container log, the pinned source revision and the live capability configuration.
 
 Predictions carry no source text, keyed instead by case identifier, which allows them to be published for sources whose text cannot be redistributed. Licences do not merge across sources: each is released with its own licence field, and SST-5, whose card states no licence, is distributed as identifiers and content hashes rather than text.
 
