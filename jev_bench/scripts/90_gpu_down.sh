@@ -26,7 +26,7 @@ say "stopping containers"
 "${SSH_CTL[@]}" 'sudo -n docker stop djev-v1 clm-encoder 2>/dev/null; pkill -f clm-serve 2>/dev/null; true' || true
 
 say "closing tunnels"
-pkill -f "ssh.*-N.*djev-a100" 2>/dev/null || true
+pkill -f "ssh.*-N.*${SSH_HOST}" 2>/dev/null || true
 
 say "stopping the instance (this is what ends GPU billing)"
 # --discard-local-ssd=false preserves the Local SSD contents; gcloud requires an

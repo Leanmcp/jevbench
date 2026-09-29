@@ -101,6 +101,6 @@ echo 'djev is ready. Running one inference check...'
 curl --fail-with-body --max-time 120 http://127.0.0.1:8000/v1/request \
   -H 'Content-Type: application/json' \
   --data-binary @smoke.json | tee logs/smoke-response.json
-printf '\nVM API docs: http://127.0.0.1:8000/docs\nMac API docs: http://localhost:18000/docs (while ssh djev-a100 is connected)\n'
+printf '\nVM API docs: http://127.0.0.1:8000/docs\nMac API docs: http://localhost:18000/docs (while the SSH tunnel is connected)\n'
 echo 'Stop the service: sudo docker stop djev-v1'
 echo 'Stopping the container does not stop GPU VM billing.'

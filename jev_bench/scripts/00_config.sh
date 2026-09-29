@@ -1,13 +1,26 @@
 #!/usr/bin/env bash
 # Shared configuration for the jev-bench GPU pipeline. Sourced, not executed.
 #
-# Every value here was verified against the live project on 2026-09-26. Change
-# these rather than editing the numbered scripts.
+# Cloud details are never stored in this repository. Set them in your shell or
+# in jev_bench/.env (git-ignored; copy jev_bench/.env.example to start):
+#   GCP_PROJECT   Google Cloud project that owns the VM
+#   GCP_ZONE      zone of the VM
+#   GCP_INSTANCE  name of the VM (one A100 80GB)
+#   SSH_HOST      ~/.ssh/config entry for the VM, with LocalForward 18000 -> 8000
 
-PROJECT="meta-chalice-499205-b0"
-ZONE="us-central1-a"
-INSTANCE="rl-arithmetic-a100-80gb"   # a2-ultragpu-1g: 1x A100 80GB, 12 vCPU, 170GB RAM
-SSH_HOST="djev-a100"                 # ~/.ssh/config entry, LocalForward 18000 -> 8000
+_env_file="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)/.env"
+# shellcheck disable=SC1090
+[ -f "$_env_file" ] && source "$_env_file"
+for _v in GCP_PROJECT GCP_ZONE GCP_INSTANCE SSH_HOST; do
+  if [ -z "${!_v:-}" ]; then
+    echo "missing $_v: set it in your shell or in jev_bench/.env (see .env.example)" >&2
+    return 1 2>/dev/null || exit 1
+  fi
+done
+
+PROJECT="$GCP_PROJECT"
+ZONE="$GCP_ZONE"
+INSTANCE="$GCP_INSTANCE"
 LOCAL_PORT=18000
 REMOTE_PORT=8000
 

@@ -90,5 +90,4 @@ Stated here because the numbers are meaningless without them. Brier is `mean_i s
 
 1. Compare a djev run against the Jev run with `report.py --latest --compare <jev_run_id>`. Point differences only; a paired bootstrap on shared case ids is the honest test.
 2. Add `vqa_rad` and the image-bearing ScienceQA rows once djev is serving, which is the only part of this that tests something no published Jev comparison covers.
-3. Build the authorization cases from [the paper plan](../reports/Benchmark_and_paper_plan.md) section 3. Tiers 1 to 6 are context; that is the contribution.
-4. Publish as two configs, `cases` and `predictions`, with per-source license fields and the `exposure` column intact.
+3. Publish as two configs, `cases` and `predictions`, with per-source license fields and the `exposure` column intact.

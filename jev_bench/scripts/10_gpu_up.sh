@@ -42,4 +42,4 @@ done
   echo "ram:   $(free -g | awk "NR==2 {print \$7\" GB available\"}")"
   echo "containers: $(sudo -n docker ps --format "{{.Names}}" | tr "\n" " ")"
 '
-say "up. next: bash 30_clm_up.sh   (or 20_djev_up.sh)"
+say "up. next: start djev on the VM (see djev-v1/README.md), then bash 40_run_suite.sh djev"

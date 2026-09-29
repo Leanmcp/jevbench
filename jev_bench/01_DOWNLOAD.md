@@ -39,7 +39,7 @@ Re-running is cheap: the Hub cache means unchanged files are not refetched, and 
 | `WARNING columns in manifest but not in file` | The upstream schema moved. The adapter in step 3 is built from these column names, so fix `sources.json` before proceeding. |
 | `WARNING expected 77 classes, observed N` | BANKING77 must have exactly 77 intents. If it does not, the option-count stress slice is not what it claims. |
 | `gold field ...: N distinct, M null` | Aegis has null `response_label` on many rows, and any unexpected nulls elsewhere mean the gold field is wrong. |
-| Row counts | These replace every "counts to be measured" note in [00_DATASET_CANDIDATES.md](00_DATASET_CANDIDATES.md). |
+| Row counts | Measured from the downloaded files; these are the counts used everywhere else. |
 | `label_distribution.counts` | Feeds stratified sampling in step 3. Do not sample 500 rows uniformly from BANKING77 and expect all 77 intents. |
 
 ## Approximate download sizes

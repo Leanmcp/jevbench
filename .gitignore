@@ -218,3 +218,9 @@ __marimo__/
 # Streamlit
 .streamlit/secrets.toml
 # <<< Python.gitignore <<<
+
+# Staged public release (built by jev_bench/workspace/stage_release.py; uploaded to Hugging Face)
+jev_bench/release/
+
+# Local cloud configuration (see jev_bench/.env.example)
+.env

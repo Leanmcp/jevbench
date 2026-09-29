@@ -57,10 +57,10 @@
 \citation{jin2019pubmedqa}
 \citation{lu2022scienceqa}
 \citation{casanueva2020banking77}
-\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces The TDBench pipeline. An adapter splits each dataset row into a request, which is sent to the model, and an answer key, which only the scorer reads. For set-of-choices slices, every request also has a reordered twin with the options shuffled (Section~\ref {sec:sampling}).}}{5}{figure.1}\protected@file@percent }
-\newlabel{fig:pipeline}{{1}{5}{The TDBench pipeline. An adapter splits each dataset row into a request, which is sent to the model, and an answer key, which only the scorer reads. For set-of-choices slices, every request also has a reordered twin with the options shuffled (Section~\ref {sec:sampling})}{figure.1}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {4}The TDBench framework}{5}{section.4}\protected@file@percent }
-\newlabel{sec:benchmark}{{4}{5}{The TDBench framework}{section.4}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces The JevBench pipeline. An adapter splits each dataset row into a request, which is sent to the model, and an answer key, which only the scorer reads. For set-of-choices slices, every request also has a reordered twin with the options shuffled (Section~\ref {sec:sampling}).}}{5}{figure.1}\protected@file@percent }
+\newlabel{fig:pipeline}{{1}{5}{The JevBench pipeline. An adapter splits each dataset row into a request, which is sent to the model, and an answer key, which only the scorer reads. For set-of-choices slices, every request also has a reordered twin with the options shuffled (Section~\ref {sec:sampling})}{figure.1}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {4}The JevBench framework}{5}{section.4}\protected@file@percent }
+\newlabel{sec:benchmark}{{4}{5}{The JevBench framework}{section.4}{}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {4.1}Datasets}{5}{subsection.4.1}\protected@file@percent }
 \newlabel{sec:datasets}{{4.1}{5}{Datasets}{subsection.4.1}{}}
 \@writefile{toc}{\contentsline {paragraph}{Medical and examination questions (\textsc  {choice}).}{5}{section*.8}\protected@file@percent }
@@ -123,6 +123,7 @@
 \@writefile{toc}{\contentsline {subsection}{\numberline {6.6}Image-grounded decisions}{10}{subsection.6.6}\protected@file@percent }
 \newlabel{sec:images}{{6.6}{10}{Image-grounded decisions}{subsection.6.6}{}}
 \citation{typesafe2026jev}
+\citation{he2025nondeterminism}
 \@writefile{lot}{\contentsline {table}{\numberline {6}{\ignorespaces The same 500 ATBench trajectories, input tokens as reported by each serving stack.}}{11}{table.6}\protected@file@percent }
 \newlabel{tab:context}{{6}{11}{The same 500 ATBench trajectories, input tokens as reported by each serving stack}{table.6}{}}
 \@writefile{lot}{\contentsline {table}{\numberline {7}{\ignorespaces Count of cases where the correct option received exactly zero probability.}}{11}{table.7}\protected@file@percent }
@@ -135,20 +136,32 @@
 \@writefile{toc}{\contentsline {paragraph}{Reading a question and choosing among options is the discriminating capability.}{11}{section*.24}\protected@file@percent }
 \@writefile{toc}{\contentsline {section}{\numberline {8}Limitations}{11}{section.8}\protected@file@percent }
 \newlabel{sec:limitations}{{8}{11}{Limitations}{section.8}{}}
-\citation{he2025nondeterminism}
+\@writefile{toc}{\contentsline {paragraph}{Access to the commercial model.}{11}{section*.25}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Evaluation design.}{11}{section*.26}\protected@file@percent }
 \@writefile{lot}{\contentsline {table}{\numberline {8}{\ignorespaces Image-grounded decisions, djev-0.1. The ScienceQA pair is a controlled comparison: identical model, adapter and dataset, differing only in whether the answer requires the image.}}{12}{table.8}\protected@file@percent }
 \newlabel{tab:images}{{8}{12}{Image-grounded decisions, djev-0.1. The ScienceQA pair is a controlled comparison: identical model, adapter and dataset, differing only in whether the answer requires the image}{table.8}{}}
+\@writefile{toc}{\contentsline {paragraph}{Data.}{12}{section*.27}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Laya's context length.}{12}{section*.28}\protected@file@percent }
 \@writefile{toc}{\contentsline {section}{\numberline {9}Reproducibility and artifacts}{12}{section.9}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {A}Paired bootstrap over shared cases}{12}{appendix.A}\protected@file@percent }
+\newlabel{app:paired}{{A}{12}{Paired bootstrap over shared cases}{appendix.A}{}}
 \citation{casanueva2020banking77}
+\@writefile{lot}{\contentsline {table}{\numberline {9}{\ignorespaces Paired bootstrap. $\Delta $ is A minus B, where A is Jev 1.13 and B is djev-0.1. A positive value favours A.}}{13}{table.9}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {10}{\ignorespaces Paired bootstrap. $\Delta $ is A minus B, where A is Jev 1.13 and B is Laya 421M. A positive value favours A.}}{13}{table.10}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Three differences do not survive the paired test.}{13}{section*.30}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {B}Dataset provenance}{13}{appendix.B}\protected@file@percent }
+\newlabel{app:provenance}{{B}{13}{Dataset provenance}{appendix.B}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {11}{\ignorespaces Paired bootstrap. $\Delta $ is A minus B, where A is djev-0.1 and B is Laya 421M. A positive value favours A.}}{14}{table.11}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {12}{\ignorespaces Pinned sources. Aegis~2.0 supplies two slices (prompt and response); ScienceQA supplies the text and image slices.}}{14}{table.12}\protected@file@percent }
+\newlabel{tab:provenance}{{12}{14}{Pinned sources. Aegis~2.0 supplies two slices (prompt and response); ScienceQA supplies the text and image slices}{table.12}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {C}Prompts}{14}{appendix.C}\protected@file@percent }
+\newlabel{app:prompts}{{C}{14}{Prompts}{appendix.C}{}}
+\@writefile{toc}{\contentsline {paragraph}{Set-of-choices slices with lettered options.}{14}{section*.31}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{BANKING77.}{14}{section*.32}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{PubMedQA.}{14}{section*.33}\protected@file@percent }
 \bibstyle{unsrtnat}
 \bibdata{references}
 \bibcite{brier1950}{{1}{1950}{{Brier}}{{}}}
-\@writefile{lot}{\contentsline {table}{\numberline {9}{\ignorespaces Paired bootstrap. $\Delta $ is A minus B, where A is Jev 1.13 and B is djev-0.1. A positive value favours A.}}{13}{table.9}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {A}Paired bootstrap over shared cases}{13}{appendix.A}\protected@file@percent }
-\newlabel{app:paired}{{A}{13}{Paired bootstrap over shared cases}{appendix.A}{}}
-\@writefile{toc}{\contentsline {paragraph}{Three differences do not survive the paired test.}{13}{section*.26}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {B}Dataset provenance}{13}{appendix.B}\protected@file@percent }
-\newlabel{app:provenance}{{B}{13}{Dataset provenance}{appendix.B}{}}
 \bibcite{mcfadden1974conditional}{{2}{1974}{{McFadden}}{{}}}
 \bibcite{mccullagh1980ordinal}{{3}{1980}{{McCullagh}}{{}}}
 \bibcite{typesafe2026jev}{{4}{2026}{{Almeida}}{{}}}
@@ -156,9 +169,10 @@
 \bibcite{willard2023outlines}{{6}{2023}{{Willard and Louf}}{{}}}
 \bibcite{kwon2023vllm}{{7}{2023}{{Kwon et~al.}}{{Kwon, Li, Zhuang, Sheng, Zheng, Yu, Gonzalez, Zhang, and Stoica}}}
 \bibcite{jin2019pubmedqa}{{8}{2019}{{Jin et~al.}}{{Jin, Dhingra, Liu, Cohen, and Lu}}}
+\@writefile{toc}{\contentsline {paragraph}{SST-5.}{15}{section*.34}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Safety slices.}{15}{section*.35}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{VQA-RAD.}{15}{section*.36}\protected@file@percent }
 \bibcite{socher2013sst}{{9}{2013}{{Socher et~al.}}{{Socher, Perelygin, Wu, Chuang, Manning, Ng, and Potts}}}
-\@writefile{lot}{\contentsline {table}{\numberline {10}{\ignorespaces Paired bootstrap. $\Delta $ is A minus B, where A is Jev 1.13 and B is Laya 421M. A positive value favours A.}}{14}{table.10}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {11}{\ignorespaces Paired bootstrap. $\Delta $ is A minus B, where A is djev-0.1 and B is Laya 421M. A positive value favours A.}}{14}{table.11}\protected@file@percent }
 \bibcite{pal2022medmcqa}{{10}{2022}{{Pal et~al.}}{{Pal, Umapathi, and Sankarasubbu}}}
 \bibcite{jin2020disease}{{11}{2021}{{Jin et~al.}}{{Jin, Pan, Oufattole, Weng, Fang, and Szolovits}}}
 \bibcite{wang2024mmlupro}{{12}{2024}{{Wang et~al.}}{{Wang, Ma, Zhang, Ni, Chandra, Guo, Ren, Arulraj, He, Jiang, Li, Ku, Wang, Zhuang, Fan, Yue, and Chen}}}
@@ -167,8 +181,6 @@
 \bibcite{li2026atbench}{{15}{2026}{{Li et~al.}}{{Li, Luo, Xie, Fu, Yang, Shao, Ren, Qu, Fu, Yang, Shao, Hu, and Liu}}}
 \bibcite{ghosh2025aegis2}{{16}{2025}{{Ghosh et~al.}}{{Ghosh, Varshney, Sreedhar, Padmakumar, Rebedea, Varghese, and Parisien}}}
 \bibcite{gneiting2007scoring}{{17}{2007}{{Gneiting and Raftery}}{{}}}
-\@writefile{lot}{\contentsline {table}{\numberline {12}{\ignorespaces Pinned sources. Aegis~2.0 supplies two slices (prompt and response); ScienceQA supplies the text and image slices.}}{15}{table.12}\protected@file@percent }
-\newlabel{tab:provenance}{{12}{15}{Pinned sources. Aegis~2.0 supplies two slices (prompt and response); ScienceQA supplies the text and image slices}{table.12}{}}
 \bibcite{naeini2015ece}{{18}{2015}{{Pakdaman~Naeini et~al.}}{{Pakdaman~Naeini, Cooper, and Hauskrecht}}}
 \bibcite{guo2017calibration}{{19}{2017}{{Guo et~al.}}{{Guo, Pleiss, Sun, and Weinberger}}}
 \bibcite{zheng2024mcqbias}{{20}{2024}{{Zheng et~al.}}{{Zheng, Zhou, Meng, Zhou, and Huang}}}
@@ -181,4 +193,4 @@
 \bibcite{laya2026}{{27}{2026}{{Nandakishor}}{{}}}
 \bibcite{warner2024modernbert}{{28}{2024}{{Warner et~al.}}{{Warner, Chaffin, Clavi{\'e}, Weller, Hallstr{\"o}m, Taghadouini, Gallagher, Biswas, Ladhak, Aarsen, Cooper, Adams, Howard, and Poli}}}
 \bibcite{he2025nondeterminism}{{29}{2025}{{He and Lab}}{{}}}
-\gdef \@abspage@last{16}
+\gdef \@abspage@last{17}

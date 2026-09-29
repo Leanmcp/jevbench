@@ -83,4 +83,4 @@ To download the code elsewhere:
 git clone https://github.com/NandhaKishorM/laya.git
 ```
 
-Inspect results for your real labels, especially negation and ambiguous cases. Use the existing [evaluation plan](../PRELIM_RESEARCH/02_benchmarks_and_evaluation.md) for a meaningful comparison after the first trial.
+Inspect results for your real labels, especially negation and ambiguous cases.
