@@ -6,3 +6,12 @@ Predictions are keyed by case identifier and carry no source text, so they can b
 
 The cases, predictions and provenance are available at \url{https://huggingface.co/datasets/Leanmcp/jevbench} (version \texttt{v0.1}), and the code, under the MIT Licence, at \url{https://github.com/Leanmcp/jevbench}.
 
+\paragraph{D1 extension.} The D1 measurements in this revision come from the
+local run \texttt{liquid-d1-full}, collected on 30 September 2026. Its
+\texttt{predictions.jsonl} contains 8{,}014 successful decisions and two error
+records; \texttt{meta.json} records the endpoint, model alias and concurrency
+history. These artifacts are not claimed to be part of the existing
+\texttt{v0.1} dataset release. Table~\ref{tab:d1} uses the last record per case,
+filters request and parsing failures, and intersects successful case identifiers
+across all four runs. The original three-model paired bootstrap artifact does
+not supply uncertainty estimates for D1.

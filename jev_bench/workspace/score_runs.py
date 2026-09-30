@@ -19,8 +19,8 @@ Metric choices, stated rather than implied:
 - Confidence intervals are percentile bootstrap over 2000 resamples grouped by
   family_id, so a case and its permuted twin move together.
 - For a noul slice whose upstream card never states label polarity, accuracy is
-  reported both ways. If the flipped number is the high one, the mapping in
-  common.POLARITY_ASSUMPTIONS is wrong.
+  reported both ways. Higher flipped accuracy is a diagnostic, not proof that
+  common.POLARITY_ASSUMPTIONS is wrong. Verify labels independently of results.
 - best_threshold_accuracy is chosen on the very data it scores, so it is an
   optimistic diagnostic and is labelled that way, not an operating point.
 """
@@ -391,7 +391,7 @@ def main() -> int:
     flips = [k for k, v in scores.items() if v.get("metrics", {}).get("accuracy_if_polarity_flipped", 0) > v.get("metrics", {}).get("accuracy_at_0.5", 1)]
     if flips:
         print("\nPOLARITY WARNING: flipped accuracy is higher for " + ", ".join(flips))
-        print("Fix the mapping in common.POLARITY_ASSUMPTIONS and rescore. Do not report either number until it is settled.")
+        print("Higher flipped accuracy does not prove a label-mapping error. Check source label semantics independently; do not flip labels to improve model scores. Small samples, model errors, and threshold effects can also cause this warning.")
     print(f"\nNext: uv run workspace/report.py --run-id {run_id}")
     return 0
 

@@ -120,9 +120,10 @@ def build(scores: dict, compare: dict | None) -> str:
         add("")
         add(md_table(noul_rows, ["slice", "n", "acc @0.5", "acc if flipped", "positive recall", "FPR", "AUROC", "Brier", "ECE", "base rate"]))
         add("")
-        add("`acc if flipped` exists because two upstream cards never state which integer means unsafe. If that column is the higher one, "
-            "the mapping in `common.POLARITY_ASSUMPTIONS` is wrong and neither number should be quoted until it is fixed. "
-            "AUROC is threshold-free, so it is the fairer comparison between models with differently placed probabilities.")
+        add("`acc if flipped` is a diagnostic for label polarity, not evidence that labels should be reversed. "
+            "Higher flipped accuracy can reflect model errors, threshold effects, or a small sample. "
+            "For slices with unverified label semantics in `common.POLARITY_ASSUMPTIONS`, verify the source mapping independently before drawing conclusions; never choose polarity to improve a model's score. "
+            "AUROC measures ranking without a fixed threshold, but does not establish calibration or resolve label semantics.")
         add("")
 
     # ordinal detail

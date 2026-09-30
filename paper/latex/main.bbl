@@ -1,4 +1,4 @@
-\begin{thebibliography}{31}
+\begin{thebibliography}{33}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
@@ -253,6 +253,20 @@ Benjamin Warner, Antoine Chaffin, Benjamin Clavi{\'e}, Orion Weller, Oskar
 \newblock Smarter, better, faster, longer: A modern bidirectional encoder for
   fast, memory efficient, and long context finetuning and inference, 2024.
 \newblock URL \url{https://arxiv.org/abs/2412.13663}.
+
+\bibitem[{Liquid AI}(2026{\natexlab{a}})]{liquid2026decisions}
+{Liquid AI}.
+\newblock Decision models.
+\newblock \url{https://docs.liquid.ai/lfm/models/decision-models},
+  2026{\natexlab{a}}.
+\newblock Accessed 30 September 2026.
+
+\bibitem[{Liquid AI}(2026{\natexlab{b}})]{liquid2026library}
+{Liquid AI}.
+\newblock Liquid foundation models.
+\newblock \url{https://docs.liquid.ai/lfm/models/complete-library},
+  2026{\natexlab{b}}.
+\newblock Accessed 30 September 2026.
 
 \bibitem[He and Lab(2025)]{he2025nondeterminism}
 Horace He and Thinking~Machines Lab.

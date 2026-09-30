@@ -17,7 +17,7 @@ is a separate experiment and would change the latency numbers, so it is not
 mixed in here.
 
 Resumable: re-running the same --run-id skips case ids already recorded. The
-API key is read from TYPESAFE_API_KEY, never logged, and scrubbed out of any
+API key is read from TYPESAFE_API_KEY (LIQUID_API_KEY for Liquid), never logged, and scrubbed out of any
 error text before it is written to disk.
 
 Predictions store the decision, the probability vector, latency and token usage,
@@ -43,9 +43,11 @@ def resolve_endpoint(name: str) -> str:
         return C.JEV_URL
     if name == "djev":
         return C.DJEV_URL
+    if name == "liquid":
+        return C.LIQUID_URL
     if name.startswith("http"):
         return name
-    raise SystemExit(f"--endpoint must be 'jev', 'djev' or a URL, got {name!r}")
+    raise SystemExit(f"--endpoint must be 'jev', 'djev', 'liquid' or a URL, got {name!r}")
 
 
 def load_done(path) -> set[str]:
@@ -53,7 +55,7 @@ def load_done(path) -> set[str]:
         return set()
     done = set()
     for rec in C.read_jsonl(path):
-        if rec.get("error") is None:
+        if rec.get("error") is None and not rec.get("parse_error"):
             done.add(rec["case_id"])
     return done
 
@@ -62,8 +64,8 @@ def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--only", action="append", default=[], metavar="SLICE")
     ap.add_argument("--skip", action="append", default=[], metavar="SLICE")
-    ap.add_argument("--endpoint", default="jev", help="jev, djev, or a full URL")
-    ap.add_argument("--model", default=C.JEV_MODEL)
+    ap.add_argument("--endpoint", default="jev", help="jev, djev, liquid, or a full URL")
+    ap.add_argument("--model", default=None, help="defaults to d1:free for Liquid, jev-1.13.0 otherwise")
     ap.add_argument("--run-id", default=None)
     ap.add_argument("--limit", type=int, default=None, help="cap cases per slice")
     ap.add_argument("--concurrency", type=int, default=2)
@@ -79,6 +81,11 @@ def main() -> int:
     ap.add_argument("--save-raw", action="store_true",
                     help="also write the exact request and response body per case to raw.jsonl, for tracing and audit")
     args = ap.parse_args()
+    endpoint = resolve_endpoint(args.endpoint)
+    is_liquid = endpoint == C.LIQUID_URL
+    args.model = args.model or (C.LIQUID_MODEL if is_liquid else C.JEV_MODEL)
+    if is_liquid and (args.no_send_model or args.seed is not None or args.samples is not None):
+        ap.error("Liquid requires a model and does not document djev seed/samples options")
 
     options: dict = {}
     if args.seed is not None:
@@ -95,8 +102,7 @@ def main() -> int:
         print("No case files selected. Run workspace/build_cases.py first.")
         return 2
 
-    endpoint = resolve_endpoint(args.endpoint)
-    status = C.key_status()
+    status = C.key_status(C.LIQUID_API_KEY_ENV if is_liquid else C.API_KEY_ENV)
     print(f"endpoint  {endpoint}")
     print(f"model     sent={'(omitted)' if args.no_send_model else args.model}  recorded as={label}")
     print(f"options   {options or '(none)'}")
@@ -106,7 +112,7 @@ def main() -> int:
         endpoint=endpoint,
         model=None if args.no_send_model else args.model,
         options=options or None,
-        require_key=(not args.dry_run) and endpoint.startswith("https://api.typesafe.ai"),
+        require_key=(not args.dry_run) and (endpoint == C.JEV_URL or is_liquid),
         timeout=args.timeout,
     )
 
@@ -116,6 +122,10 @@ def main() -> int:
         if args.limit:
             cases = cases[: args.limit]
         work += cases
+    if is_liquid:
+        image_slices = sorted({c["slice"] for c in work if c.get("image_path") or c.get("_images")})
+        if image_slices:
+            ap.error("Liquid D1 has no documented image input. Exclude these slices with --skip: " + ", ".join(image_slices))
     print(f"slices    {len(keys)}: " + ", ".join(keys))
     print(f"cases     {len(work):,}")
 
@@ -138,12 +148,18 @@ def main() -> int:
     todo = [c for c in work if c["case_id"] not in done]
     print(f"run id    {run_id}")
     print(f"resuming  {len(done):,} already recorded, {len(todo):,} to send\n")
+    meta_path = run_dir / "meta.json"
+    prior_meta = json.loads(meta_path.read_text(encoding="utf-8")) if meta_path.exists() else {}
+    if prior_meta and any(prior_meta.get(k) != v for k, v in {
+        "endpoint": endpoint,
+        "model_requested": label,
+        "model_sent_on_wire": None if args.no_send_model else args.model,
+        "request_options": options or None,
+    }.items()):
+        ap.error("run-id belongs to a different endpoint/model/options; choose a new --run-id")
     if not todo:
         print("Nothing left to send. Next: uv run workspace/score_runs.py --run-id " + run_id)
         return 0
-
-    meta_path = run_dir / "meta.json"
-    prior_meta = json.loads(meta_path.read_text(encoding="utf-8")) if meta_path.exists() else {}
     meta_path.write_text(
         json.dumps(
             {
@@ -158,6 +174,7 @@ def main() -> int:
                 "slices": keys,
                 "n_cases_total": len(work),
                 "concurrency": args.concurrency,
+                "concurrency_history": prior_meta.get("concurrency_history", [prior_meta["concurrency"]] if "concurrency" in prior_meta else []) + [args.concurrency],
                 "limit_per_slice": args.limit,
                 "api_key_env": status["env_var"],
                 "api_key_present": status["present"],
@@ -189,6 +206,7 @@ def main() -> int:
             "gold": case["gold"],
             "truncated_state": case["truncated"],
             "latency_ms": result.get("latency_ms"),
+            "client_concurrency": args.concurrency,
             "attempts": result.get("attempts"),
             "error": None if result["ok"] else result["error"],
             "ts": time.strftime("%Y-%m-%dT%H:%M:%S%z"),
@@ -243,7 +261,7 @@ def main() -> int:
     if toks:
         print(f"input tokens reported by the API: total={sum(toks):,}  mean={sum(toks)/len(toks):.0f}")
     print(f"\nNext: uv run workspace/score_runs.py --run-id {run_id}")
-    return 1 if state["stop"] else 0
+    return 1 if state["stop"] or state["errors"] else 0
 
 
 if __name__ == "__main__":

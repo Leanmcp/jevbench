@@ -1,5 +1,8 @@
 # jev-bench step 3: build, verify, run, score, report
 
+For Liquid D1, see [the D1 runbook](03_LIQUID_D1.md): `--endpoint liquid`
+uses `LIQUID_API_KEY` and defaults to `d1:free`. D1 is currently API-only.
+
 Written 26 September 2026. Five scripts in `workspace/`, one base module and one per stage.
 
 | File | Does | Network |

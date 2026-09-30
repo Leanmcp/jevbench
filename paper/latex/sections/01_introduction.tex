@@ -11,9 +11,13 @@ We make four contributions.
 \begin{enumerate}
   \item \textbf{An open evaluation framework.} JevBench runs any typed-decision model on 12 slices (8{,}016 text cases) of eleven public datasets pinned to exact commit hashes. A single adapter per question type guarantees that every model receives byte-identical inputs.
   \item \textbf{A measurement of interface fragility.} By constructing a reordered twin of every set-of-choices case, we separate positional preference from task competence, and find that it differs by an order of magnitude across implementations.
-  \item \textbf{A measurement of the operating-point problem.} We show that the 0.5 threshold, which is the natural reading of a probability and the one every default integration uses, is wrong for all three models, and we quantify the accuracy left on the table.
+  \item \textbf{A measurement of the operating-point problem.} In the original Jev, djev and Laya evaluation, we quantify the difference between accuracy at 0.5 and accuracy at a threshold selected on the scored data. This diagnostic does not estimate a held-out calibration gain.
   \item \textbf{Released predictions.} We release all 24{,}799 decisions with their full probability vectors. Anyone can recompute calibration, risk--coverage curves and agreement between models from these files, and test new metrics on them, without access to the models or a GPU.
 \end{enumerate}
 
 Our aim is diagnostic. We do not claim to rank these systems for production use, and Section~\ref{sec:limitations} sets out why the results should not be read that way.
 
+We extend the original evaluation with Liquid D1 under the hosted alias
+\texttt{d1:free}. The extension contributes 8{,}014 successful text decisions
+and a four-system comparison on shared cases; it is separate from the original
+24{,}799-prediction release.

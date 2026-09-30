@@ -50,6 +50,11 @@ scripts for djev read their cloud settings from `jev_bench/.env`; copy
 [`jev_bench/.env.example`](jev_bench/.env.example) to start.
 [`jev_bench/02_RUNNING.md`](jev_bench/02_RUNNING.md) covers full runs and scoring.
 
+Liquid D1 integration is available with `--endpoint liquid` and `LIQUID_API_KEY`.
+See [the D1 runbook](jev_bench/03_LIQUID_D1.md) for trial/full-run commands,
+licensing findings and the conditional Google Cloud GPU plan. D1 results have
+not yet been measured.
+
 ## Repository layout
 
 | Path | Contents |

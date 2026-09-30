@@ -29,7 +29,9 @@ Slice & $n$ & Chance & Laya 421M & djev-0.1 & Jev 1.13 \\
 \end{tabular}
 \end{table}
 
-Table~\ref{tab:main} reports accuracy on every text slice. Appendix~\ref{app:paired} repeats each pairwise comparison as a paired bootstrap over shared cases, which is the stronger test because all three models answered byte-identical items.
+Table~\ref{tab:main} reports the original three-model evaluation. Appendix~\ref{app:paired} gives its pairwise bootstrap comparisons over shared cases. Table~\ref{tab:d1} adds Liquid D1 on cases successfully answered by all four systems.
+
+\input{sections/06_liquid_d1}
 
 \paragraph{Four slices are at chance for the 421M model.} MedMCQA 26.9 against 25.0, MedQA 26.1 against 25.0, MMLU-Pro 12.5 against 11.1, and PubMedQA 32.8 against 33.3, which is below chance. The same model reaches 93.0\% on jailbreak classification, so its competence varies sharply across slices.
 
@@ -59,7 +61,7 @@ Slice & Model & Acc @0.5 & Best thr. & Acc at best & AUROC & ECE \\
 
 Two observations follow. \textbf{The commercial model's worst slice is a threshold effect.} Its AUROC on prompt injection is 0.978, meaning it separates the classes almost perfectly; its accuracy at 0.5 is 73.3\% because its probabilities sit below the threshold. \textbf{djev-0.1 is more severely affected}, with optimal thresholds between 0.002 and 0.147 and expected calibration error up to 0.333. Laya shows the opposite sign on jailbreak classification, with an optimal threshold of 0.963.
 
-The direction and magnitude of the offset differ by implementation and by slice, so there is no single correction. The practical consequence is that any comparison of these systems at a fixed 0.5 threshold measures probability placement as much as decision quality, and every accuracy figure in Table~\ref{tab:main} understates the model that produced it.
+The direction and magnitude of the offset differ by implementation and by slice, so there is no single correction. Binary accuracy at 0.5 measures the chosen operating point as well as discrimination. The threshold analysis here covers Jev, djev and Laya; it does not establish a threshold correction for D1.
 
 \subsection{Option-order sensitivity}
 \label{sec:position}
@@ -133,7 +135,7 @@ djev assigned non-zero mass to the correct option in every one of 4{,}500 multi-
 \subsection{Image-grounded decisions}
 \label{sec:images}
 
-We evaluated the image path of the open implementation. Neither of the other systems could be evaluated here: the commercial API route available to us has no image input, and the 421M model is text-only.
+We evaluated djev's image path. The Jev API route available to us has no image input, Laya is text-only, and the cited D1 interface does not document image input.
 
 \begin{table}[t]
 \centering
@@ -156,4 +158,3 @@ The 1.9-point difference between the image and text rows of ScienceQA has overla
 \paragraph{Verification that the image is consumed.} Sending 12 VQA-RAD cases twice, identical except for the image, every pair increased input tokens by 254 to 274 with no exceptions, and 3 of 12 decisions changed. With the image removed the model answered ``no'' to all 12 cases, producing varied answers only when the image was present. Accuracy with the image on that small sample was lower than without (66.7\% against 75.0\%), but the no-image condition is a degenerate always-negative predictor and 9 of the 12 golds were negative; we report it to forestall the misreading.
 
 \paragraph{Latency.} Image decisions cost 1{,}633\,ms (VQA-RAD) and 1{,}913\,ms (ScienceQA) at the median against 781\,ms for text on the same hardware.
-

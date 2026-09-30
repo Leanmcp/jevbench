@@ -1,0 +1,38 @@
+\paragraph{Liquid D1 on shared cases.}
+D1 has higher point accuracy than Jev on BANKING77 (+4.4 percentage points),
+Aegis prompts (+3.8), and ScienceQA text (+0.1). Jev leads on ATBench
+(+14.4) and MMLU-Pro (+14.1). SST-5 MAE differs by less than 0.001.
+D1 exceeds djev on ten accuracy slices and ties it on jailbreak classification;
+it also has lower SST-5 MAE. Laya retains the highest prompt-injection point
+accuracy under the current label mapping. These results do not define a single
+ordering across tasks or establish statistical significance for D1 comparisons.
+
+\begin{table}[t]
+\centering
+\caption{Four-model comparison on shared successful cases. Accuracy (\%) is
+higher-is-better; SST-5 MAE is lower-is-better. These are point estimates.
+The two failed D1 MMLU-Pro requests are excluded from every model's column,
+giving 8{,}014 shared cases. $^{\dagger}$Label polarity remains an unverified
+source assumption; no polarity was chosen to improve model scores.}
+\label{tab:d1}
+\small
+\begin{tabular}{@{}lrrrrr@{}}
+\toprule
+Slice & Shared $n$ & Liquid D1 & Jev 1.13 & djev-0.1 & Laya 421M \\
+\midrule
+Aegis prompts & 500 & \textbf{86.6} & 82.8 & 81.0 & 54.2 \\
+Aegis responses & 500 & 78.8 & \textbf{81.2} & 69.2 & 52.8 \\
+ATBench$^{\dagger}$ & 500 & 78.6 & \textbf{93.0} & 75.8 & 65.4 \\
+BANKING77 & 1000 & \textbf{85.7} & 81.3 & 71.4 & 36.3 \\
+Jailbreak classification & 400 & 96.5 & \textbf{97.5} & 96.5 & 93.0 \\
+MedMCQA & 1000 & 77.0 & \textbf{78.1} & 53.8 & 26.9 \\
+MedQA-USMLE & 1000 & 86.6 & \textbf{87.3} & 71.2 & 26.1 \\
+MMLU-Pro & 998 & 66.4 & \textbf{80.6} & 42.2 & 12.5 \\
+Prompt injections$^{\dagger}$ & 116 & 71.6 & 73.3 & 64.7 & \textbf{81.0} \\
+PubMedQA & 500 & 70.4 & \textbf{70.6} & 62.2 & 32.8 \\
+ScienceQA text & 1000 & \textbf{95.8} & 95.7 & 84.7 & 53.4 \\
+\midrule
+SST-5 MAE $\downarrow$ & 500 & 0.5080 & \textbf{0.5071} & 0.5440 & 0.8493 \\
+\bottomrule
+\end{tabular}
+\end{table}

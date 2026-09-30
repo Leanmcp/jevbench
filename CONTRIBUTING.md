@@ -35,7 +35,7 @@ Add dependencies with `uv add <package>`. Do not use `pip install`.
 
 ## Adding a model
 
-`run_eval.py --endpoint` accepts `jev`, `djev`, or a full URL. A new model can
+`run_eval.py --endpoint` accepts `jev`, `djev`, `liquid`, or a full URL. A new model can
 be evaluated without code changes if it serves the same typed-decision request
 format. Always do a dry run first, then a small trial:
 

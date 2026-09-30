@@ -13,11 +13,20 @@ and a replication cannot be ruled out, and whether any slice appears in its
 training data cannot be determined. Our results for Jev therefore describe the
 deployed service as a customer reaches it.
 
+\paragraph{D1 access and incomplete coverage.} The D1 alias \texttt{d1:free}
+does not identify an immutable checkpoint. We cannot separate model changes
+from service changes or infer its hardware, training exposure or self-hosting
+licence from the API response. Two rate-limited MMLU-Pro cases remain absent
+from the results reported here. D1 comparisons use shared successful cases and
+do not include paired confidence intervals in this revision. Its client
+concurrency changed during the run, so its latency is not a controlled speed
+comparison with the other systems.
+
 \paragraph{Evaluation design.} We wrote the instructions and criteria for every
 slice ourselves; they are listed in Appendix~\ref{app:prompts}, and different
 wording could shift the results. Each request carries one question, so the
 batched setting in which this model class is reported to be fastest is not
-measured. The three systems also run on different hardware: Jev remotely, so its
+measured. The four systems also run on different hardware: Jev and D1 remotely, so their
 latency includes a network round trip, djev on one A100, and Laya on a laptop.
 Latency figures therefore compare systems, not models. Each system was run once.
 Language-model inference is not deterministic by default, since GPU kernel
@@ -31,8 +40,10 @@ to appear, in the training data of these models
 (Appendix~\ref{app:provenance}), and results should not be averaged across
 exposed and unexposed slices. Most safety slices are sampled close to class balance, so their
 accuracies do not estimate incident rates in deployment. Two sources do not
-state their label polarity; we report accuracy under both polarities, and the
-direction we assumed was the higher one in every case. The harness caps states
+state their label polarity; the scorer reports both directions as a diagnostic.
+A higher score under one direction does not verify its semantics. These source
+mappings require independent verification before substantive safety conclusions.
+The harness caps states
 at 12{,}000 characters, which truncated 34 ATBench cases and one jailbreak case.
 
 \paragraph{Laya's context length.} Laya's default context is 512 tokens, and it
@@ -40,5 +51,5 @@ truncated every ATBench trajectory internally; our truncation flag, which tracks
 only the harness's own character cap, did not detect this. ATBench trajectories
 average about 1{,}500 tokens, so Laya's 65.4\% on this slice
 (Table~\ref{tab:main}) reflects a truncated input and is not directly comparable
-with the other two systems, which received substantially longer inputs
+with Jev and djev, which received substantially longer inputs
 (Table~\ref{tab:context}).

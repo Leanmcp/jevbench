@@ -1,7 +1,7 @@
 \section{Experimental setup}
 \label{sec:setup}
 
-We evaluate three systems that expose the typed-decision interface. They differ
+We evaluate four systems that expose the typed-decision interface. They differ
 in architecture, in how much of them is public, and in where they run.
 Table~\ref{tab:systems} summarises them.
 
@@ -17,6 +17,7 @@ released with the artifacts.}
 System & Access & Model & Serving \\
 \midrule
 Jev 1.13.0 & Closed; vendor HTTP API only & Unpublished & Hosted by the vendor \\
+Liquid D1 & Vendor HTTP API only & \texttt{d1:free}; architecture and checkpoint not specified in the cited documentation & Hosted by Liquid AI; client concurrency 1, then 16 \\
 djev-0.1 & Open source, revision \texttt{3ce907e} & DiffusionGemma 26B-A4B, a text diffusion language model (mixture of experts, 3.8B active parameters); one denoising step & One NVIDIA A100 80\,GB, vLLM, BF16, \texttt{max\_model\_len} 8192, seed 0, samples 1 \\
 Laya 421M & Open source, Apache 2.0 & ModernBERT-large encoder with decision heads; not generative & Apple M3 Pro laptop (MPS), 512-token context \\
 \bottomrule
@@ -51,7 +52,17 @@ layers follow, and a scorer assigns one logit per option; a softmax over these
 logits gives the returned distribution. We ran the English checkpoint locally on
 an Apple M3 Pro laptop, where its default context is 512 tokens.
 
-\paragraph{Identical inputs.} All three systems received the same case files,
+\paragraph{Liquid D1 (hosted service).} Liquid documents the same Noul, Choice
+and Score primitives under the model identifier \texttt{d1:free}
+\citep{liquid2026decisions}. Its model library lists D1 as API-only
+\citep{liquid2026library}; we evaluate the hosted service rather than a local
+GPU deployment. Requests use the existing state, instructions and criteria
+without a D1-specific prompt rewrite. The run on 30 September 2026 produced
+8{,}014 successful decisions from 8{,}016 text cases. Two MMLU-Pro reordered
+cases failed with HTTP 429 after six attempts each. Every successful response
+reported \texttt{d1:free} and zero output tokens.
+
+\paragraph{Identical inputs.} All four systems received the same case files,
 built once by the adapters of Section~\ref{sec:adapters}, with one typed question
 per request. For every case we record the decision, the full probability vector,
 latency, input and output token counts, and any error. The records exclude the
@@ -65,4 +76,6 @@ discusses the resulting run-to-run variance.
 
 \paragraph{Cost and duration.} The djev text suite completed 8{,}016 cases in
 19.4 minutes with zero errors, using 51 minutes of A100 time in total including
-model startup. The hosted API consumed 6.03M input tokens.
+model startup. The Jev API consumed 6.03M input tokens. Successful D1 responses
+reported 2{,}984{,}383 input tokens. The D1 run resumed with client concurrency
+increased from 1 to 16; its latency measurements therefore mix serving loads.

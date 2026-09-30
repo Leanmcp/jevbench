@@ -79,11 +79,12 @@ The three types differ only in how a decision is read from $p_\theta$:
 Equation~\eqref{eq:binary} makes explicit that a \textsc{binary} answer is not a
 decision until a threshold $\gamma$ is supplied from outside the model. The
 convention $\gamma = 0.5$ is the integrator's choice, and
-Section~\ref{sec:threshold} shows it is the wrong choice for every system we
-tested.
+Section~\ref{sec:threshold} measures its effect in the original Jev, djev and
+Laya evaluation.
 
-\paragraph{Label-restricted reading.} The implementations we study do not sample a
-string and parse it. Let $z = f_\theta(s,q) \in \mathbb{R}^{|V|}$ be the logits at
+\paragraph{Label-restricted reading.} One implementation of this interface reads
+label logits rather than sampling a string and parsing it. We do not assume
+that this mechanism describes either hosted service. Let $z = f_\theta(s,q) \in \mathbb{R}^{|V|}$ be the logits at
 a designated answer position over vocabulary $V$, and let $t_j \in V$ identify
 label $l_j$. The returned distribution is the softmax restricted and renormalised
 over the declared labels alone,
