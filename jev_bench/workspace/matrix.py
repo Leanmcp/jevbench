@@ -2,6 +2,7 @@
 
     uv run workspace/matrix.py                 # interactive grid
     uv run workspace/matrix.py --list          # print the grid and exit
+    uv run workspace/matrix.py --sources       # which result files each row is built from
     uv run workspace/matrix.py --pending       # select every pending cell, confirm, run
     uv run workspace/matrix.py --pending --model clef   # only rows whose name matches
 
@@ -55,6 +56,7 @@ SHORT = {
     "mcpmark_tool_selection": "MMts",
 }
 CELL_W = 5
+HOST_W = 11  # "Cloud GPU" plus a gap
 LOCAL_ENDPOINTS = {"djev": C.DJEV_URL, "d1local": C.D1_LOCAL_URL}
 
 
@@ -78,9 +80,8 @@ def load_slices() -> tuple[list[str], dict[str, set[str]], set[str]]:
     return keys, ids, image
 
 
-def successful_ids(run_id: str) -> dict[str, set[str]]:
+def successful_ids(path) -> dict[str, set[str]]:
     out: dict[str, set[str]] = defaultdict(set)
-    path = C.RUNS / run_id / "predictions.jsonl"
     if path.exists():
         for rec in C.read_jsonl(path):
             if rec.get("error") is None and not rec.get("parse_error"):
@@ -88,11 +89,30 @@ def successful_ids(run_id: str) -> dict[str, set[str]]:
     return out
 
 
+def discover_sources(m: dict) -> list:
+    """Every predictions file that belongs to this model: its own run, any
+    also_read run, and any other run or release copy whose meta.json records
+    the same endpoint and model label (trials, MCP runs, published copies)."""
+    found = [C.RUNS / m["run_id"] / "predictions.jsonl"] + [C.RUNS / r / "predictions.jsonl" for r in m.get("also_read", [])]
+    url = endpoint_url(m)
+    for meta in sorted([*C.RUNS.glob("*/meta.json"), *(C.ROOT / "release" / "predictions").glob("*/meta.json")]):
+        try:
+            rec = json.loads(meta.read_text(encoding="utf-8"))
+        except ValueError:
+            continue
+        pred = meta.with_name("predictions.jsonl")
+        if rec.get("endpoint") == url and rec.get("model_requested") == m["label"] and pred not in found:
+            found.append(pred)
+    return [p for p in found if p.exists()]
+
+
 def build_grid(models: list[dict], keys: list[str], ids: dict[str, set[str]], image: set[str]) -> list[list[dict]]:
     grid = []
     for m in models:
-        primary = successful_ids(m["run_id"])
-        others = [successful_ids(r) for r in m.get("also_read", [])]
+        m["_sources"] = discover_sources(m)
+        primary_path = C.RUNS / m["run_id"] / "predictions.jsonl"
+        primary = successful_ids(primary_path)
+        others = [successful_ids(p) for p in m["_sources"] if p != primary_path]
         row = []
         for key in keys:
             total = len(ids[key])
@@ -139,7 +159,9 @@ def run_ui(stdscr, models, keys, grid) -> dict | None:
     COL = {DONE: curses.color_pair(1), PARTIAL: curses.color_pair(2), PENDING: curses.A_DIM, NA: curses.A_DIM}
     SEL_RUN, SEL_RERUN, WARN = curses.color_pair(3) | curses.A_BOLD, curses.color_pair(4) | curses.A_BOLD, curses.color_pair(5)
 
-    label_w = min(30, max(len(m["name"]) for m in models)) + 2
+    name_w = min(30, max(len(m["name"]) for m in models)) + 2
+    label_w = name_w + HOST_W
+    HOST_COL = {"API": curses.color_pair(3), "Cloud GPU": curses.color_pair(4), "Local": curses.color_pair(1)}
     cy = cx = 0
     row_off = col_off = 0
     selection: dict[tuple[int, int], str] = {}
@@ -161,7 +183,7 @@ def run_ui(stdscr, models, keys, grid) -> dict | None:
             del selection[(mi, si)]
         elif cell["state"] == DONE:
             if cell["in_other_run"]:
-                message = f"results live in {models[mi]['also_read']}; rerun them by hand"
+                message = "some results live in another run folder; rerun them by hand"
                 return
             selection[(mi, si)] = "rerun"
         else:
@@ -190,12 +212,15 @@ def run_ui(stdscr, models, keys, grid) -> dict | None:
         put(0, 35, "· pending ", curses.A_DIM)
         put(0, 45, "● run ", SEL_RUN)
         put(0, 51, "R rerun", SEL_RERUN)
+        put(1, name_w, "where", curses.A_BOLD)
         for j, si in enumerate(range(col_off, min(len(keys), col_off + vis_cols))):
             head = SHORT.get(keys[si], keys[si][:4])
             put(1, label_w + j * CELL_W, head.ljust(CELL_W), curses.A_BOLD | (curses.A_REVERSE if si == cx else 0))
         for i, mi in enumerate(range(row_off, min(len(models), row_off + vis_rows))):
             y = 2 + i
-            put(y, 0, models[mi]["name"][: label_w - 2].ljust(label_w), curses.A_BOLD if mi == cy else 0)
+            put(y, 0, models[mi]["name"][: name_w - 2].ljust(name_w), curses.A_BOLD if mi == cy else 0)
+            host = models[mi].get("hosting", "?")
+            put(y, name_w, host.ljust(HOST_W), HOST_COL.get(host, 0))
             for j, si in enumerate(range(col_off, min(len(keys), col_off + vis_cols))):
                 cell = grid[mi][si]
                 action = selection.get((mi, si))
@@ -210,7 +235,7 @@ def run_ui(stdscr, models, keys, grid) -> dict | None:
 
         m, cell, key = models[cy], grid[cy][cx], keys[cx]
         put(h - 5, 0, f"{m['name']}  ×  {key}", curses.A_BOLD)
-        put(h - 4, 0, f"{cell['state']}  {cell['done']:,}/{cell['total']:,} cases   run {m['run_id']}"[: w - 1])
+        put(h - 4, 0, f"{cell['state']}  {cell['done']:,}/{cell['total']:,} cases   {m.get('hosting', '?')}   writes to {m['run_id']}, reads {len(m['_sources'])} result file(s)"[: w - 1])
         if m.get("needs"):
             put(h - 3, 0, f"needs {m['needs']}"[: w - 1], curses.A_DIM)
         n_req, usd, unpriced = estimate(models, grid, keys, selection)
@@ -307,10 +332,10 @@ def run_model(m: dict, slices: list[str]) -> int:
 
 
 def print_grid(models, keys, grid) -> None:
-    label_w = min(30, max(len(m["name"]) for m in models)) + 2
-    print(" " * label_w + "".join(SHORT.get(k, k[:4]).ljust(CELL_W) for k in keys))
+    name_w = min(30, max(len(m["name"]) for m in models)) + 2
+    print(" " * name_w + "where".ljust(HOST_W) + "".join(SHORT.get(k, k[:4]).ljust(CELL_W) for k in keys))
     for m, row in zip(models, grid):
-        print(m["name"][: label_w - 2].ljust(label_w) + "".join(f" {GLYPH[c['state']]}".ljust(CELL_W) for c in row))
+        print(m["name"][: name_w - 2].ljust(name_w) + m.get("hosting", "?").ljust(HOST_W) + "".join(f" {GLYPH[c['state']]}".ljust(CELL_W) for c in row))
     print("\n✓ done  ◐ partial  · pending  (blank) not applicable")
     print("columns: " + ", ".join(f"{SHORT.get(k, k[:4])}={k}" for k in keys))
 
@@ -318,6 +343,7 @@ def print_grid(models, keys, grid) -> None:
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--list", action="store_true", help="print the matrix and exit")
+    ap.add_argument("--sources", action="store_true", help="print which result files each model was read from, and exit")
     ap.add_argument("--pending", action="store_true", help="select every pending cell without the grid")
     ap.add_argument("--model", action="append", default=[], help="only models whose name contains this (repeatable)")
     ap.add_argument("--yes", action="store_true", help="skip the final confirmation")
@@ -337,6 +363,11 @@ def main() -> int:
 
     if args.list:
         print_grid(models, keys, grid)
+        return 0
+    if args.sources:
+        for m in models:
+            files = [str(p.relative_to(C.ROOT)) for p in m["_sources"]] or ["(none yet)"]
+            print(f"{m['name']:<30} {m.get('hosting', '?'):<10} " + ("\n" + " " * 42).join(files))
         return 0
     if args.pending:
         selection = {(i, j): "run" for i in range(len(models)) for j in range(len(keys)) if grid[i][j]["state"] in (PENDING, PARTIAL)}

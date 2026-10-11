@@ -5,7 +5,7 @@ Checked 11 October 2026. Code is in place; nothing below has been run yet.
 ## Where each model runs
 
 Hosted wherever possible. OpenRouter's alpha Decisions endpoint,
-`POST https://openrouter.ai/api/v1/api/alpha/decisions`, takes the same
+`POST https://openrouter.ai/api/alpha/decisions`, takes the same
 `{model, state, questions}` body the harness already sends and answers in the
 same `{answers, usage}` shape as Jev, so the existing parser reads it unchanged.
 One `OPENROUTER_API_KEY` covers every hosted model. The only weights the

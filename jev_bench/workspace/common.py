@@ -43,7 +43,7 @@ LIQUID_MODEL = "d1:free"
 LIQUID_API_KEY_ENV = "LIQUID_API_KEY"
 # One alpha Decisions endpoint routes to every hosted decision model on
 # OpenRouter (Clef, Clef-flash, pplx-decider, Liquid d1, Jev) under one key.
-OPENROUTER_URL = "https://openrouter.ai/api/v1/api/alpha/decisions"
+OPENROUTER_URL = "https://openrouter.ai/api/alpha/decisions"
 OPENROUTER_API_KEY_ENV = "OPENROUTER_API_KEY"
 # Local d1-3B / d1-omni-600M served by workspace/serve_d1_local.py.
 D1_LOCAL_URL = "http://127.0.0.1:18100/v1/request"

@@ -157,12 +157,20 @@ def main() -> int:
     print(f"resuming  {len(done):,} already recorded, {len(todo):,} to send\n")
     meta_path = run_dir / "meta.json"
     prior_meta = json.loads(meta_path.read_text(encoding="utf-8")) if meta_path.exists() else {}
-    mcp_fingerprint = C.content_hash(C.state_json([
-        {"id": c["case_id"], "state": c["state"], "question": c["question"], "gold": c["gold"]}
-        for c in work if c["slice"].startswith(("mcpmark_", "mcpbench_"))
-    ]))
-    if prior_meta.get("mcp_cases_fingerprint") not in (None, mcp_fingerprint):
-        ap.error("MCP cases changed since this run began; choose a new --run-id")
+    # One fingerprint per MCP slice, compared only for slices sent now, so a run
+    # filled a few slices at a time is not mistaken for changed cases.
+    mcp_fingerprints = {
+        key: C.content_hash(C.state_json([
+            {"id": c["case_id"], "state": c["state"], "question": c["question"], "gold": c["gold"]}
+            for c in work if c["slice"] == key
+        ]))
+        for key in keys if key.startswith(("mcpmark_", "mcpbench_"))
+    }
+    prior_fps = prior_meta.get("mcp_cases_fingerprints") or {}
+    changed = [k for k, fp in mcp_fingerprints.items() if prior_fps.get(k) not in (None, fp)]
+    if changed:
+        ap.error("MCP cases changed since this run began (" + ", ".join(changed) + "); choose a new --run-id")
+    mcp_fingerprints = {**prior_fps, **mcp_fingerprints}
     # Runs from before 30 Sep 2026 do not record model_sent_on_wire or
     # request_options; compare only what the earlier run actually recorded.
     if prior_meta and any(k in prior_meta and prior_meta[k] != v for k, v in {
@@ -192,7 +200,7 @@ def main() -> int:
                 "slices": sorted(set(prior_meta.get("slices", [])) | set(keys)),
                 "n_cases_total": sum(by_slice.values()),
                 "n_cases_by_slice": by_slice,
-                "mcp_cases_fingerprint": mcp_fingerprint,
+                "mcp_cases_fingerprints": mcp_fingerprints,
                 "concurrency": args.concurrency,
                 "concurrency_history": prior_meta.get("concurrency_history", [prior_meta["concurrency"]] if "concurrency" in prior_meta else []) + [args.concurrency],
                 "limit_per_slice": args.limit,
