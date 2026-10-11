@@ -197,6 +197,9 @@ def build(scores: dict, compare: dict | None) -> str:
     # caveats, generated from the run
     add("## What these numbers do not establish")
     add("")
+    if any(k.startswith(("mcpmark_", "mcpbench_")) for k in slices):
+        add("- **MCP scope.** These are offline derived slices, not official MCPMark or MCP-Bench end-to-end scores. Server routing is separate from function selection. Tool selection uses a small authored subset of hypothetical checkpoints and curated candidate catalogues; no tool execution or argument correctness is measured. Public-task training exposure is unknown. Pinned sources: `mcp_sources.json`; labels: `annotations/mcp_tools.json`.")
+        add("- **MCP coverage.** Headlines use valid returned decisions. `scores.json` also reports accuracy over planned cases, counting errors and missing predictions as wrong. Multiple checkpoints from one task share the bootstrap family; small subsets do not support broad ranking claims.")
     truncated = {k: v["n_truncated_states"] for k, v in slices.items() if v.get("n_truncated_states")}
     if truncated:
         add(f"- **Truncated states.** {', '.join(f'{k}: {n}' for k, n in truncated.items())}. Those cases were not shown the full record, so the slice is not a faithful full-input evaluation.")

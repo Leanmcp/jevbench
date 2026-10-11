@@ -1,0 +1,52 @@
+{
+  "version": 1,
+  "label_origin": "JevBench authored checkpoints, not official gold trajectories. Hypothetical progress is explicitly supplied; no live tool outputs are claimed.",
+  "catalogues": {
+    "filesystem": {
+      "filesystem.list_directory": "List the immediate files and directories at a known directory path.",
+      "filesystem.get_file_info": "Get metadata for a known file, including its size and timestamps.",
+      "filesystem.create_directory": "Create a directory at the specified path.",
+      "filesystem.move_file": "Move or rename a file or directory from a source path to a destination path.",
+      "filesystem.write_file": "Write supplied text content to a file, replacing existing content."
+    },
+    "reference_tools": {
+      "OpenAPI Explorer:getApiOverview": "Retrieve the overview, paths and operations of a named API specification.",
+      "OpenAPI Explorer:getApiOperation": "Retrieve the detailed schema and parameters of one operation in a specification.",
+      "Wikipedia:search_wikipedia": "Search Wikipedia for articles matching a query.",
+      "Wikipedia:get_sections": "Retrieve the section headings of an article with a known title.",
+      "Wikipedia:get_links": "Retrieve outbound links from an article with a known title.",
+      "Wikipedia:extract_key_facts": "Extract key facts about a specified topic within an article.",
+      "Hugging Face:search-models": "Search for models using query, author and tag filters.",
+      "Hugging Face:get-model-info": "Retrieve detailed metadata for a known model ID.",
+      "Hugging Face:search-datasets": "Search for datasets using a query and filters.",
+      "Hugging Face:get-dataset-info": "Retrieve detailed metadata for a known dataset ID.",
+      "Paper Search:search_arxiv": "Search arXiv for papers matching a query.",
+      "Paper Search:download_arxiv": "Download an arXiv paper using its known paper ID.",
+      "Paper Search:read_arxiv_paper": "Extract the text of a downloaded arXiv paper."
+    }
+  },
+  "checkpoints": [
+    {"source":"mcpmark","task":"filesystem/standard/file_property/size_classification","id":"enumerate","catalogue":"filesystem","checkpoint":"The test directory path is known. Before classifying anything, obtain its immediate file entries; do not inspect individual sizes yet.","gold":"filesystem.list_directory","evidence":"Task Objectives 2–3: classify all files regardless of extension."},
+    {"source":"mcpmark","task":"filesystem/standard/file_property/size_classification","id":"measure","catalogue":"filesystem","checkpoint":"The files have been enumerated. For one known file path, obtain its byte size to decide its size category.","gold":"filesystem.get_file_info","evidence":"Task Objective 1 defines categories by byte size."},
+    {"source":"mcpmark","task":"filesystem/standard/file_property/size_classification","id":"mkdir","catalogue":"filesystem","checkpoint":"The destination paths are known. The small_files directory does not exist; create that empty directory now.","gold":"filesystem.create_directory","evidence":"Task Objective 1: create three directories."},
+    {"source":"mcpmark","task":"filesystem/standard/file_property/size_classification","id":"relocate","catalogue":"filesystem","checkpoint":"A file has been measured and assigned to small_files. The destination directory exists. Relocate the original file there without rewriting its contents.","gold":"filesystem.move_file","evidence":"Task Objective 2: move files to the appropriate subdirectory."},
+    {"source":"mcpmark","task":"filesystem/easy/file_property/largest_rename","id":"enumerate","catalogue":"filesystem","checkpoint":"The test directory path is known. Obtain the immediate directory entries before identifying the JPEG files.","gold":"filesystem.list_directory","evidence":"Task Objective 1: find all .jpg files."},
+    {"source":"mcpmark","task":"filesystem/easy/file_property/largest_rename","id":"measure","catalogue":"filesystem","checkpoint":"JPEG paths are known. Obtain the byte size of one candidate JPEG; do not modify it.","gold":"filesystem.get_file_info","evidence":"Task Objective 2: determine which .jpg file is largest by file size."},
+    {"source":"mcpmark","task":"filesystem/easy/file_property/largest_rename","id":"rename","catalogue":"filesystem","checkpoint":"The largest JPEG has already been identified and its path is known. Rename this existing file to largest.jpg without rewriting its contents.","gold":"filesystem.move_file","evidence":"Task Objective 3: rename the largest .jpg file to largest.jpg."},
+    {"source":"mcpmark","task":"filesystem/easy/file_context/uppercase","id":"mkdir","catalogue":"filesystem","checkpoint":"The test root is known. Create its missing uppercase subdirectory before saving any converted files.","gold":"filesystem.create_directory","evidence":"Task Objective 1: create an uppercase directory."},
+    {"source":"mcpmark","task":"filesystem/easy/file_context/uppercase","id":"save","catalogue":"filesystem","checkpoint":"A file's content has already been read and converted to uppercase in memory. The uppercase directory exists. Save the converted string into its destination file now.","gold":"filesystem.write_file","evidence":"Task Objective 3: save converted files with the same names."},
+    {"source":"mcpbench","task":"openapi_explorer_000","id":"overview","catalogue":"reference_tools","checkpoint":"Begin the API audit by retrieving the paths and operations of the known openai specification; no individual operation has been selected yet.","gold":"OpenAPI Explorer:getApiOverview","evidence":"task_description step 1 explicitly calls getApiOverview."},
+    {"source":"mcpbench","task":"openapi_explorer_000","id":"operation","catalogue":"reference_tools","checkpoint":"The overview has been fetched and a search operation identified. Retrieve that operation's detailed parameters and response schema.","gold":"OpenAPI Explorer:getApiOperation","evidence":"task_description step 3 explicitly calls getApiOperation."},
+    {"source":"mcpbench","task":"wikipedia_000","id":"search","catalogue":"reference_tools","checkpoint":"Start by finding article titles matching climate change negotiation frameworks.","gold":"Wikipedia:search_wikipedia","evidence":"task_description step 1."},
+    {"source":"mcpbench","task":"wikipedia_000","id":"sections","catalogue":"reference_tools","checkpoint":"An article title is known. Obtain only its section headings to determine whether it contains a History section.","gold":"Wikipedia:get_sections","evidence":"task_description step 2b."},
+    {"source":"mcpbench","task":"wikipedia_000","id":"links","catalogue":"reference_tools","checkpoint":"An article title is known. Retrieve its outbound links so their count can be recorded.","gold":"Wikipedia:get_links","evidence":"task_description step 2d."},
+    {"source":"mcpbench","task":"wikipedia_000","id":"facts","catalogue":"reference_tools","checkpoint":"Extract five facts about emission reduction targets specifically from the Paris Agreement article.","gold":"Wikipedia:extract_key_facts","evidence":"task_description step 3b."},
+    {"source":"mcpbench","task":"hugging_face_000","id":"models","catalogue":"reference_tools","checkpoint":"Begin by finding pretrained text-classification models using an author filter. No model IDs are known yet.","gold":"Hugging Face:search-models","evidence":"task_description step 1."},
+    {"source":"mcpbench","task":"hugging_face_000","id":"modelinfo","catalogue":"reference_tools","checkpoint":"A model ID has been returned by the search. Fetch its parameter count and licence metadata for filtering.","gold":"Hugging Face:get-model-info","evidence":"task_description steps 2–3."},
+    {"source":"mcpbench","task":"hugging_face_000","id":"datasets","catalogue":"reference_tools","checkpoint":"Find candidate spam classification datasets. No dataset IDs are known yet.","gold":"Hugging Face:search-datasets","evidence":"task_description step 4."},
+    {"source":"mcpbench","task":"hugging_face_000","id":"datasetinfo","catalogue":"reference_tools","checkpoint":"A dataset ID has been returned by search. Retrieve its metadata to inspect training row count.","gold":"Hugging Face:get-dataset-info","evidence":"task_description step 5."},
+    {"source":"mcpbench","task":"paper_search_004","id":"search","catalogue":"reference_tools","checkpoint":"Begin the arXiv branch by searching for machine learning protein folding papers; no paper ID is known yet.","gold":"Paper Search:search_arxiv","evidence":"task_description step 1a."},
+    {"source":"mcpbench","task":"paper_search_004","id":"download","catalogue":"reference_tools","checkpoint":"An arXiv paper ID has been selected. Save its PDF locally before extracting its text.","gold":"Paper Search:download_arxiv","evidence":"task_description step 3: download then read."},
+    {"source":"mcpbench","task":"paper_search_004","id":"read","catalogue":"reference_tools","checkpoint":"An arXiv paper has already been downloaded. Extract its full text to count keyword occurrences.","gold":"Paper Search:read_arxiv_paper","evidence":"task_description steps 3–4."}
+  ]
+}

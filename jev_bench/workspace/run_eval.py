@@ -150,6 +150,12 @@ def main() -> int:
     print(f"resuming  {len(done):,} already recorded, {len(todo):,} to send\n")
     meta_path = run_dir / "meta.json"
     prior_meta = json.loads(meta_path.read_text(encoding="utf-8")) if meta_path.exists() else {}
+    mcp_fingerprint = C.content_hash(C.state_json([
+        {"id": c["case_id"], "state": c["state"], "question": c["question"], "gold": c["gold"]}
+        for c in work if c["slice"].startswith(("mcpmark_", "mcpbench_"))
+    ]))
+    if prior_meta.get("mcp_cases_fingerprint") not in (None, mcp_fingerprint):
+        ap.error("MCP cases changed since this run began; choose a new --run-id")
     if prior_meta and any(prior_meta.get(k) != v for k, v in {
         "endpoint": endpoint,
         "model_requested": label,
@@ -173,6 +179,8 @@ def main() -> int:
                 "started_at": time.strftime("%Y-%m-%dT%H:%M:%S%z"),
                 "slices": keys,
                 "n_cases_total": len(work),
+                "n_cases_by_slice": {key: sum(c["slice"] == key for c in work) for key in keys},
+                "mcp_cases_fingerprint": mcp_fingerprint,
                 "concurrency": args.concurrency,
                 "concurrency_history": prior_meta.get("concurrency_history", [prior_meta["concurrency"]] if "concurrency" in prior_meta else []) + [args.concurrency],
                 "limit_per_slice": args.limit,
@@ -204,6 +212,9 @@ def main() -> int:
             "perturbation": case["perturbation"],
             "n_options": case["n_options"],
             "gold": case["gold"],
+            "metric_scope": case.get("metric_scope"),
+            "source_revision": case.get("revision"),
+            "state_hash": case.get("state_hash"),
             "truncated_state": case["truncated"],
             "latency_ms": result.get("latency_ms"),
             "client_concurrency": args.concurrency,
@@ -215,6 +226,9 @@ def main() -> int:
             payload = result["response"]
             rec.update(C.parse_answer(payload, case["question_key"], case["task_type"]))
             rec.update(C.usage_of(payload))
+            if case["task_type"] == "choice" and not rec.get("parse_error"):
+                if str(rec.get("pred")) not in case["question"]["criteria"]:
+                    rec["parse_error"] = "Predicted choice is outside the supplied candidate set"
         if args.save_raw:
             # Full request and response, so a disputed number can be traced to the
             # exact bytes that produced it. Kept in a separate file because it is

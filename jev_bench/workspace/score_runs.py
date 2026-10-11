@@ -329,6 +329,22 @@ def main() -> int:
             "n_truncated_states": sum(1 for r in recs if r.get("truncated_state")),
             "error_examples": sorted({str(r.get("error"))[:120] for r in errors})[:3],
         }
+        mcp_metric = None
+        if slice_key in {"mcpmark_tool_selection", "mcpbench_tool_selection"}:
+            mcp_metric = "tool_selection_accuracy"
+        elif slice_key in {"mcpmark_server_routing", "mcpbench_server_routing"}:
+            mcp_metric = "server_routing_accuracy"
+        if mcp_metric:
+            entry["scope_note"] = "Offline derived slice; not official end-to-end MCP benchmark success. Tool checkpoints are authored hypothetical states."
+            entry["accuracy_counting_recorded_errors_as_wrong"] = sum(
+                str(r["gold"]) == str(r["pred"]) for r in usable
+            ) / len(recs) if recs else None
+            planned = meta.get("n_cases_by_slice", {}).get(slice_key, len(recs))
+            entry["n_planned"] = planned
+            entry["n_missing"] = max(0, planned - len(recs))
+            entry["accuracy_over_planned_cases"] = sum(
+                str(r["gold"]) == str(r["pred"]) for r in usable
+            ) / planned if planned else None
         if usable:
             if task_type == "choice":
                 entry["metrics"] = score_choice(usable)
@@ -338,6 +354,9 @@ def main() -> int:
                 entry["metrics"] = score_ordinal(usable)
 
             name, units = headline_units(usable, task_type)
+            if mcp_metric:
+                entry["metrics"][mcp_metric] = entry["metrics"]["accuracy"]
+                name = mcp_metric
             ci = bootstrap_ci(units)
             entry["headline"] = {
                 "metric": name,

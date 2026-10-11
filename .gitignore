@@ -232,3 +232,9 @@ quick_benchmark/rjudge-source/
 
 # arXiv bundles and PDF copies (built by paper/workspace/make_arxiv.sh)
 paper/dist/
+
+# MCP benchmark source downloads and locally derived task text
+jev_bench/data/upstream/
+jev_bench/data/cases/mcp*.jsonl
+jev_bench/data/cases/previews/mcp*.json
+jev_bench/data/mcp_build_manifest.json
