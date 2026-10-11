@@ -60,6 +60,13 @@ slices are available for both Jev and D1. See [the MCP runbook](jev_bench/04_MCP
 for pinned downloads, authored checkpoint labels, verification and run commands.
 These derived decision scores are separate from the official end-to-end agent benchmarks.
 
+Thirteen more hosted decision models (Cloudflare Clef, Clef-flash and Clef-omni,
+Perplexity pplx-decider v1.1, GPT-6 Luna Decisions and others) run through
+OpenRouter's Decisions API with `--endpoint openrouter` and `OPENROUTER_API_KEY`.
+The open-weight Liquid d1-3B and d1-omni-600M, which no API serves, run on a
+laptop through `--endpoint d1local`. See [the decision-models runbook](jev_bench/05_DECISION_MODELS.md)
+for licences, per-run costs and commands.
+
 ## Repository layout
 
 | Path | Contents |

@@ -17,7 +17,7 @@ is a separate experiment and would change the latency numbers, so it is not
 mixed in here.
 
 Resumable: re-running the same --run-id skips case ids already recorded. The
-API key is read from TYPESAFE_API_KEY (LIQUID_API_KEY for Liquid), never logged, and scrubbed out of any
+API key is read from TYPESAFE_API_KEY (LIQUID_API_KEY for Liquid, OPENROUTER_API_KEY for OpenRouter), never logged, and scrubbed out of any
 error text before it is written to disk.
 
 Predictions store the decision, the probability vector, latency and token usage,
@@ -45,9 +45,13 @@ def resolve_endpoint(name: str) -> str:
         return C.DJEV_URL
     if name == "liquid":
         return C.LIQUID_URL
+    if name == "openrouter":
+        return C.OPENROUTER_URL
+    if name == "d1local":
+        return C.D1_LOCAL_URL
     if name.startswith("http"):
         return name
-    raise SystemExit(f"--endpoint must be 'jev', 'djev', 'liquid' or a URL, got {name!r}")
+    raise SystemExit(f"--endpoint must be 'jev', 'djev', 'liquid', 'openrouter', 'd1local' or a URL, got {name!r}")
 
 
 def load_done(path) -> set[str]:
@@ -64,7 +68,7 @@ def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--only", action="append", default=[], metavar="SLICE")
     ap.add_argument("--skip", action="append", default=[], metavar="SLICE")
-    ap.add_argument("--endpoint", default="jev", help="jev, djev, liquid, or a full URL")
+    ap.add_argument("--endpoint", default="jev", help="jev, djev, liquid, openrouter, d1local, or a full URL")
     ap.add_argument("--model", default=None, help="defaults to d1:free for Liquid, jev-1.13.0 otherwise")
     ap.add_argument("--run-id", default=None)
     ap.add_argument("--limit", type=int, default=None, help="cap cases per slice")
@@ -83,9 +87,12 @@ def main() -> int:
     args = ap.parse_args()
     endpoint = resolve_endpoint(args.endpoint)
     is_liquid = endpoint == C.LIQUID_URL
+    is_openrouter = endpoint == C.OPENROUTER_URL
+    if is_openrouter and not args.model:
+        ap.error("OpenRouter needs an explicit --model slug, e.g. cloudflare/clef")
     args.model = args.model or (C.LIQUID_MODEL if is_liquid else C.JEV_MODEL)
-    if is_liquid and (args.no_send_model or args.seed is not None or args.samples is not None):
-        ap.error("Liquid requires a model and does not document djev seed/samples options")
+    if (is_liquid or is_openrouter) and (args.no_send_model or args.seed is not None or args.samples is not None):
+        ap.error("hosted decision APIs require a model and do not document djev seed/samples options")
 
     options: dict = {}
     if args.seed is not None:
@@ -102,7 +109,7 @@ def main() -> int:
         print("No case files selected. Run workspace/build_cases.py first.")
         return 2
 
-    status = C.key_status(C.LIQUID_API_KEY_ENV if is_liquid else C.API_KEY_ENV)
+    status = C.key_status(C.KEY_ENV_BY_URL.get(endpoint, C.API_KEY_ENV))
     print(f"endpoint  {endpoint}")
     print(f"model     sent={'(omitted)' if args.no_send_model else args.model}  recorded as={label}")
     print(f"options   {options or '(none)'}")
@@ -112,7 +119,7 @@ def main() -> int:
         endpoint=endpoint,
         model=None if args.no_send_model else args.model,
         options=options or None,
-        require_key=(not args.dry_run) and (endpoint == C.JEV_URL or is_liquid),
+        require_key=(not args.dry_run) and endpoint in C.KEY_ENV_BY_URL,
         timeout=args.timeout,
     )
 
@@ -122,10 +129,10 @@ def main() -> int:
         if args.limit:
             cases = cases[: args.limit]
         work += cases
-    if is_liquid:
+    if is_liquid or is_openrouter:
         image_slices = sorted({c["slice"] for c in work if c.get("image_path") or c.get("_images")})
         if image_slices:
-            ap.error("Liquid D1 has no documented image input. Exclude these slices with --skip: " + ", ".join(image_slices))
+            ap.error("Image input is not wired for this hosted API yet. Exclude these slices with --skip: " + ", ".join(image_slices))
     print(f"slices    {len(keys)}: " + ", ".join(keys))
     print(f"cases     {len(work):,}")
 

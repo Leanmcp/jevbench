@@ -41,6 +41,19 @@ DJEV_URL = "http://127.0.0.1:18000/v1/request"
 LIQUID_URL = "https://api.liquid.ai/decisions/v1/systemone"
 LIQUID_MODEL = "d1:free"
 LIQUID_API_KEY_ENV = "LIQUID_API_KEY"
+# One alpha Decisions endpoint routes to every hosted decision model on
+# OpenRouter (Clef, Clef-flash, pplx-decider, Liquid d1, Jev) under one key.
+OPENROUTER_URL = "https://openrouter.ai/api/v1/api/alpha/decisions"
+OPENROUTER_API_KEY_ENV = "OPENROUTER_API_KEY"
+# Local d1-3B / d1-omni-600M served by workspace/serve_d1_local.py.
+D1_LOCAL_URL = "http://127.0.0.1:18100/v1/request"
+
+# Which environment variable holds the key for each keyed endpoint.
+KEY_ENV_BY_URL = {
+    JEV_URL: API_KEY_ENV,
+    LIQUID_URL: LIQUID_API_KEY_ENV,
+    OPENROUTER_URL: OPENROUTER_API_KEY_ENV,
+}
 
 # State is truncated to this many characters before sending, and every truncated
 # case is flagged. ATBench trajectories average about 1.52k tokens per its card,
@@ -539,7 +552,7 @@ class DecisionClient:
         self.options = options
         self.timeout = timeout
         self.max_retries = max_retries
-        self.key_env = LIQUID_API_KEY_ENV if endpoint == LIQUID_URL else API_KEY_ENV
+        self.key_env = KEY_ENV_BY_URL.get(endpoint, API_KEY_ENV)
         self._key = os.environ.get(self.key_env)
         if require_key and not self._key:
             raise RuntimeError(
@@ -596,7 +609,7 @@ class DecisionClient:
 
 def _scrub(text: str) -> str:
     """Belt and braces: if a key ever appears in an error body, do not persist it."""
-    for env_var in (API_KEY_ENV, LIQUID_API_KEY_ENV):
+    for env_var in set(KEY_ENV_BY_URL.values()):
         key = os.environ.get(env_var)
         if key:
             text = text.replace(key, "[redacted]")
@@ -653,6 +666,9 @@ def usage_of(payload: dict) -> dict:
         "input_tokens": usage.get("input_tokens"),
         "output_tokens": usage.get("output_tokens"),
         "model_reported": (payload or {}).get("model"),
+        # OpenRouter only: billed USD and the upstream provider that served it.
+        "cost_usd": usage.get("cost"),
+        "provider_reported": (payload or {}).get("provider"),
     }
 
 
