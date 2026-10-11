@@ -38,6 +38,9 @@ API_KEY_ENV = "TYPESAFE_API_KEY"
 JEV_URL = "https://api.typesafe.ai/v1/systemone"
 JEV_MODEL = "jev-1.13.0"
 DJEV_URL = "http://127.0.0.1:18000/v1/request"
+LIQUID_URL = "https://api.liquid.ai/decisions/v1/systemone"
+LIQUID_MODEL = "d1:free"
+LIQUID_API_KEY_ENV = "LIQUID_API_KEY"
 
 # State is truncated to this many characters before sending, and every truncated
 # case is flagged. ATBench trajectories average about 1.52k tokens per its card,
@@ -516,10 +519,10 @@ def content_hash(text: str) -> str:
 # the client
 # --------------------------------------------------------------------------
 
-def key_status() -> dict:
+def key_status(env_var: str = API_KEY_ENV) -> dict:
     """Presence and length only. The value is never returned or logged."""
-    raw = os.environ.get(API_KEY_ENV)
-    return {"env_var": API_KEY_ENV, "present": bool(raw), "length": len(raw) if raw else 0}
+    raw = os.environ.get(env_var)
+    return {"env_var": env_var, "present": bool(raw), "length": len(raw) if raw else 0}
 
 
 class DecisionClient:
@@ -536,10 +539,11 @@ class DecisionClient:
         self.options = options
         self.timeout = timeout
         self.max_retries = max_retries
-        self._key = os.environ.get(API_KEY_ENV)
+        self.key_env = LIQUID_API_KEY_ENV if endpoint == LIQUID_URL else API_KEY_ENV
+        self._key = os.environ.get(self.key_env)
         if require_key and not self._key:
             raise RuntimeError(
-                f"{API_KEY_ENV} is not set in this shell. Export it before running, and keep it out of files and command lines."
+                f"{self.key_env} is not set in this shell. Export it before running, and keep it out of files and command lines."
             )
 
     def build_request(self, case: dict) -> dict:
@@ -592,8 +596,11 @@ class DecisionClient:
 
 def _scrub(text: str) -> str:
     """Belt and braces: if a key ever appears in an error body, do not persist it."""
-    key = os.environ.get(API_KEY_ENV)
-    return text.replace(key, "[redacted]") if key else text
+    for env_var in (API_KEY_ENV, LIQUID_API_KEY_ENV):
+        key = os.environ.get(env_var)
+        if key:
+            text = text.replace(key, "[redacted]")
+    return text
 
 
 # --------------------------------------------------------------------------

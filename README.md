@@ -50,6 +50,16 @@ scripts for djev read their cloud settings from `jev_bench/.env`; copy
 [`jev_bench/.env.example`](jev_bench/.env.example) to start.
 [`jev_bench/02_RUNNING.md`](jev_bench/02_RUNNING.md) covers full runs and scoring.
 
+Liquid D1 integration is available with `--endpoint liquid` and `LIQUID_API_KEY`.
+See [the D1 runbook](jev_bench/03_LIQUID_D1.md) for trial/full-run commands,
+licensing findings and the conditional Google Cloud GPU plan. D1 results have
+not yet been measured.
+
+MCPMark and MCP-Bench source downloads and offline server-routing/tool-selection
+slices are available for both Jev and D1. See [the MCP runbook](jev_bench/04_MCP_BENCHMARKS.md)
+for pinned downloads, authored checkpoint labels, verification and run commands.
+These derived decision scores are separate from the official end-to-end agent benchmarks.
+
 ## Repository layout
 
 | Path | Contents |

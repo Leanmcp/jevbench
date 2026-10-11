@@ -19,8 +19,8 @@ Metric choices, stated rather than implied:
 - Confidence intervals are percentile bootstrap over 2000 resamples grouped by
   family_id, so a case and its permuted twin move together.
 - For a noul slice whose upstream card never states label polarity, accuracy is
-  reported both ways. If the flipped number is the high one, the mapping in
-  common.POLARITY_ASSUMPTIONS is wrong.
+  reported both ways. Higher flipped accuracy is a diagnostic, not proof that
+  common.POLARITY_ASSUMPTIONS is wrong. Verify labels independently of results.
 - best_threshold_accuracy is chosen on the very data it scores, so it is an
   optimistic diagnostic and is labelled that way, not an operating point.
 """
@@ -329,6 +329,22 @@ def main() -> int:
             "n_truncated_states": sum(1 for r in recs if r.get("truncated_state")),
             "error_examples": sorted({str(r.get("error"))[:120] for r in errors})[:3],
         }
+        mcp_metric = None
+        if slice_key in {"mcpmark_tool_selection", "mcpbench_tool_selection"}:
+            mcp_metric = "tool_selection_accuracy"
+        elif slice_key in {"mcpmark_server_routing", "mcpbench_server_routing"}:
+            mcp_metric = "server_routing_accuracy"
+        if mcp_metric:
+            entry["scope_note"] = "Offline derived slice; not official end-to-end MCP benchmark success. Tool checkpoints are authored hypothetical states."
+            entry["accuracy_counting_recorded_errors_as_wrong"] = sum(
+                str(r["gold"]) == str(r["pred"]) for r in usable
+            ) / len(recs) if recs else None
+            planned = meta.get("n_cases_by_slice", {}).get(slice_key, len(recs))
+            entry["n_planned"] = planned
+            entry["n_missing"] = max(0, planned - len(recs))
+            entry["accuracy_over_planned_cases"] = sum(
+                str(r["gold"]) == str(r["pred"]) for r in usable
+            ) / planned if planned else None
         if usable:
             if task_type == "choice":
                 entry["metrics"] = score_choice(usable)
@@ -338,6 +354,9 @@ def main() -> int:
                 entry["metrics"] = score_ordinal(usable)
 
             name, units = headline_units(usable, task_type)
+            if mcp_metric:
+                entry["metrics"][mcp_metric] = entry["metrics"]["accuracy"]
+                name = mcp_metric
             ci = bootstrap_ci(units)
             entry["headline"] = {
                 "metric": name,
@@ -391,7 +410,7 @@ def main() -> int:
     flips = [k for k, v in scores.items() if v.get("metrics", {}).get("accuracy_if_polarity_flipped", 0) > v.get("metrics", {}).get("accuracy_at_0.5", 1)]
     if flips:
         print("\nPOLARITY WARNING: flipped accuracy is higher for " + ", ".join(flips))
-        print("Fix the mapping in common.POLARITY_ASSUMPTIONS and rescore. Do not report either number until it is settled.")
+        print("Higher flipped accuracy does not prove a label-mapping error. Check source label semantics independently; do not flip labels to improve model scores. Small samples, model errors, and threshold effects can also cause this warning.")
     print(f"\nNext: uv run workspace/report.py --run-id {run_id}")
     return 0
 

@@ -1,0 +1,19 @@
+Use case: ads-marketing. Create a polished square high-resolution social media comparison graphic for LinkedIn and X. Subject: independent JevBench evaluation, Jev 1.13 versus Liquid D1 (d1:free). Editorial technology publication aesthetic, warm ivory background, near-black typography, crisp grid, generous margins, teal for D1 and indigo for Jev. No fake logos, robots, trophies or decorative charts. Typography is the main visual. Main title huge: "Jev vs Liquid D1". Subtitle: "Same questions. Different strengths." Small kicker "JevBench • September 2026".
+Main graphic is a beautifully typeset compact comparison table, all ELEVEN accuracy slices, exact numbers, no invented data. Columns: "Accuracy ↑", "Jev 1.13", "D1 :free". Rows:
+"Aegis2 prompts" "82.8%" "86.6%"
+"Aegis2 responses" "81.2%" "78.8%"
+"ATBench†" "93.0%" "78.6%"
+"Banking77" "81.3%" "85.7%"
+"Jailbreak detection" "97.5%" "96.5%"
+"MedMCQA" "78.1%" "77.0%"
+"MedQA USMLE" "87.3%" "86.6%"
+"MMLU-Pro*" "80.6%" "66.4%"
+"Prompt injections†" "73.3%" "71.6%"
+"PubMedQA" "70.6%" "70.4%"
+"ScienceQA text" "95.7%" "95.8%".
+Use tabular aligned numbers. Highlight the higher number subtly in each row, no winner badge. Below table a separate concise line: "SST-5 MAE ↓   Jev 0.5071  |  D1 0.5080".
+Legible footer exact: "8,014 shared text cases • Point estimates, not significance claims"
+Next footer line: "*MMLU-Pro: 998 cases; two D1 rate-limit failures excluded."
+Next footer line: "†Label polarity requires independent verification."
+Bottom source "github.com/Leanmcp/jevbench".
+Fit everything elegantly with excellent text legibility. This is a factual comparison asset, not an overall model ranking. No claims about price, speed, open source or superiority.

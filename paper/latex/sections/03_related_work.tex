@@ -21,7 +21,7 @@ The baseline this model class displaces is a fine-tuned encoder classifier, one
 per task. BANKING77 was introduced as an intent-detection benchmark for exactly
 that setting \citep{casanueva2020banking77}. We note in
 Section~\ref{sec:limitations} that our suite lacks such a baseline, which leaves
-open whether a task-specific classifier would beat all three systems on the
+open whether a task-specific classifier would beat the evaluated systems on the
 slices where they look strongest.
 
 \subsection{Constrained decoding}
@@ -104,7 +104,7 @@ One finding in this line bears directly on how our own flip rates should be read
 and reports that position bias is statistically detectable only inside a roughly
 60 to 95 percent base-accuracy band: below it, general processing difficulty
 dominates the signal, and above it ceiling effects compress the variance that the
-diagnostic depends on. Our three systems straddle that band. Jev sits at or above
+diagnostic depends on. The original three systems straddle that band. Jev sits at or above
 its upper edge on most multi-option slices, so part of its low flip rate may be
 ceiling compression instead of genuine robustness, and Laya sits below the lower
 edge on four slices where it is at chance. We therefore read the flip rate as a

@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "sources": {
+    "mcpmark": {
+      "url": "https://github.com/eval-sys/mcpmark",
+      "revision": "cd45b7f57923b9b3985467f5139927575f83141c",
+      "license": "Apache-2.0",
+      "redistributable": true,
+      "suite": "standard (MCPMark Verified); easy tasks used only by annotated tool checkpoints"
+    },
+    "mcpbench": {
+      "url": "https://github.com/Accenture/mcp-bench",
+      "revision": "7a8eaeae83a842a2949080acc5473f65e1569daf",
+      "license": "unspecified at repository root; do not infer task licence from bundled server licences",
+      "redistributable": false,
+      "suite": "single-server tasks for routing; all three task files downloaded"
+    }
+  }
+}

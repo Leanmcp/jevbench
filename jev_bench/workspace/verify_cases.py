@@ -49,8 +49,16 @@ def check_slice(slice_key: str, verbose: bool) -> tuple[list[str], list[str], di
     hard: list[str] = []
     soft: list[str] = []
     cases = C.read_cases(slice_key)
-    src = C.source_by_key(C.parent_key(slice_key))
-    rows, _, _ = B.rows_for_slice(slice_key)
+    if slice_key.startswith(("mcpmark_", "mcpbench_")):
+        import build_mcp_cases as M
+        expected, _ = M.build(any(c["perturbation"] == "permuted" for c in cases))
+        if cases != expected[slice_key]:
+            hard.append(f"{slice_key}: cases differ from pinned sources and annotations; rebuild")
+        src, rows = {}, []
+        soft.append(f"{slice_key}: derived routing/authored checkpoint score, not official task success")
+    else:
+        src = C.source_by_key(C.parent_key(slice_key))
+        rows, _, _ = B.rows_for_slice(slice_key)
     by_row = {r["_row_index"]: r for r in rows}
     hidden_fields = [f for f in src.get("hidden", []) if f in (src.get("columns") or [])]
 
