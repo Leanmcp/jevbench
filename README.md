@@ -114,7 +114,14 @@ uv run workspace/verify_cases.py           # leakage and consistency checks
 uv run workspace/run_eval.py --dry-run     # build every request, send nothing
 ```
 
-Then pick an endpoint:
+To see which model has run on which dataset, and run only the missing cells:
+
+```bash
+uv run workspace/matrix.py          # arrow keys to move, space to select, enter to run
+```
+
+Models live in [`jev_bench/models.json`](jev_bench/models.json); adding one is one
+entry. Or call a single endpoint directly:
 
 | Endpoint | Key | Runbook |
 |---|---|---|

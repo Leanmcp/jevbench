@@ -61,7 +61,14 @@ All thirteen OpenRouter models together come to roughly USD 3 to 6.
 
 ## Run order
 
-From `jev_bench/`, with `OPENROUTER_API_KEY` exported in the shell:
+The simplest route is the matrix, which runs only the cells that are missing:
+
+```bash
+time uv run workspace/matrix.py
+```
+
+The per-model scripts below do the same for one model at a time. From
+`jev_bench/`, with `OPENROUTER_API_KEY` exported in the shell:
 
 ```bash
 # 1. build every request for one model, send nothing

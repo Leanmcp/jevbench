@@ -163,7 +163,9 @@ def main() -> int:
     ]))
     if prior_meta.get("mcp_cases_fingerprint") not in (None, mcp_fingerprint):
         ap.error("MCP cases changed since this run began; choose a new --run-id")
-    if prior_meta and any(prior_meta.get(k) != v for k, v in {
+    # Runs from before 30 Sep 2026 do not record model_sent_on_wire or
+    # request_options; compare only what the earlier run actually recorded.
+    if prior_meta and any(k in prior_meta and prior_meta[k] != v for k, v in {
         "endpoint": endpoint,
         "model_requested": label,
         "model_sent_on_wire": None if args.no_send_model else args.model,
@@ -173,6 +175,7 @@ def main() -> int:
     if not todo:
         print("Nothing left to send. Next: uv run workspace/score_runs.py --run-id " + run_id)
         return 0
+    by_slice = {**(prior_meta.get("n_cases_by_slice") or {}), **{key: sum(c["slice"] == key for c in work) for key in keys}}
     meta_path.write_text(
         json.dumps(
             {
@@ -184,9 +187,11 @@ def main() -> int:
                 "model_sent_on_wire": None if args.no_send_model else args.model,
                 "request_options": options or None,
                 "started_at": time.strftime("%Y-%m-%dT%H:%M:%S%z"),
-                "slices": keys,
-                "n_cases_total": len(work),
-                "n_cases_by_slice": {key: sum(c["slice"] == key for c in work) for key in keys},
+                # Merged with the earlier record, so a run filled one slice at a
+                # time (matrix.py) still lists every slice it holds.
+                "slices": sorted(set(prior_meta.get("slices", [])) | set(keys)),
+                "n_cases_total": sum(by_slice.values()),
+                "n_cases_by_slice": by_slice,
                 "mcp_cases_fingerprint": mcp_fingerprint,
                 "concurrency": args.concurrency,
                 "concurrency_history": prior_meta.get("concurrency_history", [prior_meta["concurrency"]] if "concurrency" in prior_meta else []) + [args.concurrency],

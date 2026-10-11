@@ -68,6 +68,13 @@ def main() -> int:
             self.end_headers()
             self.wfile.write(body)
 
+        def do_GET(self) -> None:
+            # matrix.py checks this so a d1-3B cell never runs against omni.
+            if self.path == "/health":
+                self._send(200, {"ok": True, "model": served})
+            else:
+                self._send(404, {"error": f"unknown path {self.path}"})
+
         def do_POST(self) -> None:
             if self.path != "/v1/request":
                 self._send(404, {"error": f"unknown path {self.path}"})
