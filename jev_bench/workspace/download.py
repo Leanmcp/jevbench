@@ -53,7 +53,7 @@ def load_json_any(path: Path):
     stripped = text.lstrip()
     if stripped.startswith("["):
         return json.loads(text), "json_array"
-    rows = [json.loads(line) for line in text.splitlines() if line.strip()]
+    rows = [json.loads(line) for line in text.split("\n") if line.strip()]
     return rows, "json_lines"
 
 
@@ -74,7 +74,7 @@ def measure_parquet(path: Path, src: dict) -> dict:
 
 
 def measure_jsonl(path: Path, src: dict) -> dict:
-    rows = [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line.strip()]
+    rows = [json.loads(line) for line in path.read_text(encoding="utf-8").split("\n") if line.strip()]
     return finish_rows(rows, src)
 
 

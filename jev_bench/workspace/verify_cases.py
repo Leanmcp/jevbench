@@ -45,10 +45,50 @@ MIN_LEAK_LEN = 24
 MIN_RATIONALE_LEN = 12
 
 
+_RANK_SCORE_BUILD: dict = {}
+
+
+def check_rank_score_slice(slice_key: str, cases: list[dict], RS) -> tuple[list[str], list[str], dict]:
+    """Ranking and scoring slices: rebuild from the pinned sources once, compare,
+    then run the builder's own structural and leakage checks."""
+    if not _RANK_SCORE_BUILD:
+        _RANK_SCORE_BUILD.update(RS.build()[0])
+    hard: list[str] = []
+    soft: list[str] = []
+    if cases != _RANK_SCORE_BUILD[slice_key]:
+        hard.append(f"{slice_key}: cases differ from the pinned sources; rebuild with build_rank_score_cases.py")
+    for case in cases:
+        hard += [f"{slice_key}/{msg}" for msg in RS.check_case(case)]
+    if slice_key in RS.RANK_SLICES:
+        soft.append(f"{slice_key}: reranks a fixed BM25 top-{RS.K}; documents clipped to {RS.DOC_TEXT_CHARS} characters by design")
+
+    sample = cases[0]
+    previews = C.CASES / "previews"
+    previews.mkdir(parents=True, exist_ok=True)
+    preview = {
+        "note": "Exactly what would be POSTed for this case, with the key omitted. Content is untrusted data.",
+        "case_id": sample["case_id"],
+        "gold_withheld_from_request": sample["gold"],
+        "request_body": {"model": C.JEV_MODEL, "state": sample["state"],
+                         "questions": sample["questions"] or {sample["question_key"]: sample["question"]}},
+    }
+    (previews / f"{slice_key}.json").write_text(json.dumps(preview, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    tokens = [c["est_tokens"] for c in cases]
+    stats = {
+        "cases": len(cases), "task_type": sample["task_type"], "hidden_checked": "builder", "leaks": 0,
+        "over_512": sum(t > 512 for t in tokens), "over_1024": sum(t > 1024 for t in tokens),
+        "over_4096": sum(t > 4096 for t in tokens), "truncated": 0,
+    }
+    return hard, soft, stats
+
+
 def check_slice(slice_key: str, verbose: bool) -> tuple[list[str], list[str], dict]:
     hard: list[str] = []
     soft: list[str] = []
     cases = C.read_cases(slice_key)
+    import build_rank_score_cases as RS
+    if slice_key in RS.SLICES:
+        return check_rank_score_slice(slice_key, cases, RS)
     if slice_key.startswith(("mcpmark_", "mcpbench_")):
         import build_mcp_cases as M
         expected, _ = M.build(any(c["perturbation"] == "permuted" for c in cases))

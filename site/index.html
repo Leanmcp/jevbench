@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>JevBench</title>
+  <meta name="description" content="Open benchmark for typed decision models: results, datasets and examples.">
+  <meta property="og:title" content="JevBench">
+  <meta property="og:description" content="Open benchmark for typed decision models">
+  <meta property="og:image" content="social-preview.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="logo.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="top">
+    <a class="brand" href="#top" aria-label="JevBench home">
+      <svg viewBox="0 0 112 112" class="brand-mark" aria-hidden="true">
+        <rect width="112" height="112" rx="24" class="tile"/>
+        <rect x="22" y="62" width="18" height="30" rx="4" class="bar"/>
+        <rect x="47" y="22" width="18" height="70" rx="4" class="pick"/>
+        <rect x="72" y="76" width="18" height="16" rx="4" class="bar"/>
+      </svg>
+      <span>JevBench</span>
+    </a>
+    <nav aria-label="Sections">
+      <a href="#results">Results</a>
+      <a href="#ranking">Ranking</a>
+      <a href="#explorer">Datasets</a>
+      <a href="#submit">Submit</a>
+      <a href="#cite">Cite</a>
+    </nav>
+  </header>
+
+  <main id="top">
+    <section class="hero">
+      <div class="hero-mark" aria-hidden="true">
+        <span style="--h:.30"></span><span style="--h:.92"></span><span style="--h:.18"></span><span style="--h:.46"></span><span style="--h:.10"></span>
+      </div>
+      <div class="hero-copy">
+        <h1>JevBench</h1>
+        <p class="lede">Open benchmark for typed decision models</p>
+        <div class="actions">
+          <a class="btn primary" id="paper-link" href="#">Paper</a>
+          <a class="btn" id="pdf-link" href="#">PDF</a>
+          <a class="btn" id="dataset-link" href="#">Dataset</a>
+          <a class="btn" id="github-link" href="#">GitHub</a>
+          <a class="btn" href="#cite">Cite</a>
+        </div>
+        <dl class="facts" id="facts"></dl>
+      </div>
+    </section>
+
+    <section id="results" class="block">
+      <div class="block-head">
+        <h2>Results</h2>
+        <div class="controls">
+          <div class="chips" id="group-chips" role="group" aria-label="Dataset group"></div>
+          <div class="chips" id="host-chips" role="group" aria-label="Where the model runs"></div>
+        </div>
+      </div>
+      <div class="table-wrap" id="heat-wrap">
+        <table class="heat" id="heat"></table>
+      </div>
+      <div class="spotlight" id="spotlight" aria-live="polite"></div>
+    </section>
+
+    <section id="ranking" class="block">
+      <div class="block-head">
+        <h2>Ranking</h2>
+        <div class="chips" id="rank-chips" role="group" aria-label="Ranking dataset"></div>
+      </div>
+      <div class="legend" id="rank-legend"></div>
+      <div class="rank-chart" id="rank-chart"></div>
+    </section>
+
+    <section id="explorer" class="block">
+      <div class="block-head">
+        <h2>Datasets</h2>
+        <label class="select">
+          <span class="sr-only">Dataset</span>
+          <select id="ds-select"></select>
+        </label>
+      </div>
+      <div class="ds-meta" id="ds-meta"></div>
+      <div class="stepper" id="stepper" role="group" aria-label="Example"></div>
+      <div class="example" id="example"></div>
+    </section>
+
+    <section id="submit" class="block submit">
+      <h2>Submit</h2>
+      <div class="submit-grid">
+        <a class="submit-card" id="submit-dataset" href="#">
+          <strong>Submit a dataset</strong>
+          <span>Pick the models to benchmark it against</span>
+        </a>
+        <a class="submit-card" id="submit-model" href="#">
+          <strong>Add a model</strong>
+          <span>Pick the datasets to run it on</span>
+        </a>
+      </div>
+    </section>
+
+    <section id="cite" class="block">
+      <div class="block-head">
+        <h2>Cite</h2>
+        <button class="btn" id="copy-cite" type="button">Copy BibTeX</button>
+      </div>
+      <pre class="bib" id="bib"></pre>
+    </section>
+  </main>
+
+  <footer class="foot">
+    <span>Code MIT. Datasets keep their own licences.</span>
+    <span id="generated"></span>
+  </footer>
+
+  <div class="tip" id="tip" role="tooltip" hidden></div>
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

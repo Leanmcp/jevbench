@@ -47,6 +47,12 @@ MODELS_PATH = C.ROOT / "models.json"
 # Upper bound for the cost estimate: Jev counted 6.0M input tokens over 8,035
 # requests, Liquid d1 3.0M over 8,016. Real spend is in each row's cost_usd.
 TOKENS_PER_CASE = 750
+# Per-slice mean of the builders' 4-characters-per-token estimate, filled by
+# load_slices; ranking requests carry 20 documents and run far above 750.
+SLICE_TOKENS: dict[str, float] = {}
+# Largest option count per slice, filled by load_slices, checked against a
+# model's max_options so a hard API limit shows as not applicable.
+SLICE_MAX_OPTIONS: dict[str, int] = {}
 
 NA, PENDING, PARTIAL, DONE = "n/a", "pending", "partial", "done"
 SHORT = {
@@ -57,6 +63,9 @@ SHORT = {
     "sst5": "SST5", "vqa_rad": "VQA", "mcpbench_server_routing": "MBsr",
     "mcpbench_tool_selection": "MBts", "mcpmark_server_routing": "MMsr",
     "mcpmark_tool_selection": "MMts",
+    "scifact_rank_noul": "SFn", "scifact_rank_choice": "SFc", "nfcorpus_rank_noul": "NFn",
+    "nfcorpus_rank_choice": "NFc", "nfcorpus_rank_graded": "NFg", "helpsteer2_helpfulness": "HS2",
+    "rewardbench2": "RB2",
 }
 CELL_W = 5
 HOST_W = 11  # "Cloud GPU" plus a gap
@@ -78,6 +87,10 @@ def load_slices() -> tuple[list[str], dict[str, set[str]], set[str]]:
     for key in keys:
         cases = C.read_cases(key)
         ids[key] = {c["case_id"] for c in cases}
+        est = [c["est_tokens"] for c in cases if c.get("est_tokens")]
+        if est:
+            SLICE_TOKENS[key] = sum(est) / len(est)
+        SLICE_MAX_OPTIONS[key] = max((c.get("n_options") or 0) for c in cases)
         if any(c.get("image_path") or c.get("_images") for c in cases):
             image.add(key)
     return keys, ids, image
@@ -120,7 +133,16 @@ def build_grid(models: list[dict], keys: list[str], ids: dict[str, set[str]], im
         for key in keys:
             total = len(ids[key])
             if key in image and not m.get("images"):
-                row.append({"state": NA, "done": 0, "total": total, "in_other_run": False})
+                row.append({"state": NA, "done": 0, "total": total, "in_other_run": False, "why": "no image input"})
+                continue
+            # A frozen model keeps what it finished; anything short of done, including
+            # a slice a stopped run began, is not offered again.
+            if m.get("no_new_runs") and len((primary[key] | set().union(*(o[key] for o in others))) & ids[key]) < total:
+                row.append({"state": NA, "done": 0, "total": total, "in_other_run": False, "why": m["no_new_runs"]})
+                continue
+            if m.get("max_options") and SLICE_MAX_OPTIONS.get(key, 0) > m["max_options"]:
+                row.append({"state": NA, "done": 0, "total": total, "in_other_run": False,
+                            "why": f"{SLICE_MAX_OPTIONS[key]} options; this API accepts at most {m['max_options']}"})
                 continue
             got = primary[key] & ids[key]
             other = set().union(*(o[key] for o in others)) & ids[key] if others else set()
@@ -142,7 +164,7 @@ def estimate(models, grid, keys, selection) -> tuple[int, float, bool]:
         if price is None:
             unpriced = unpriced or n > 0
         else:
-            usd += n * TOKENS_PER_CASE / 1e6 * price
+            usd += n * max(TOKENS_PER_CASE, SLICE_TOKENS.get(keys[si], 0)) / 1e6 * price
     return requests, usd, unpriced
 
 
@@ -180,7 +202,7 @@ def run_ui(stdscr, models, keys, grid) -> dict | None:
         nonlocal message
         cell = grid[mi][si]
         if cell["state"] == NA:
-            message = "not applicable: this model has no image input"
+            message = f"not applicable: {cell.get('why', 'unsupported')}"
             return
         if (mi, si) in selection:
             del selection[(mi, si)]
@@ -320,7 +342,7 @@ def drop_slices(run_id: str, slices: set[str]) -> None:
         return
     backup = path.with_name(f"predictions.jsonl.bak-{time.strftime('%Y%m%dT%H%M%S')}")
     backup.write_bytes(path.read_bytes())
-    keep = [line for line in path.read_text(encoding="utf-8").splitlines() if line.strip() and json.loads(line).get("slice") not in slices]
+    keep = [line for line in path.read_text(encoding="utf-8").split("\n") if line.strip() and json.loads(line).get("slice") not in slices]
     path.write_text("".join(line + "\n" for line in keep), encoding="utf-8")
     print(f"  backed up to {backup.name}, dropped {', '.join(sorted(slices))}")
 
@@ -330,6 +352,8 @@ def run_model(m: dict, slices: list[str]) -> int:
     cmd = py + ["workspace/run_eval.py", "--endpoint", m["endpoint"], "--label", m["label"], "--run-id", m["run_id"],
                 "--concurrency", str(m.get("concurrency", 4)), "--timeout", "300"]
     cmd += ["--model", m["model"]] if m.get("model") else ["--no-send-model"]
+    if m.get("state_as_string"):
+        cmd.append("--state-as-string")
     for k, v in (m.get("options") or {}).items():
         cmd += [f"--{k}", str(v)]
     for s in slices:

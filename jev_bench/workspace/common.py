@@ -95,14 +95,16 @@ def read_parquet(path: Path, columns: list[str] | None = None) -> list[dict]:
 
 
 def read_jsonl(path: Path) -> list[dict]:
-    return [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line.strip()]
+    # split on \n only: str.splitlines also breaks on U+2028 and similar
+    # separators, which occur inside dataset text and are legal in a JSON line.
+    return [json.loads(line) for line in path.read_text(encoding="utf-8").split("\n") if line.strip()]
 
 
 def read_json_any(path: Path) -> list[dict]:
     text = path.read_text(encoding="utf-8")
     if text.lstrip().startswith("["):
         return json.loads(text)
-    return [json.loads(line) for line in text.splitlines() if line.strip()]
+    return [json.loads(line) for line in text.split("\n") if line.strip()]
 
 
 def read_csv(path: Path) -> list[dict]:
@@ -541,7 +543,7 @@ def key_status(env_var: str = API_KEY_ENV) -> dict:
 class DecisionClient:
     """One typed decision per request against Jev or a local djev."""
 
-    def __init__(self, endpoint: str = JEV_URL, model: str | None = JEV_MODEL, require_key: bool = True, timeout: float = 60.0, max_retries: int = 6, options: dict | None = None):
+    def __init__(self, endpoint: str = JEV_URL, model: str | None = JEV_MODEL, require_key: bool = True, timeout: float = 60.0, max_retries: int = 6, options: dict | None = None, state_as_string: bool = False):
         self.endpoint = endpoint
         # `model` is what goes on the wire. djev's documented request contract has
         # only state/questions/options, so sending a model field there may be
@@ -550,6 +552,8 @@ class DecisionClient:
         # djev accepts options {seed, samples, diagnostics}. Pinning seed=0 and
         # samples=1 is what makes a djev run reproducible; Jev ignores it.
         self.options = options
+        # Some APIs (Span-01) accept only a string state; the same JSON is sent as text.
+        self.state_as_string = state_as_string
         self.timeout = timeout
         self.max_retries = max_retries
         self.key_env = KEY_ENV_BY_URL.get(endpoint, API_KEY_ENV)
@@ -560,7 +564,11 @@ class DecisionClient:
             )
 
     def build_request(self, case: dict) -> dict:
-        body: dict[str, Any] = {"state": case["state"], "questions": {case["question_key"]: case["question"]}}
+        # Ranking cases in the Jev style carry many questions against one state.
+        questions = case.get("questions") or {case["question_key"]: case["question"]}
+        body: dict[str, Any] = {"state": case["state"], "questions": questions}
+        if self.state_as_string and not isinstance(body["state"], str):
+            body["state"] = state_json(body["state"])
         if case.get("_images"):
             body["images"] = case["_images"]
         if self.model:
@@ -665,6 +673,29 @@ def parse_answer(payload: dict, question_key: str, task_type: str) -> dict:
     else:
         return {"parse_error": f"unknown task type {task_type!r}", **out}
     return out
+
+
+def parse_rank(payload: dict, case: dict) -> dict:
+    """One score per candidate document: p(true) from a batch of nouls, or the
+    choice probability on each document. Ties break by presentation key."""
+    answers = (payload or {}).get("answers") or {}
+    keys = list(case["rank_meta"]["candidates"])
+    if case.get("rank_protocol") == "choice":
+        ans = answers.get(case["question_key"])
+        probs = ans.get("probabilities") if isinstance(ans, dict) else None
+        if not isinstance(probs, dict):
+            return {"parse_error": "choice probabilities missing"}
+        scores = {k: float(probs.get(k, 0.0)) for k in keys}
+    else:
+        scores = {}
+        for k in keys:
+            ans = answers.get(k)
+            val = ans.get("noul") if isinstance(ans, dict) else None
+            if not isinstance(val, (int, float)):
+                return {"parse_error": f"no noul answer for {k}"}
+            scores[k] = float(val)
+    top = min(keys, key=lambda k: (-scores[k], k))
+    return {"answer_type": "rank", "doc_scores": scores, "pred": top}
 
 
 def usage_of(payload: dict) -> dict:
