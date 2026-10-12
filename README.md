@@ -27,27 +27,27 @@
 <!-- results:start -->
 ### JevBench Index
 
-One number per model: every dataset on 0-100, averaged within six clusters, then the six clusters averaged. A model is ranked once it has every dataset in the index. ‡ the model's API rejects some datasets outright (too many options, or question types it does not take); those count as 0.
+One number per model: every dataset on 0-100, averaged within six clusters, then the six clusters averaged. Datasets not run yet are left out: (4/6) means the score covers four of the six clusters, and * that a cluster is missing a dataset. ‡ the model's API rejects some datasets outright (too many options, or question types it does not take); those count as 0.
 
 | # | Model | **Index** | Safety | Knowledge | Classification | Tools | Ranking | Judging |
 |---:|---|---:|---:|---:|---:|---:|---:|---:|
 | 1 | pplx-decider v1.1 | **78.0** | 84.3 | 80.4 | 84.6 | 89.1 | 56.9 | 72.8 |
-| 2 | Mercury Decide | **76.6** | 81.6 | 76.4 | 89.0 | 89.3 | 55.9 | 67.4 |
-| 3 | Jev 1.13 | **76.5** | 85.6 | 82.5 | 84.3 | 86.8 | 56.4 | 63.7 |
-| 4 | Clef | **76.1** | 86.6 | 77.1 | 90.7 | 87.6 | 55.9 | 59.0 |
-| 5 | Microsoft Decision 1 | **75.6** | 84.2 | 76.5 | 86.4 | 85.9 | 54.9 | 65.8 |
-| 6 | GPT-6 Luna Decisions | **73.4** | 79.1 | 76.3 | 82.5 | 86.4 | 54.8 | 61.1 |
-| 7 | Clef-omni | **72.0** | 79.1 | 76.6 | 90.9 | 81.2 | 53.9 | 50.2 |
-| 8 | Clef-flash | **71.8** | 78.5 | 75.3 | 91.4 | 81.9 | 54.3 | 49.2 |
-| 9 | Solar Decide | **60.3**‡ | 79.4 | 76.7 | 42.5 | 60.6 | 44.0 | 58.7 |
-| 10 | TEv1 4B (exp.) | **56.9**‡ | 69.0 | 66.7 | 43.5 | 58.4 | 54.7 | 49.0 |
-| 11 | Solar Decide Flash | **55.1**‡ | 74.4 | 64.2 | 41.0 | 52.0 | 49.5 | 49.3 |
-|  | Liquid D1 | incomplete (3 missing) | 82.4 | 79.2 | 86.5 | 84.0 | – | – |
-|  | djev-0.1 | incomplete (8 missing) | 77.4 | 62.8 | 78.9 | – | – | – |
-|  | Laya 421M | incomplete (8 missing) | 69.3 | 30.3 | 57.5 | – | – | – |
-|  | Drex v1.5 | incomplete (1 missing) | 75.2 | 71.8 | 85.5 | 81.4 | – | 46.0 |
-|  | Kev 4B | incomplete (3 missing) | 73.2 | 65.6 | 85.9 | 76.1 | – | – |
-|  | Span-01 | incomplete (2 missing) | – | 0.0 | 0.0 | 0.0 | 0.0 | 0.0 |
+| 2 | Liquid D1 | **77.4** (5/6) | 82.4 | 79.2 | 86.5 | 84.0 | – | 54.7 |
+| 3 | Mercury Decide | **76.6** | 81.6 | 76.4 | 89.0 | 89.3 | 55.9 | 67.4 |
+| 4 | Jev 1.13 | **76.5** | 85.6 | 82.5 | 84.3 | 86.8 | 56.4 | 63.7 |
+| 5 | Clef | **76.1** | 86.6 | 77.1 | 90.7 | 87.6 | 55.9 | 59.0 |
+| 6 | Microsoft Decision 1 | **75.6** | 84.2 | 76.5 | 86.4 | 85.9 | 54.9 | 65.8 |
+| 7 | GPT-6 Luna Decisions | **73.4** | 79.1 | 76.3 | 82.5 | 86.4 | 54.8 | 61.1 |
+| 8 | djev-0.1 | **73.1** (3/6) | 77.4 | 62.8 | 78.9 | – | – | – |
+| 9 | Clef-omni | **72.0** | 79.1 | 76.6 | 90.9 | 81.2 | 53.9 | 50.2 |
+| 10 | Clef-flash | **71.8** | 78.5 | 75.3 | 91.4 | 81.9 | 54.3 | 49.2 |
+| 11 | Kev 4B | **66.8** (5/6) | 73.2 | 65.6 | 85.9 | 76.1 | – | 33.3 |
+| 12 | Drex v1.5 | **66.2*** | 75.2 | 71.8 | 85.5 | 81.4 | 37.3 | 46.0 |
+| 13 | Solar Decide | **60.3**‡ | 79.4 | 76.7 | 42.5 | 60.6 | 44.0 | 58.7 |
+| 14 | TEv1 4B (exp.) | **56.9**‡ | 69.0 | 66.7 | 43.5 | 58.4 | 54.7 | 49.0 |
+| 15 | Solar Decide Flash | **55.1**‡ | 74.4 | 64.2 | 41.0 | 52.0 | 49.5 | 49.3 |
+| 16 | Laya 421M | **52.4** (3/6) | 69.3 | 30.3 | 57.5 | – | – | – |
+| 17 | Span-01 | **12.2**‡* | 73.1 | 0.0 | 0.0 | 0.0 | 0.0 | 0.0 |
 
 ### Every dataset
 

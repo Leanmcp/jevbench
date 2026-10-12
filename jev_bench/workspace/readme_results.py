@@ -112,13 +112,17 @@ def main() -> int:
         ranked.append((m["name"].replace(" (hosted)", ""), ix))
     ranked.sort(key=lambda t: (t[1]["index"] is None, -(t[1]["index"] or 0)))
     index_rows = ["| # | Model | **Index** | " + " | ".join(CLUSTERS) + " |", "|---:|---|---:|" + "---:|" * len(CLUSTERS)]
-    place = 0
-    for name, ix in ranked:
-        if ix["index"] is not None:
-            place += 1
+    for place, (name, ix) in enumerate(ranked, 1):
         cl = " | ".join("–" if v is None else f"{v:.1f}" for v in ix["clusters"].values())
-        head = (f"**{ix['index']:.1f}**" + ("‡" if ix["zeroed"] else "")) if ix["index"] is not None else f"incomplete ({len(ix['missing'])} missing)"
-        index_rows.append(f"| {place if ix['index'] is not None else ''} | {name} | {head} | {cl} |")
+        if ix["index"] is None:
+            head = "–"
+        else:
+            head = f"**{ix['index']:.1f}**" + ("‡" if ix["zeroed"] else "")
+            if ix["clusters_counted"] < len(CLUSTERS):
+                head += f" ({ix['clusters_counted']}/{len(CLUSTERS)})"
+            elif not ix["complete"]:
+                head += "*"
+        index_rows.append(f"| {place} | {name} | {head} | {cl} |")
 
     model_rows = ["| Model | Runs on | Served through |", "|---|---|---|"]
     for m, _, _ in columns:
@@ -132,8 +136,9 @@ def main() -> int:
         "### JevBench Index",
         "",
         "One number per model: every dataset on 0-100, averaged within six clusters, then the six "
-        "clusters averaged. A model is ranked once it has every dataset in the index. ‡ the model's API rejects "
-        "some datasets outright (too many options, or question types it does not take); those count as 0.",
+        "clusters averaged. Datasets not run yet are left out: (4/6) means the score covers four of the six "
+        "clusters, and * that a cluster is missing a dataset. ‡ the model's API rejects some datasets outright "
+        "(too many options, or question types it does not take); those count as 0.",
         "",
         *index_rows,
         "",

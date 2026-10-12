@@ -325,7 +325,7 @@ function renderIndex() {
   const pending = rows.filter((r) => score(r) === null);
   const grid = el("div", { class: "bars" });
   ranked.forEach((r, i) => {
-    const row = barRow(`${i + 1}. ${r.name}`, score(r), 100, { text: score(r).toFixed(1) + (r.zeroed.length && indexBy === "Index" ? "‡" : "") });
+    const row = barRow(`${i + 1}. ${r.name}`, score(r), 100, { text: score(r).toFixed(1) + (indexBy === "Index" ? (r.zeroed.length ? "‡" : "") + (r.covered < D.clusters.length ? ` (${r.covered}/${D.clusters.length})` : !r.complete ? "*" : "") : "") });
     const lines = [r.name, `Index ${r.index ?? "incomplete"}`, ...D.clusters.map((c) => `${c} ${r.clusters[c] ?? "–"}`)];
     if (r.zeroed.length) lines.push(`Counted as 0, the API rejects them: ${r.zeroed.join(", ")}`);
     row[1].tabIndex = 0;
@@ -336,8 +336,8 @@ function renderIndex() {
   $("#index-chart").replaceChildren(grid);
   $("#index-note").textContent = [
     "Every dataset on 0 to 100, averaged within each cluster, then the clusters averaged.",
-    ranked.some((r) => r.zeroed.length) && indexBy === "Index" ? " ‡ datasets the model's API rejects count as 0." : "",
-    pending.length ? ` Waiting on runs: ${pending.map((r) => r.name).join(", ")}.` : "",
+    indexBy === "Index" ? " (4/6): covers four of six clusters; *: a cluster is missing a dataset; ‡: datasets the model's API rejects count as 0." : "",
+    pending.length ? ` Not run yet: ${pending.map((r) => r.name).join(", ")}.` : "",
   ].join("");
 }
 

@@ -240,7 +240,8 @@ def main() -> int:
         index_rows.append({"name": m["name"].replace(" (hosted)", ""), "hosting": m.get("hosting", "API"),
                            "index": None if ix["index"] is None else round(ix["index"], 1),
                            "clusters": {k: None if v is None else round(v, 1) for k, v in ix["clusters"].items()},
-                           "zeroed": [DATASETS[k][0] for k in ix["zeroed"]], "missing": len(ix["missing"])})
+                           "zeroed": [DATASETS[k][0] for k in ix["zeroed"]], "missing": len(ix["missing"]),
+                           "covered": ix["clusters_counted"], "complete": ix["complete"]})
 
     payload = {"generated": time.strftime("%Y-%m-%d"), "paper": PAPER, "citation": CITATION,
                "index": index_rows, "clusters": list(CLUSTERS),

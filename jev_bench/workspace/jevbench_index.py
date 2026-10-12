@@ -6,8 +6,9 @@
 3. Index = the plain average of the six clusters, so no cluster outweighs
    another however many datasets it holds.
 
-A model gets an index only when it has every dataset below; otherwise skipping
-a hard dataset would raise its score. A dataset the model's API
+Datasets a model has not run yet are left out: each cluster averages the
+datasets it has, and the index averages the clusters it has, reported with how
+many of the six it covers, e.g. 73.0 (4/6). A dataset the model's API
 rejects outright (option limits, question types) counts as 0, since the model
 cannot do it. Ranking uses the Jev-style protocol only, so each ranking dataset
 counts once. Image slices are left out: only one model
@@ -73,7 +74,8 @@ def index_for(slices: dict, unsupported: set[str] = frozenset()) -> dict:
         vals = [0.0 if k in unsupported else to_100(k, slices.get(k)) for k in keys]
         missing += [k for k, v in zip(keys, vals) if v is None]
         have = [v for v in vals if v is not None]
-        clusters[name] = sum(have) / len(have) if len(have) == len(keys) else None
-    complete = all(v is not None for v in clusters.values())
-    return {"clusters": clusters, "index": sum(clusters.values()) / len(clusters) if complete else None,
+        clusters[name] = sum(have) / len(have) if have else None
+    counted = [v for v in clusters.values() if v is not None]
+    return {"clusters": clusters, "index": sum(counted) / len(counted) if counted else None,
+            "clusters_counted": len(counted), "complete": not missing,
             "missing": missing, "zeroed": zeroed}
