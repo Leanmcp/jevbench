@@ -4,6 +4,8 @@
 const D = window.JEVBENCH;
 const $ = (s) => document.querySelector(s);
 const REDUCED = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+// PostHog events (analytics.js); a no-op locally or when PostHog is blocked.
+const track = (event, props) => { try { window.track?.(event, props); } catch (e) { /* analytics must never break the page */ } };
 
 function el(tag, attrs = {}, ...kids) {
   const n = document.createElement(tag);
@@ -38,6 +40,7 @@ function paintThemeButton() { themeBtn.textContent = currentTheme() === "dark" ?
 themeBtn.addEventListener("click", () => {
   const next = currentTheme() === "dark" ? "light" : "dark";
   document.documentElement.dataset.theme = next;
+  track("theme_changed", { theme: next });
   try { localStorage.setItem("jevbench-theme", next); } catch (e) { /* storage blocked: theme lasts this visit */ }
   paintThemeButton();
 });
@@ -91,6 +94,8 @@ function clearPeek() { peek.cat = undefined; peek.ds = undefined; renderAll(); }
 function lock(cat, ds) {
   if (ds !== undefined) { sel.ds = sel.ds === ds ? null : ds; sel.cat = cat; }
   else { sel.cat = sel.cat === cat ? null : cat; sel.ds = null; }
+  if (sel.ds) track("dataset_charted", { dataset: sel.ds, category: sel.cat });
+  else if (sel.cat) track("category_selected", { category: sel.cat });
   peek.cat = peek.ds = undefined;
   renderAll();
   scrollGridToSelection();
@@ -292,6 +297,7 @@ function openModel(name, opener) {
   const r = INDEX_BY_NAME[name];
   if (!r) return;
   drawerOpener = opener || document.activeElement;
+  track("model_opened", { model: name });
   const scores = Object.entries(r.scores || {}).filter(([k]) => !r.unsupported.includes(k) && DS[k]);
   const byScore = [...scores].sort((a, b) => b[1] - a[1]);
   const list = (items) => el("ul", { class: "plain" }, items.map(([k, v]) => el("li", {},
@@ -365,7 +371,7 @@ function renderExtremes() {
 
 function renderCards() {
   $("#ds-sort").replaceChildren(...Object.keys(SORTS).map((s) => el("button", {
-    class: "btn", type: "button", "aria-pressed": String(s === sortMode), onclick: () => { sortMode = s; renderCards(); },
+    class: "btn", type: "button", "aria-pressed": String(s === sortMode), onclick: () => { sortMode = s; track("datasets_sorted", { sort: s }); renderCards(); },
   }, s)));
   $("#ds-cards").replaceChildren(...sortedKeys().map((k) => {
     const d = DS[k], f = difficulty[k];
@@ -384,6 +390,7 @@ function renderCards() {
 }
 
 function pickDataset(key, linked, scroll) {
+  if (scroll) track("dataset_opened", { dataset: key });
   Object.assign(ex, { key, i: 0, model: null, reveal: false });
   for (const c of $("#ds-cards").children) c.setAttribute("aria-pressed", "false");
   renderCards();
