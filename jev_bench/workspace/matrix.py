@@ -5,6 +5,7 @@
     uv run workspace/matrix.py --sources       # which result files each row is built from
     uv run workspace/matrix.py --pending       # select every pending cell, confirm, run
     uv run workspace/matrix.py --pending --model clef   # only rows whose name matches
+    uv run workspace/matrix.py --concurrency 50          # parallel requests for every API model
 
 Rows are the models in models.json, columns are the case files in data/cases/.
 A cell is done when every case in that slice has a successful prediction in the
@@ -347,9 +348,14 @@ def main() -> int:
     ap.add_argument("--pending", action="store_true", help="select every pending cell without the grid")
     ap.add_argument("--model", action="append", default=[], help="only models whose name contains this (repeatable)")
     ap.add_argument("--yes", action="store_true", help="skip the final confirmation")
+    ap.add_argument("--concurrency", type=int, default=None, help="parallel requests for every API model, overriding models.json")
     args = ap.parse_args()
 
     models = load_models()
+    if args.concurrency:
+        for m in models:
+            if m.get("hosting") == "API":
+                m["concurrency"] = args.concurrency
     if args.model:
         models = [m for m in models if any(s.lower() in m["name"].lower() for s in args.model)]
         if not models:
@@ -405,7 +411,8 @@ def main() -> int:
     if len(blocked) == len(plan):
         print("Every selected model is blocked; fix the reasons above and run again.")
         return 1
-    if not args.yes and input("Run it? [y/N] ").strip().lower() != "y":
+    # Enter alone means yes; only an explicit n or no stops here.
+    if not args.yes and input("Run it? [Y/n] ").strip().lower() in ("n", "no"):
         print("Nothing run.")
         return 0
 
