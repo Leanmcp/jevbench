@@ -50,6 +50,9 @@ TOKENS_PER_CASE = 750
 # Per-slice mean of the builders' 4-characters-per-token estimate, filled by
 # load_slices; ranking requests carry 20 documents and run far above 750.
 SLICE_TOKENS: dict[str, float] = {}
+# Largest option count per slice, filled by load_slices, checked against a
+# model's max_options so a hard API limit shows as not applicable.
+SLICE_MAX_OPTIONS: dict[str, int] = {}
 
 NA, PENDING, PARTIAL, DONE = "n/a", "pending", "partial", "done"
 SHORT = {
@@ -87,6 +90,7 @@ def load_slices() -> tuple[list[str], dict[str, set[str]], set[str]]:
         est = [c["est_tokens"] for c in cases if c.get("est_tokens")]
         if est:
             SLICE_TOKENS[key] = sum(est) / len(est)
+        SLICE_MAX_OPTIONS[key] = max((c.get("n_options") or 0) for c in cases)
         if any(c.get("image_path") or c.get("_images") for c in cases):
             image.add(key)
     return keys, ids, image
@@ -129,7 +133,11 @@ def build_grid(models: list[dict], keys: list[str], ids: dict[str, set[str]], im
         for key in keys:
             total = len(ids[key])
             if key in image and not m.get("images"):
-                row.append({"state": NA, "done": 0, "total": total, "in_other_run": False})
+                row.append({"state": NA, "done": 0, "total": total, "in_other_run": False, "why": "no image input"})
+                continue
+            if m.get("max_options") and SLICE_MAX_OPTIONS.get(key, 0) > m["max_options"]:
+                row.append({"state": NA, "done": 0, "total": total, "in_other_run": False,
+                            "why": f"{SLICE_MAX_OPTIONS[key]} options; this API accepts at most {m['max_options']}"})
                 continue
             got = primary[key] & ids[key]
             other = set().union(*(o[key] for o in others)) & ids[key] if others else set()
@@ -189,7 +197,7 @@ def run_ui(stdscr, models, keys, grid) -> dict | None:
         nonlocal message
         cell = grid[mi][si]
         if cell["state"] == NA:
-            message = "not applicable: this model has no image input"
+            message = f"not applicable: {cell.get('why', 'unsupported')}"
             return
         if (mi, si) in selection:
             del selection[(mi, si)]
@@ -339,6 +347,8 @@ def run_model(m: dict, slices: list[str]) -> int:
     cmd = py + ["workspace/run_eval.py", "--endpoint", m["endpoint"], "--label", m["label"], "--run-id", m["run_id"],
                 "--concurrency", str(m.get("concurrency", 4)), "--timeout", "300"]
     cmd += ["--model", m["model"]] if m.get("model") else ["--no-send-model"]
+    if m.get("state_as_string"):
+        cmd.append("--state-as-string")
     for k, v in (m.get("options") or {}).items():
         cmd += [f"--{k}", str(v)]
     for s in slices:

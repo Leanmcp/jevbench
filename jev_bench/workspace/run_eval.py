@@ -85,6 +85,8 @@ def main() -> int:
                     help="what to record as the model in meta.json, when it differs from what is sent (e.g. djev-0.1)")
     ap.add_argument("--seed", type=int, default=None, help="djev options.seed. Pass 0 for a reproducible run.")
     ap.add_argument("--samples", type=int, default=None, help="djev options.samples, 1-4. Averages independent one-step reads.")
+    ap.add_argument("--state-as-string", action="store_true",
+                    help="send the state as its JSON text, for APIs that accept only a string state (Span-01)")
     ap.add_argument("--save-raw", action="store_true",
                     help="also write the exact request and response body per case to raw.jsonl, for tracing and audit")
     args = ap.parse_args()
@@ -124,6 +126,7 @@ def main() -> int:
         options=options or None,
         require_key=(not args.dry_run) and endpoint in C.KEY_ENV_BY_URL,
         timeout=args.timeout,
+        state_as_string=args.state_as_string,
     )
 
     work: list[dict] = []
@@ -197,6 +200,7 @@ def main() -> int:
                 "model_requested": label,
                 "model_sent_on_wire": None if args.no_send_model else args.model,
                 "request_options": options or None,
+                "state_as_string": args.state_as_string,
                 "started_at": time.strftime("%Y-%m-%dT%H:%M:%S%z"),
                 # Merged with the earlier record, so a run filled one slice at a
                 # time (matrix.py) still lists every slice it holds.

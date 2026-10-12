@@ -543,7 +543,7 @@ def key_status(env_var: str = API_KEY_ENV) -> dict:
 class DecisionClient:
     """One typed decision per request against Jev or a local djev."""
 
-    def __init__(self, endpoint: str = JEV_URL, model: str | None = JEV_MODEL, require_key: bool = True, timeout: float = 60.0, max_retries: int = 6, options: dict | None = None):
+    def __init__(self, endpoint: str = JEV_URL, model: str | None = JEV_MODEL, require_key: bool = True, timeout: float = 60.0, max_retries: int = 6, options: dict | None = None, state_as_string: bool = False):
         self.endpoint = endpoint
         # `model` is what goes on the wire. djev's documented request contract has
         # only state/questions/options, so sending a model field there may be
@@ -552,6 +552,8 @@ class DecisionClient:
         # djev accepts options {seed, samples, diagnostics}. Pinning seed=0 and
         # samples=1 is what makes a djev run reproducible; Jev ignores it.
         self.options = options
+        # Some APIs (Span-01) accept only a string state; the same JSON is sent as text.
+        self.state_as_string = state_as_string
         self.timeout = timeout
         self.max_retries = max_retries
         self.key_env = KEY_ENV_BY_URL.get(endpoint, API_KEY_ENV)
@@ -565,6 +567,8 @@ class DecisionClient:
         # Ranking cases in the Jev style carry many questions against one state.
         questions = case.get("questions") or {case["question_key"]: case["question"]}
         body: dict[str, Any] = {"state": case["state"], "questions": questions}
+        if self.state_as_string and not isinstance(body["state"], str):
+            body["state"] = state_json(body["state"])
         if case.get("_images"):
             body["images"] = case["_images"]
         if self.model:
