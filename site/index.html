@@ -14,6 +14,9 @@
     // Set the theme before first paint so the page never flashes the wrong one.
     try { const t = localStorage.getItem("jevbench-theme"); if (t) document.documentElement.dataset.theme = t; } catch (e) {}
   </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -66,8 +69,12 @@
     <section id="datasets">
       <div class="head">
         <h2>Datasets</h2>
-        <label><span class="sr">Dataset</span><select id="ds-select"></select></label>
+        <div class="cats" id="ds-sort" role="group" aria-label="Sort datasets"></div>
       </div>
+      <p class="extremes" id="ds-extremes"></p>
+      <div class="cards" id="ds-cards" role="list"></div>
+      <p class="small">Average: mean score of every model on that dataset, 0 to 100. Bar: worst to best model. Scales differ, so compare datasets of the same metric most closely.</p>
+      <div class="ds-head" id="ds-head"></div>
       <p class="meta" id="ds-meta"></p>
       <div class="steps" id="steps" role="group" aria-label="Example"></div>
       <div class="example" id="example"></div>

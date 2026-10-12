@@ -17,13 +17,12 @@ body {
   margin: 0;
   background: var(--bg);
   color: var(--fg);
-  font: 17px/1.5 "Times New Roman", Times, serif;
+  font: 15px/1.65 "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
 }
 a { color: var(--fg); }
 :focus-visible { outline: 2px solid var(--fg); outline-offset: 2px; }
 .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
 hr { border: 0; border-top: 1px solid var(--fg); margin: 40px 0; }
-.num, .chart, .grid, pre, .val, .steps, select { font-family: "Courier New", Courier, monospace; }
 
 /* top bar */
 .bar {
@@ -46,10 +45,10 @@ hr { border: 0; border-top: 1px solid var(--fg); margin: 40px 0; }
 
 main { max-width: 1000px; margin: 0 auto; padding: 0 20px; }
 .intro { padding: 48px 0 28px; }
-h1 { font-size: 64px; line-height: 1; margin: 0 0 10px; font-weight: 700; letter-spacing: -.01em; }
-.intro p { margin: 0 0 16px; font-size: 20px; }
+h1 { font-size: 56px; line-height: 1; margin: 0 0 12px; font-weight: 700; letter-spacing: -.03em; }
+.intro p { margin: 0 0 18px; font-size: 17px; }
 .links { display: flex; flex-wrap: wrap; gap: 8px; }
-h2 { font-size: 28px; margin: 0; font-weight: 700; }
+h2 { font-size: 24px; margin: 0; font-weight: 700; letter-spacing: -.02em; }
 .head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px 16px; margin-bottom: 14px; }
 .sub, .small, .meta { color: var(--dim); }
 .small { font-size: 14px; margin: 10px 0 0; max-width: 72ch; }
@@ -61,7 +60,7 @@ h2 { font-size: 28px; margin: 0; font-weight: 700; }
   align-items: center; height: 26px; transition: transform .35s ease, opacity .2s;
 }
 .row .rk { color: var(--dim); text-align: right; }
-.row .nm { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-family: "Times New Roman", Times, serif; font-size: 16px; }
+.row .nm { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 15px; }
 .track { position: relative; height: 14px; border: 1px solid var(--fg); }
 .fill { position: absolute; inset: 0 auto 0 0; background: var(--fg); transition: width .35s ease; }
 .mark { position: absolute; top: -5px; bottom: -5px; width: 0; border-left: 2px dashed var(--fg); }
@@ -80,17 +79,17 @@ h2 { font-size: 28px; margin: 0; font-weight: 700; }
 .grid { border-collapse: collapse; font-size: 13px; min-width: 100%; }
 .grid th, .grid td { border: 1px solid var(--faint); padding: 0; }
 .grid thead th { height: 150px; vertical-align: bottom; background: var(--bg); position: relative; }
-.grid .rowhead { position: sticky; left: 0; background: var(--bg); text-align: left; padding: 0 10px; white-space: nowrap; font-family: "Times New Roman", Times, serif; font-size: 15px; font-weight: 400; border-right: 1px solid var(--fg); z-index: 1; }
+.grid .rowhead { position: sticky; left: 0; background: var(--bg); text-align: left; padding: 0 10px; white-space: nowrap; font-size: 14px; font-weight: 500; border-right: 1px solid var(--fg); z-index: 1; }
 .grid thead .rowhead { z-index: 3; vertical-align: bottom; padding-bottom: 8px; color: var(--dim); }
-.colbtn { all: unset; cursor: pointer; display: block; width: 46px; height: 146px; position: relative; }
-.colbtn span { position: absolute; left: 20px; bottom: 8px; transform: rotate(-60deg); transform-origin: left bottom; white-space: nowrap; font-family: "Times New Roman", Times, serif; font-size: 13px; }
+.colbtn { all: unset; cursor: pointer; display: block; width: 50px; height: 146px; position: relative; }
+.colbtn span { position: absolute; left: 20px; bottom: 8px; transform: rotate(-60deg); transform-origin: left bottom; white-space: nowrap; font-size: 12.5px; }
 .colbtn:hover span, .colbtn[aria-pressed="true"] span { text-decoration: underline; }
 .cell {
-  width: 46px; height: 28px; text-align: center;
-  background: color-mix(in srgb, var(--fg) calc(var(--t, 0) * 82%), var(--bg));
-  color: var(--fg); transition: opacity .15s;
+  width: 50px; height: 28px; text-align: center; font-size: 12.5px;
+  background: var(--heat, var(--bg)); color: #000; transition: opacity .15s;
 }
-.cell.inv { color: var(--bg); }
+/* viridis: the dark end needs white text, whatever the page theme */
+.cell.inv { color: #fff; }
 .cell.best { font-weight: 700; text-decoration: underline; }
 .cell.empty { background: var(--bg); color: var(--dim); }
 .grid .off { opacity: .18; }
@@ -104,9 +103,9 @@ select { font-size: 14px; padding: 4px 8px; border: 1px solid var(--fg); backgro
 .example { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: 16px; }
 .panel { border: 1px solid var(--fg); padding: 14px 16px; min-width: 0; }
 .panel h3 { font-size: 15px; margin: 0 0 10px; font-weight: 400; color: var(--dim); }
-.q { font-size: 19px; margin: 0 0 12px; }
+.q { font-size: 16px; font-weight: 500; margin: 0 0 12px; }
 .kv .k { font-size: 13px; color: var(--dim); margin-top: 8px; }
-.kv .v { white-space: pre-wrap; overflow-wrap: anywhere; max-height: 240px; overflow: auto; font-size: 15px; }
+.kv .v { white-space: pre-wrap; overflow-wrap: anywhere; max-height: 240px; overflow: auto; font-size: 14px; }
 .veil { position: relative; }
 .veil.hidden .v { filter: blur(6px); user-select: none; pointer-events: none; }
 .veil .btn { position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%); z-index: 1; }
@@ -127,19 +126,19 @@ img.ex { max-width: 100%; max-height: 300px; border: 1px solid var(--fg); margin
 .docs li.rel { border: 2px solid var(--fg); }
 .docs .t { font-weight: 700; }
 .docs .s { color: var(--dim); font-size: 14px; }
-.docs .g, .docs .sc { font-family: "Courier New", Courier, monospace; font-size: 13px; }
+.docs .g, .docs .sc { font-size: 13px; }
 .docs .sc { text-align: right; }
 
 .two { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; margin-top: 14px; }
 .box { display: flex; flex-direction: column; gap: 4px; padding: 18px; border: 2px solid var(--fg); text-decoration: none; }
-.box b { font-size: 21px; }
+.box b { font-size: 18px; }
 .box span { color: var(--dim); }
 .box:hover { background: var(--fg); color: var(--bg); }
 .box:hover span { color: var(--bg); }
 pre { margin: 0; padding: 14px; border: 1px solid var(--fg); overflow-x: auto; font-size: 13px; line-height: 1.6; }
 .foot { max-width: 1000px; margin: 40px auto 0; padding: 16px 20px 40px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px; border-top: 2px solid var(--fg); color: var(--dim); font-size: 14px; }
 
-.tip { position: fixed; z-index: 50; pointer-events: none; max-width: 280px; background: var(--fg); color: var(--bg); padding: 7px 10px; font: 13px/1.45 "Courier New", Courier, monospace; }
+.tip { position: fixed; z-index: 50; pointer-events: none; max-width: 280px; background: var(--fg); color: var(--bg); padding: 7px 10px; font-size: 13px; line-height: 1.5; }
 
 @media (max-width: 760px) {
   h1 { font-size: 44px; }
@@ -149,3 +148,25 @@ pre { margin: 0; padding: 14px; border: 1px solid var(--fg); overflow-x: auto; f
 @media (prefers-reduced-motion: reduce) {
   .row, .fill, .cell { transition: none; }
 }
+
+/* dataset cards: pick one to explore; the number is the average across models */
+.extremes { display: flex; flex-wrap: wrap; gap: 6px 28px; margin: 0 0 14px; font-size: 14px; }
+.link { all: unset; cursor: pointer; text-decoration: underline; }
+.link:focus-visible { outline: 2px solid var(--fg); }
+.cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(176px, 1fr)); gap: 8px; }
+.card {
+  all: unset; box-sizing: border-box; cursor: pointer; display: flex; flex-direction: column; gap: 3px;
+  padding: 10px 12px; border: 1px solid var(--fg); background: var(--bg); color: var(--fg); min-height: 128px;
+}
+.card:hover { box-shadow: inset 0 0 0 1px var(--fg); }
+.card:focus-visible { outline: 2px solid var(--fg); outline-offset: 2px; }
+.card[aria-pressed="true"] { background: var(--fg); color: var(--bg); }
+.card .cat, .card .foot2 { font-size: 12px; color: var(--dim); }
+.card[aria-pressed="true"] .cat, .card[aria-pressed="true"] .foot2 { color: var(--bg); opacity: .75; }
+.card .name { font-weight: 700; font-size: 14px; line-height: 1.3; }
+.card .avg { font-size: 26px; font-weight: 700; margin-top: auto; letter-spacing: -.02em; }
+.range { position: relative; height: 8px; border: 1px solid currentColor; margin: 2px 0 4px; }
+.range .span { position: absolute; top: 0; bottom: 0; background: currentColor; opacity: .35; }
+.range .mean { position: absolute; top: -4px; bottom: -4px; width: 2px; margin-left: -1px; background: currentColor; }
+.ds-head { margin-top: 28px; border-top: 1px solid var(--fg); padding-top: 14px; }
+.ds-head h3 { margin: 0 0 4px; font-size: 20px; }

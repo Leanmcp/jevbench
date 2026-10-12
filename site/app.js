@@ -210,6 +210,14 @@ function fmt(r, k) {
   if (r.metric === "mae_expected_level") return r.value.toFixed(2);
   return r.value.toFixed(3);
 }
+// Viridis, sampled at nine points: perceptually even and readable with colour blindness.
+const VIRIDIS = [[68, 1, 84], [72, 40, 120], [62, 74, 137], [49, 104, 142], [38, 130, 142],
+  [31, 158, 137], [53, 183, 121], [109, 205, 89], [180, 222, 44], [253, 231, 37]];
+function viridis(t) {
+  const x = Math.max(0, Math.min(1, t)) * (VIRIDIS.length - 1), i = Math.min(VIRIDIS.length - 2, Math.floor(x)), f = x - i;
+  const [a, b] = [VIRIDIS[i], VIRIDIS[i + 1]];
+  return `rgb(${a.map((v, j) => Math.round(v + (b[j] - v) * f)).join(",")})`;
+}
 const gridVal = (r, k) => (k === "helpsteer2_helpfulness" && r.spearman != null ? r.spearman : DS[k].lower_is_better ? -r.value : r.value);
 
 function renderGrid() {
@@ -232,7 +240,7 @@ function renderGrid() {
       if (!r) return el("td", { class: "cell empty" + off }, "–");
       const [lo, hi] = ranges[k], val = gridVal(r, k);
       const t = hi > lo ? (val - lo) / (hi - lo) : 1;
-      const td = el("td", { class: "cell num" + (t > 0.55 ? " inv" : "") + (val === hi ? " best" : "") + off, style: `--t:${t.toFixed(3)}` },
+      const td = el("td", { class: "cell" + (t < 0.55 ? " inv" : "") + (val === hi ? " best" : "") + off, style: `--heat:${viridis(t)}` },
         fmt(r, k) + (r.coverage < 0.995 ? "*" : ""));
       const lines = [`${m.name}, ${DS[k].name}`, `${metricOf(k)}: ${fmt(r, k)}`];
       if (r.ci && k !== "helpsteer2_helpfulness") lines.push(`95% interval ${fmt({ ...r, value: r.ci[0] }, k)} to ${fmt({ ...r, value: r.ci[1] }, k)}`);
@@ -258,21 +266,71 @@ function scrollGridToSelection() {
 
 /* ---------------- dataset explorer ---------------- */
 const ex = { key: null, i: 0, model: null, reveal: false };
-const select = $("#ds-select");
 const GROUPS = [...CAT_NAMES, "Images"];
-for (const g of GROUPS) {
-  const ds = D.datasets.filter((d) => d.cluster === g && (D.examples[d.key] || []).length);
-  if (ds.length) select.append(el("optgroup", { label: g }, ds.map((d) => el("option", { value: d.key }, d.name))));
-}
-const others = D.datasets.filter((d) => !GROUPS.includes(d.cluster) && (D.examples[d.key] || []).length);
-if (others.length) select.append(el("optgroup", { label: "Other" }, others.map((d) => el("option", { value: d.key }, d.name))));
-select.addEventListener("change", () => pickDataset(select.value, true));
 
-function pickDataset(key, linked) {
+// Difficulty: every model's score on a dataset, on the index's 0-100 scale.
+function to100(r, k) {
+  if (k === "helpsteer2_helpfulness") return r.spearman != null ? 100 * r.spearman : null;
+  if (r.metric === "mae_expected_level") return 100 * (1 - r.value / 4);
+  return 100 * r.value;
+}
+const difficulty = Object.fromEntries(D.datasets.map((d) => {
+  const vals = D.models.map((m) => [m.name, D.results[m.name]?.[d.key]]).filter(([, r]) => r)
+    .map(([name, r]) => [name, to100(r, d.key)]).filter(([, v]) => v !== null);
+  if (!vals.length) return [d.key, null];
+  const nums = vals.map(([, v]) => v);
+  const best = vals.reduce((a, b) => (b[1] > a[1] ? b : a));
+  return [d.key, { mean: nums.reduce((a, b) => a + b, 0) / nums.length, min: Math.min(...nums), max: Math.max(...nums), n: nums.length, best: best[0] }];
+}));
+const exploreKeys = D.datasets.filter((d) => (D.examples[d.key] || []).length).map((d) => d.key);
+const SORTS = { "By category": null, "Hardest first": 1, "Easiest first": -1 };
+let sortMode = "By category";
+
+function sortedKeys() {
+  const groupRank = (k) => (GROUPS.indexOf(DS[k].cluster) + 1 || 99);
+  if (SORTS[sortMode] === null) return [...exploreKeys].sort((a, b) => groupRank(a) - groupRank(b));
+  // Datasets only one model has run are ranked after the rest: one score says nothing about difficulty.
+  const ranked = exploreKeys.filter((k) => difficulty[k]?.n > 1);
+  const rest = exploreKeys.filter((k) => !(difficulty[k]?.n > 1));
+  return [...ranked.sort((a, b) => SORTS[sortMode] * (difficulty[a].mean - difficulty[b].mean)), ...rest];
+}
+
+function renderExtremes() {
+  const ranked = exploreKeys.filter((k) => difficulty[k]?.n > 2).sort((a, b) => difficulty[a].mean - difficulty[b].mean);
+  if (!ranked.length) return;
+  // One entry per source dataset (NFCorpus has three ranking versions), keeping its first in order.
+  const distinct = (ks) => ks.filter((k, i) => ks.findIndex((j) => DS[j].url === DS[k].url) === i);
+  const line = (label, ks) => [el("b", {}, label + ": "), ks.map((k, i) => [i ? ", " : "", el("button", { class: "link", type: "button", onclick: () => pickDataset(k, true, true) }, DS[k].name), ` ${difficulty[k].mean.toFixed(1)}`])];
+  $("#ds-extremes").replaceChildren(el("span", {}, line("Hardest", distinct(ranked).slice(0, 3))), el("span", {}, line("Easiest", distinct([...ranked].reverse()).slice(0, 3))));
+}
+
+function renderCards() {
+  $("#ds-sort").replaceChildren(...Object.keys(SORTS).map((s) => el("button", {
+    class: "btn", type: "button", "aria-pressed": String(s === sortMode), onclick: () => { sortMode = s; renderCards(); },
+  }, s)));
+  $("#ds-cards").replaceChildren(...sortedKeys().map((k) => {
+    const d = DS[k], f = difficulty[k];
+    const range = f ? el("div", { class: "range" },
+      el("div", { class: "span", style: `left:${f.min}%;width:${Math.max(0.6, f.max - f.min)}%` }),
+      el("div", { class: "mean", style: `left:${f.mean}%` })) : null;
+    const card = el("button", { class: "card", type: "button", role: "listitem", "aria-pressed": String(k === ex.key), onclick: () => pickDataset(k, true, true) },
+      el("span", { class: "cat" }, d.cluster),
+      el("span", { class: "name" }, d.name),
+      el("span", { class: "avg" }, f ? f.mean.toFixed(1) : "–"),
+      range,
+      el("span", { class: "foot2" }, `${d.cases.toLocaleString()} cases${f ? `, ${f.n} model${f.n > 1 ? "s" : ""}` : ""}`));
+    if (f) tipOn(card, [d.name, `Average ${f.mean.toFixed(1)} over ${f.n} model${f.n > 1 ? "s" : ""}`, `Worst ${f.min.toFixed(1)}, best ${f.max.toFixed(1)} (${f.best})`, metricOf(k)]);
+    return card;
+  }));
+}
+
+function pickDataset(key, linked, scroll) {
   Object.assign(ex, { key, i: 0, model: null, reveal: false });
-  select.value = key;
+  for (const c of $("#ds-cards").children) c.setAttribute("aria-pressed", "false");
+  renderCards();
   if (linked) history.replaceState(null, "", "#ds=" + key);
   renderExample();
+  if (scroll) $("#ds-head").scrollIntoView({ behavior: REDUCED ? "auto" : "smooth", block: "start" });
 }
 const goldText = (e) => (e.task_type === "noul" ? (e.gold ? "yes" : "no") : e.task_type === "score" && e.levels ? e.levels[e.gold] : String(e.gold));
 
@@ -331,6 +389,7 @@ function stateView(st, adversarial) {
 
 function renderExample() {
   const d = DS[ex.key], list = D.examples[ex.key] || [], e = list[ex.i];
+  $("#ds-head").replaceChildren(el("h3", {}, d.name));
   $("#ds-meta").replaceChildren(`${d.cluster}, ${d.cases.toLocaleString()} cases, ${metricOf(ex.key) || d.task_type}, ${d.license || "licence unstated"}. `,
     el("a", { href: d.url, target: "_blank", rel: "noopener" }, "Source"));
   $("#steps").replaceChildren(
@@ -359,6 +418,7 @@ renderAll();
 scrollGridToSelection();
 {
   const linked = location.hash.startsWith("#ds=") ? decodeURIComponent(location.hash.slice(4)) : null;
-  pickDataset(linked && D.examples[linked] ? linked : select.querySelector("option")?.value, false);
+  renderExtremes();
+  pickDataset(linked && D.examples[linked] ? linked : sortedKeys()[0], false, false);
   if (linked) $("#datasets").scrollIntoView();
 }
