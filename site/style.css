@@ -198,3 +198,4 @@ body.locked { overflow: hidden; }
 .row button.nm { text-align: left; cursor: pointer; }
 .row button.nm:hover, .grid .rowhead .link:hover { text-decoration: underline; }
 .grid .rowhead .link { text-decoration: none; }
+.steps .pos { align-self: center; margin-left: 8px; font-size: 13px; color: var(--dim); }

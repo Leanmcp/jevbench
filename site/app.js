@@ -261,13 +261,16 @@ function scrollGridToSelection() {
   if (!wrap || !first || !(sel.cat || sel.ds)) { if (wrap) wrap.scrollLeft = 0; return; }
   // Measured on screen: the column's distance from the sticky Model column.
   const rowhead = $("#grid thead .rowhead").getBoundingClientRect().right;
-  const target = wrap.scrollLeft + first.getBoundingClientRect().left - rowhead;
+  // Stop one column early, so the column before the selection stays visible as context.
+  const prev = first.previousElementSibling;
+  const lead = prev && !prev.classList.contains("rowhead") ? prev.getBoundingClientRect().width : 0;
+  const target = wrap.scrollLeft + first.getBoundingClientRect().left - rowhead - lead;
   wrap.scrollTo({ left: Math.max(0, target), behavior: REDUCED ? "auto" : "smooth" });
 }
 
 /* ---------------- models: cards and a side panel ---------------- */
 const INDEX_BY_NAME = Object.fromEntries(D.index.map((r) => [r.name, r]));
-// Results use run names ("Liquid D1 (hosted)"); the index merges them into one model.
+// Older data may carry run names ("Liquid D1 (hosted)"); map them to the one model.
 const modelFor = (name) => INDEX_BY_NAME[name] || INDEX_BY_NAME[name.replace(" (hosted)", "")] || INDEX_BY_NAME[name.replace(" via OpenRouter", "")];
 const indexRank = Object.fromEntries([...D.index].filter((r) => r.index !== null).sort((a, b) => b.index - a.index).map((r, i) => [r.name, i + 1]));
 let drawerOpener = null;
@@ -278,8 +281,12 @@ function renderModelCards() {
     el("span", { class: "cat" }, `#${indexRank[r.name] ?? "–"} · ${r.hosting}`),
     el("span", { class: "name" }, r.name),
     el("span", { class: "avg" }, r.index !== null ? r.index.toFixed(1) : "–"),
-    el("span", { class: "foot2" }, Object.keys(r.links || {}).join(", ") || "no public link"))));
+    el("span", { class: "foot2" }, (r.links?.["Hugging Face"] ? "Open weights" : "Hosted") + (orderedLinks(r.links).length ? ", " + orderedLinks(r.links).map(([l]) => l).join(", ") : "")))));
 }
+
+// Hugging Face first, then the provider's own page.
+const LINK_ORDER = ["Hugging Face", "Website", "Code", "Runbook"];
+const orderedLinks = (links) => Object.entries(links || {}).sort(([a], [b]) => (LINK_ORDER.indexOf(a) + 1 || 9) - (LINK_ORDER.indexOf(b) + 1 || 9));
 
 function openModel(name, opener) {
   const r = INDEX_BY_NAME[name];
@@ -293,15 +300,10 @@ function openModel(name, opener) {
     const v = r.clusters[c];
     return [el("span", { class: "nm" }, c), el("div", { class: "track" }, el("div", { class: "fill", style: `width:${v ?? 0}%` })), el("span", { class: "val" }, v == null ? "–" : v.toFixed(1))];
   }));
-  const copy = r.openrouter ? el("button", { class: "btn", type: "button", onclick: async (e) => {
-    try { await navigator.clipboard.writeText(r.openrouter); e.target.textContent = "Copied"; } catch { e.target.textContent = "Select and copy"; }
-    setTimeout(() => (e.target.textContent = "Copy ID"), 1500);
-  } }, "Copy ID") : null;
   $("#drawer").replaceChildren(...[
     el("div", { class: "drawer-top" }, el("h2", { id: "drawer-title" }, r.name), el("button", { class: "btn", type: "button", id: "drawer-close", onclick: closeModel }, "Close")),
-    el("p", { class: "meta" }, `${r.hosting}, served through ${r.served}. Licence: ${r.licence || "not checked"}.`),
-    el("div", { class: "links" }, Object.entries(r.links || {}).map(([label, url]) => el("a", { class: "btn", href: url, target: "_blank", rel: "noopener" }, label))),
-    r.openrouter ? el("p", { class: "slug" }, el("code", {}, r.openrouter), copy) : null,
+    el("p", { class: "meta" }, `${r.links?.["Hugging Face"] ? "Open weights" : r.hosting === "API" ? "Hosted" : r.hosting}. Licence: ${r.licence || "not checked"}.`),
+    el("div", { class: "links" }, orderedLinks(r.links).map(([label, url]) => el("a", { class: "btn", href: url, target: "_blank", rel: "noopener" }, label))),
     el("div", { class: "big" }, el("span", {}, r.index !== null ? r.index.toFixed(1) : "–"),
       el("span", { class: "sub" }, r.index !== null ? ` index, #${indexRank[r.name]} of ${Object.keys(indexRank).length}` + (r.covered < CAT_NAMES.length ? `, ${r.covered}/${CAT_NAMES.length} categories` : "") : " not indexed yet")),
     bars,
@@ -448,10 +450,18 @@ function renderExample() {
   $("#ds-head").replaceChildren(el("h3", {}, d.name));
   $("#ds-meta").replaceChildren(`${d.cluster}, ${d.cases.toLocaleString()} cases, ${metricOf(ex.key) || d.task_type}, ${d.license || "licence unstated"}. `,
     el("a", { href: d.url, target: "_blank", rel: "noopener" }, "Source"));
+  // Ten numbers at a time: < > step one example, « » jump a page of ten.
+  const PAGE = 10, last = list.length - 1, page = Math.floor(ex.i / PAGE);
+  const go = (i) => { ex.i = Math.max(0, Math.min(last, i)); renderExample(); };
+  const step = (label, aria, to, disabled) => el("button", { class: "btn", type: "button", "aria-label": aria, disabled, onclick: () => go(to) }, label);
+  const from = page * PAGE, to = Math.min(list.length, from + PAGE);
   $("#steps").replaceChildren(
-    el("button", { class: "btn", type: "button", "aria-label": "Previous example", disabled: ex.i === 0, onclick: () => { ex.i--; renderExample(); } }, "<"),
-    ...list.map((_, i) => el("button", { class: "btn", type: "button", "aria-pressed": String(i === ex.i), "aria-label": `Example ${i + 1}`, onclick: () => { ex.i = i; renderExample(); } }, i + 1)),
-    el("button", { class: "btn", type: "button", "aria-label": "Next example", disabled: ex.i >= list.length - 1, onclick: () => { ex.i++; renderExample(); } }, ">"));
+    step("«", "Previous ten examples", (page - 1) * PAGE, page === 0),
+    step("<", "Previous example", ex.i - 1, ex.i === 0),
+    ...list.slice(from, to).map((_, j) => el("button", { class: "btn", type: "button", "aria-pressed": String(from + j === ex.i), "aria-label": `Example ${from + j + 1}`, onclick: () => go(from + j) }, from + j + 1)),
+    step(">", "Next example", ex.i + 1, ex.i >= last),
+    step("»", "Next ten examples", (page + 1) * PAGE, to >= list.length),
+    el("span", { class: "pos" }, `${from + 1}–${to} of ${list.length}`));
   if (!e) { $("#example").replaceChildren(el("p", { class: "withheld" }, "No examples for this dataset.")); return; }
   if (e.task_type === "rank") { $("#example").replaceChildren(...rankPanels(e)); return; }
   const left = el("div", { class: "panel" }, el("p", { class: "q" }, e.question));

@@ -23,15 +23,13 @@ MODELS_START, MODELS_END = "<!-- models:start -->", "<!-- models:end -->"
 GROUPS = ["Safety", "Medicine", "Exams", "Language", "Tools", "Ranking", "Judging", "Images"]
 PCT = {"accuracy", "server_routing_accuracy", "tool_selection_accuracy"}
 SHORT = {
-    "Jev 1.13": "Jev 1.13", "Liquid D1 (hosted)": "Liquid D1", "djev-0.1": "djev", "Laya 421M": "Laya",
+    "Jev 1.13": "Jev 1.13", "djev-0.1": "djev", "Laya 421M": "Laya",
     "Clef": "Clef", "Clef-flash": "Clef-flash", "Clef-omni": "Clef-omni", "pplx-decider v1.1": "pplx v1.1",
     "GPT-6 Luna Decisions": "GPT-6 Luna", "Microsoft Decision 1": "MS Decision 1", "Solar Decide": "Solar",
     "Solar Decide Flash": "Solar Flash", "Drex v1.5": "Drex", "Mercury Decide": "Mercury",
     "TEv1 4B (exp.)": "TEv1 4B", "Kev 4B": "Kev 4B", "Span-01": "Span-01",
     "Liquid d1-3B (local)": "d1-3B", "Liquid d1-omni-600M (local)": "d1-omni",
 }
-SERVED = {"jev": "TypeSafe API", "liquid": "Liquid API", "openrouter": "OpenRouter",
-          "djev": "GCP A100", "d1local": "your machine"}
 
 
 def load_slices(run_id: str, also: list[str]) -> dict:
@@ -125,12 +123,12 @@ def main() -> int:
                 head += "*"
         index_rows.append(f"| {place} | {name} | {head} | {cl} |")
 
-    model_rows = ["| Model | Runs on | Served through |", "|---|---|---|"]
+    order = ["Hugging Face", "Website", "Code", "Runbook"]
+    model_rows = ["| Model | Runs on | Licence | Links |", "|---|---|---|---|"]
     for m, _, _ in columns:
-        served = SERVED.get(m["endpoint"], "local server")
-        if m["name"] in MERGE:
-            served += " and OpenRouter"
-        model_rows.append(f"| {m['name'].replace(' (hosted)', '')} | {m.get('hosting', 'API')} | {served} |")
+        links = sorted((m.get("links") or {}).items(), key=lambda kv: order.index(kv[0]) if kv[0] in order else 9)
+        kind = "Open weights" if "Hugging Face" in dict(links) else m.get("hosting", "API")
+        model_rows.append(f"| {m['name']} | {kind} | {m.get('licence') or 'not checked'} | " + " · ".join(f"[{k}]({u})" for k, u in links) + " |")
 
     block = "\n".join([
         START,
@@ -153,7 +151,7 @@ def main() -> int:
         "",
         "– not run, or not supported by that API (option limits, question types, no image input). "
         "\\* under 99.5% of cases answered, from refusals or errors. "
-        "† Liquid D1 through OpenRouter, the same hosted service.",
+        "† Liquid D1 on the newer datasets, run through a second API route to the same hosted model.",
         "",
         "Explore every cell, with intervals and examples, on the [website](https://leanmcp.github.io/jevbench/). "
         "Where each model runs: [Models](#models).",

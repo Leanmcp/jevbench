@@ -29,7 +29,7 @@ CLUSTERS = {
 
 # The same hosted D1 service reached two ways; OpenRouter fills what the free
 # tier was too slow for, so the two count as one model.
-MERGE = {"Liquid D1 (hosted)": "Liquid D1 via OpenRouter"}
+MERGE = {"Liquid D1": "Liquid D1 via OpenRouter"}
 
 
 def slice_info(read_cases, keys) -> dict[str, dict]:

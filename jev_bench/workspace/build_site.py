@@ -23,7 +23,7 @@ import common as C
 from jevbench_index import CLUSTERS, MERGE, index_for, slice_info, to_100, unsupported_keys
 
 SITE = C.ROOT.parent / "site"
-EXAMPLES_PER_DATASET = 10
+EXAMPLES_PER_DATASET = 25
 TEXT_CLIP = 1500
 DOC_CLIP = 320
 
@@ -198,7 +198,21 @@ def main() -> int:
             results[m["name"]] = row
             shown_models.append({"name": m["name"], "hosting": m.get("hosting", "API"), "run_id": m["run_id"]})
 
+    # One model, two runs (Liquid D1 direct, and through OpenRouter for the newer
+    # slices): show a single row, the direct run winning where both exist.
+    for keep, fold in MERGE.items():
+        if fold in results:
+            for k, v in results.pop(fold).items():
+                results.setdefault(keep, {}).setdefault(k, v)
+            for k, v in ranking.pop(fold, {}).items():
+                ranking.setdefault(keep, {}).setdefault(k, v)
+            shown_models = [s for s in shown_models if s["name"] != fold]
     preds = {m["name"]: latest_predictions(m["run_id"]) for m in models if m["name"] in results}
+    for keep, fold in MERGE.items():
+        fold_run = next((m["run_id"] for m in models if m["name"] == fold), None)
+        if keep in preds and fold_run:
+            for cid, rec in latest_predictions(fold_run).items():
+                preds[keep].setdefault(cid, rec)
     for m in models:
         for extra in m.get("also_read", []):
             if m["name"] in preds:
@@ -247,12 +261,8 @@ def main() -> int:
             if v is not None:
                 per_dataset[k] = round(v, 1)
         partner = next((p for p in models if p["name"] == MERGE.get(m["name"])), {})
-        or_slug = next((x["model"] for x in (m, partner) if x.get("endpoint") == "openrouter"), None)
-        served = {"jev": "TypeSafe API", "liquid": "Liquid API", "openrouter": "OpenRouter", "djev": "GCP A100 (self-hosted)"}
         index_rows.append({"name": m["name"].replace(" (hosted)", ""), "hosting": m.get("hosting", "API"),
                            "links": {**partner.get("links", {}), **m.get("links", {})}, "licence": m.get("licence"),
-                           "openrouter": or_slug,
-                           "served": " and ".join(dict.fromkeys(served.get(x["endpoint"], "local server") for x in (m, partner) if x)),
                            "index": None if ix["index"] is None else round(ix["index"], 1),
                            "clusters": {k: None if v is None else round(v, 1) for k, v in ix["clusters"].items()},
                            "zeroed": [DATASETS[k][0] for k in ix["zeroed"]], "missing": len(ix["missing"]),

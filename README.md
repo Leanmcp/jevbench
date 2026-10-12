@@ -89,7 +89,7 @@ Every model on every dataset, from the scored runs on 2026-10-11. Accuracy in %,
 | [ScienceQA images](https://huggingface.co/datasets/derek-thomas/ScienceQA) | 500 | – | – | **82.8** | – | – | – | – | – | – | – | – | – | – | – | – | – | – |
 | [VQA-RAD](https://huggingface.co/datasets/flaviagiammarino/vqa-rad) | 251 | – | – | **78.1** | – | – | – | – | – | – | – | – | – | – | – | – | – | – |
 
-– not run, or not supported by that API (option limits, question types, no image input). \* under 99.5% of cases answered, from refusals or errors. † Liquid D1 through OpenRouter, the same hosted service.
+– not run, or not supported by that API (option limits, question types, no image input). \* under 99.5% of cases answered, from refusals or errors. † Liquid D1 on the newer datasets, run through a second API route to the same hosted model.
 
 Explore every cell, with intervals and examples, on the [website](https://leanmcp.github.io/jevbench/). Where each model runs: [Models](#models).
 <!-- results:end -->
@@ -225,23 +225,23 @@ recorded per row in the released cases. Model weights keep their own licences.
 ## Models
 
 <!-- models:start -->
-| Model | Runs on | Served through |
-|---|---|---|
-| Jev 1.13 | API | TypeSafe API |
-| Liquid D1 | API | Liquid API and OpenRouter |
-| djev-0.1 | Cloud GPU | GCP A100 |
-| Laya 421M | Local | local server |
-| Clef | API | OpenRouter |
-| Clef-flash | API | OpenRouter |
-| Clef-omni | API | OpenRouter |
-| pplx-decider v1.1 | API | OpenRouter |
-| GPT-6 Luna Decisions | API | OpenRouter |
-| Microsoft Decision 1 | API | OpenRouter |
-| Solar Decide | API | OpenRouter |
-| Solar Decide Flash | API | OpenRouter |
-| Drex v1.5 | API | OpenRouter |
-| Mercury Decide | API | OpenRouter |
-| TEv1 4B (exp.) | API | OpenRouter |
-| Kev 4B | API | OpenRouter |
-| Span-01 | API | OpenRouter |
+| Model | Runs on | Licence | Links |
+|---|---|---|---|
+| Jev 1.13 | API | Hosted service, TypeSafe terms | [Website](https://typesafe.ai) |
+| Liquid D1 | API | Hosted service, Liquid terms | [Website](https://docs.liquid.ai/lfm/models/decision-models) |
+| djev-0.1 | Cloud GPU | not checked | [Runbook](https://github.com/Leanmcp/jevbench/tree/main/djev-v1) |
+| Laya 421M | Open weights | Apache 2.0 | [Hugging Face](https://huggingface.co/convaiinnovations/laya) · [Code](https://github.com/NandhaKishorM/laya) |
+| Clef | Open weights | Apache 2.0 | [Hugging Face](https://huggingface.co/Cloudflare/clef) · [Website](https://developers.cloudflare.com/workers-ai/models/clef/) |
+| Clef-flash | Open weights | Apache 2.0 | [Hugging Face](https://huggingface.co/Cloudflare/clef-flash) · [Website](https://developers.cloudflare.com/workers-ai/models/clef-flash/) |
+| Clef-omni | Open weights | Apache 2.0 | [Hugging Face](https://huggingface.co/Cloudflare/clef-omni) · [Website](https://developers.cloudflare.com/workers-ai/models/clef-omni/) |
+| pplx-decider v1.1 | Open weights | Apache 2.0 | [Hugging Face](https://huggingface.co/perplexity-ai/pplx-decider-v1.1-27b) · [Website](https://docs.perplexity.ai/docs/decisions/quickstart) |
+| GPT-6 Luna Decisions | API | Hosted service | [Website](https://developers.openai.com/api/docs/guides/decisions) |
+| Microsoft Decision 1 | API | Hosted service | [Website](https://commandline.microsoft.com/microsoft-decision-1-model-foundry/) |
+| Solar Decide | API | Hosted service | [Website](https://console.upstage.ai/docs/models) |
+| Solar Decide Flash | API | Hosted service | [Website](https://console.upstage.ai/docs/models) |
+| Drex v1.5 | Open weights | NACE AI Open RAIL-M | [Hugging Face](https://huggingface.co/nace-ai/drex-v1.5) · [Website](https://nace.ai) |
+| Mercury Decide | API | Hosted service | [Website](https://docs.inceptionlabs.ai/get-started/models) |
+| TEv1 4B (exp.) | Open weights | Not stated on the model card | [Hugging Face](https://huggingface.co/togethercomputer/Tev1-4B-experimental) · [Website](https://www.together.ai) |
+| Kev 4B | Open weights | Apache 2.0 | [Hugging Face](https://huggingface.co/jaredpalmer/kev-4b) |
+| Span-01 | API | Hosted service | [Website](https://www.respan.ai) |
 <!-- models:end -->
