@@ -129,7 +129,7 @@ function renderChart() {
     if (r.zeroed.length) lines.push(`Counted as 0, API rejects: ${r.zeroed.join(", ")}`);
     const valText = has ? value.toFixed(1) + (note && note !== "rejected" ? " " + note : note === "rejected" ? " ‡" : "") : "not run";
     const row = el("div", { class: "row" + (has ? "" : " none"), role: "listitem", "data-name": r.name },
-      el("span", { class: "rk" }, has ? rank : ""), el("span", { class: "nm", title: r.name }, r.name), track, el("span", { class: "val" }, valText));
+      el("span", { class: "rk" }, has ? rank : ""), el("button", { class: "nm link", type: "button", title: `About ${r.name}`, onclick: (e) => openModel(r.name, e.currentTarget) }, r.name), track, el("span", { class: "val" }, valText));
     tipOn(track, lines);
     return row;
   });
@@ -232,7 +232,7 @@ function renderGrid() {
     onclick: () => { lock(DS[k].cluster, k); $("#index").scrollIntoView({ behavior: REDUCED ? "auto" : "smooth" }); },
   }, el("span", {}, DS[k].name)))));
   const body = GRID_MODELS.filter((m) => gridKeys.some((k) => D.results[m.name]?.[k])).map((m) => el("tr", {},
-    el("th", { class: "rowhead", scope: "row" }, m.name),
+    el("th", { class: "rowhead", scope: "row" }, el("button", { class: "link", type: "button", title: `About ${m.name}`, onclick: (e) => openModel(modelFor(m.name)?.name, e.currentTarget) }, m.name)),
     gridKeys.map((k) => {
       const r = D.results[m.name]?.[k];
       const off = lit && !lit.has(k) ? " off" : "";
@@ -264,6 +264,62 @@ function scrollGridToSelection() {
   const target = wrap.scrollLeft + first.getBoundingClientRect().left - rowhead;
   wrap.scrollTo({ left: Math.max(0, target), behavior: REDUCED ? "auto" : "smooth" });
 }
+
+/* ---------------- models: cards and a side panel ---------------- */
+const INDEX_BY_NAME = Object.fromEntries(D.index.map((r) => [r.name, r]));
+// Results use run names ("Liquid D1 (hosted)"); the index merges them into one model.
+const modelFor = (name) => INDEX_BY_NAME[name] || INDEX_BY_NAME[name.replace(" (hosted)", "")] || INDEX_BY_NAME[name.replace(" via OpenRouter", "")];
+const indexRank = Object.fromEntries([...D.index].filter((r) => r.index !== null).sort((a, b) => b.index - a.index).map((r, i) => [r.name, i + 1]));
+let drawerOpener = null;
+
+function renderModelCards() {
+  const rows = [...D.index].sort((a, b) => (b.index ?? -1) - (a.index ?? -1));
+  $("#model-cards").replaceChildren(...rows.map((r) => el("button", { class: "card", type: "button", role: "listitem", onclick: (e) => openModel(r.name, e.currentTarget) },
+    el("span", { class: "cat" }, `#${indexRank[r.name] ?? "–"} · ${r.hosting}`),
+    el("span", { class: "name" }, r.name),
+    el("span", { class: "avg" }, r.index !== null ? r.index.toFixed(1) : "–"),
+    el("span", { class: "foot2" }, Object.keys(r.links || {}).join(", ") || "no public link"))));
+}
+
+function openModel(name, opener) {
+  const r = INDEX_BY_NAME[name];
+  if (!r) return;
+  drawerOpener = opener || document.activeElement;
+  const scores = Object.entries(r.scores || {}).filter(([k]) => !r.unsupported.includes(k) && DS[k]);
+  const byScore = [...scores].sort((a, b) => b[1] - a[1]);
+  const list = (items) => el("ul", { class: "plain" }, items.map(([k, v]) => el("li", {},
+    el("button", { class: "link", type: "button", onclick: () => { closeModel(); lock(DS[k].cluster, k); $("#index").scrollIntoView({ behavior: REDUCED ? "auto" : "smooth" }); } }, DS[k].name), ` ${v.toFixed(1)}`)));
+  const bars = el("div", { class: "answers" }, CAT_NAMES.map((c) => {
+    const v = r.clusters[c];
+    return [el("span", { class: "nm" }, c), el("div", { class: "track" }, el("div", { class: "fill", style: `width:${v ?? 0}%` })), el("span", { class: "val" }, v == null ? "–" : v.toFixed(1))];
+  }));
+  const copy = r.openrouter ? el("button", { class: "btn", type: "button", onclick: async (e) => {
+    try { await navigator.clipboard.writeText(r.openrouter); e.target.textContent = "Copied"; } catch { e.target.textContent = "Select and copy"; }
+    setTimeout(() => (e.target.textContent = "Copy ID"), 1500);
+  } }, "Copy ID") : null;
+  $("#drawer").replaceChildren(...[
+    el("div", { class: "drawer-top" }, el("h2", { id: "drawer-title" }, r.name), el("button", { class: "btn", type: "button", id: "drawer-close", onclick: closeModel }, "Close")),
+    el("p", { class: "meta" }, `${r.hosting}, served through ${r.served}. Licence: ${r.licence || "not checked"}.`),
+    el("div", { class: "links" }, Object.entries(r.links || {}).map(([label, url]) => el("a", { class: "btn", href: url, target: "_blank", rel: "noopener" }, label))),
+    r.openrouter ? el("p", { class: "slug" }, el("code", {}, r.openrouter), copy) : null,
+    el("div", { class: "big" }, el("span", {}, r.index !== null ? r.index.toFixed(1) : "–"),
+      el("span", { class: "sub" }, r.index !== null ? ` index, #${indexRank[r.name]} of ${Object.keys(indexRank).length}` + (r.covered < CAT_NAMES.length ? `, ${r.covered}/${CAT_NAMES.length} categories` : "") : " not indexed yet")),
+    bars,
+    byScore.length ? el("h3", {}, "Strongest") : null, byScore.length ? list(byScore.slice(0, 3)) : null,
+    byScore.length > 3 ? el("h3", {}, "Weakest") : null, byScore.length > 3 ? list(byScore.slice(-3).reverse()) : null,
+    r.zeroed.length ? el("p", { class: "small" }, `Its API rejects ${r.zeroed.join(", ")}; counted as 0.`) : null].filter(Boolean));
+  $("#drawer").hidden = $("#backdrop").hidden = false;
+  document.body.classList.add("locked");
+  $("#drawer-close").focus();
+}
+function closeModel() {
+  if ($("#drawer").hidden) return;
+  $("#drawer").hidden = $("#backdrop").hidden = true;
+  document.body.classList.remove("locked");
+  drawerOpener?.focus?.();
+}
+$("#backdrop").addEventListener("click", closeModel);
+addEventListener("keydown", (e) => { if (e.key === "Escape") closeModel(); });
 
 /* ---------------- dataset explorer ---------------- */
 const ex = { key: null, i: 0, model: null, reveal: false };
@@ -418,6 +474,9 @@ renderAll();
 scrollGridToSelection();
 {
   const linked = location.hash.startsWith("#ds=") ? decodeURIComponent(location.hash.slice(4)) : null;
+  renderModelCards();
+  const wantModel = location.hash.startsWith("#model=") ? decodeURIComponent(location.hash.slice(7)) : null;
+  if (wantModel) openModel(wantModel, null);
   renderExtremes();
   pickDataset(linked && D.examples[linked] ? linked : sortedKeys()[0], false, false);
   if (linked) $("#datasets").scrollIntoView();

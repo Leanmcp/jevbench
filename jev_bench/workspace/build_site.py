@@ -246,7 +246,13 @@ def main() -> int:
             v = 0.0 if k in unsupported else to_100(k, slices.get(k))
             if v is not None:
                 per_dataset[k] = round(v, 1)
+        partner = next((p for p in models if p["name"] == MERGE.get(m["name"])), {})
+        or_slug = next((x["model"] for x in (m, partner) if x.get("endpoint") == "openrouter"), None)
+        served = {"jev": "TypeSafe API", "liquid": "Liquid API", "openrouter": "OpenRouter", "djev": "GCP A100 (self-hosted)"}
         index_rows.append({"name": m["name"].replace(" (hosted)", ""), "hosting": m.get("hosting", "API"),
+                           "links": {**partner.get("links", {}), **m.get("links", {})}, "licence": m.get("licence"),
+                           "openrouter": or_slug,
+                           "served": " and ".join(dict.fromkeys(served.get(x["endpoint"], "local server") for x in (m, partner) if x)),
                            "index": None if ix["index"] is None else round(ix["index"], 1),
                            "clusters": {k: None if v is None else round(v, 1) for k, v in ix["clusters"].items()},
                            "zeroed": [DATASETS[k][0] for k in ix["zeroed"]], "missing": len(ix["missing"]),
