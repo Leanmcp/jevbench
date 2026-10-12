@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "_doc": "Pinned sources for the ranking and scoring slices built by workspace/build_rank_score_cases.py. Revisions checked on Hugging Face on 2026-10-11.",
+  "sources": {
+    "scifact": {
+      "corpus": {"repo": "BeIR/scifact", "revision": "b3b5335604bf5ee3c4447671af975ea25143d4f5", "file": "corpus/corpus-00000-of-00001.parquet"},
+      "queries": {"repo": "BeIR/scifact", "revision": "b3b5335604bf5ee3c4447671af975ea25143d4f5", "file": "queries/queries-00000-of-00001.parquet"},
+      "qrels": {"repo": "BeIR/scifact-qrels", "revision": "2938d17dc3b09882fdb8c12bbbe2e2dc0e75a029", "file": "test.tsv"},
+      "license": "cc-by-sa-4.0",
+      "redistributable": true,
+      "exposure": "public BEIR benchmark; possible training exposure",
+      "notes": "Queries are scientific claims; relevant abstracts support or refute them. Test qrels are binary (grade 1)."
+    },
+    "nfcorpus": {
+      "corpus": {"repo": "BeIR/nfcorpus", "revision": "b5026a0e96e8a7ac4f95f482a596389289d46269", "file": "corpus/corpus-00000-of-00001.parquet"},
+      "queries": {"repo": "BeIR/nfcorpus", "revision": "b5026a0e96e8a7ac4f95f482a596389289d46269", "file": "queries/queries-00000-of-00001.parquet"},
+      "qrels": {"repo": "BeIR/nfcorpus-qrels", "revision": "a451b3b26d3ae1358f259c1a3a4dd61fcea35a65", "file": "test.tsv"},
+      "license": "cc-by-sa-4.0",
+      "redistributable": true,
+      "exposure": "public BEIR benchmark; possible training exposure",
+      "notes": "Lay health questions against PubMed abstracts. Test qrels are graded 1 (partially) and 2 (highly); unjudged documents count as 0."
+    },
+    "helpsteer2": {
+      "data": {"repo": "nvidia/HelpSteer2", "revision": "990b2711a36180dd19d9c94b8627844866f8982a", "file": "validation.jsonl.gz"},
+      "license": "cc-by-4.0",
+      "redistributable": true,
+      "exposure": "public reward-model training data; likely training exposure",
+      "notes": "Human ratings 0-4 per response. The validation split is used; helpfulness is the attribute scored."
+    },
+    "rewardbench2": {
+      "data": {"repo": "allenai/reward-bench-2", "revision": "7ff08853b0d5686e79b13fda8677024f566a104a", "file": "data/test-00000-of-00001.parquet"},
+      "license": "odc-by",
+      "redistributable": true,
+      "exposure": "public benchmark; possible training exposure",
+      "notes": "Best-of-4: one correct response, three rejected. The Ties subset allows several correct answers and is excluded."
+    }
+  }
+}

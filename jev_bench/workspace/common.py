@@ -560,7 +560,9 @@ class DecisionClient:
             )
 
     def build_request(self, case: dict) -> dict:
-        body: dict[str, Any] = {"state": case["state"], "questions": {case["question_key"]: case["question"]}}
+        # Ranking cases in the Jev style carry many questions against one state.
+        questions = case.get("questions") or {case["question_key"]: case["question"]}
+        body: dict[str, Any] = {"state": case["state"], "questions": questions}
         if case.get("_images"):
             body["images"] = case["_images"]
         if self.model:
@@ -665,6 +667,29 @@ def parse_answer(payload: dict, question_key: str, task_type: str) -> dict:
     else:
         return {"parse_error": f"unknown task type {task_type!r}", **out}
     return out
+
+
+def parse_rank(payload: dict, case: dict) -> dict:
+    """One score per candidate document: p(true) from a batch of nouls, or the
+    choice probability on each document. Ties break by presentation key."""
+    answers = (payload or {}).get("answers") or {}
+    keys = list(case["rank_meta"]["candidates"])
+    if case.get("rank_protocol") == "choice":
+        ans = answers.get(case["question_key"])
+        probs = ans.get("probabilities") if isinstance(ans, dict) else None
+        if not isinstance(probs, dict):
+            return {"parse_error": "choice probabilities missing"}
+        scores = {k: float(probs.get(k, 0.0)) for k in keys}
+    else:
+        scores = {}
+        for k in keys:
+            ans = answers.get(k)
+            val = ans.get("noul") if isinstance(ans, dict) else None
+            if not isinstance(val, (int, float)):
+                return {"parse_error": f"no noul answer for {k}"}
+            scores[k] = float(val)
+    top = min(keys, key=lambda k: (-scores[k], k))
+    return {"answer_type": "rank", "doc_scores": scores, "pred": top}
 
 
 def usage_of(payload: dict) -> dict:

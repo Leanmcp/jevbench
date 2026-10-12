@@ -57,7 +57,7 @@ def build(scores: dict, compare: dict | None) -> str:
     add(f"# jev-bench results: {scores['run_id']}")
     add("")
     add(f"Scored {scores['scored_at']}. Model requested `{meta.get('model_requested', 'unknown')}`, endpoint `{meta.get('endpoint', 'unknown')}`, "
-        f"manifest pinned {meta.get('manifest_pinned_on', 'unknown')}. One typed question per request.")
+        f"manifest pinned {meta.get('manifest_pinned_on', 'unknown')}. One typed question per request, except `*_rank_noul` slices, which ask one noul per candidate document in a single request.")
     add("")
 
     # headline
@@ -134,14 +134,45 @@ def build(scores: dict, compare: dict | None) -> str:
             continue
         m = s["metrics"]
         ord_rows.append([key, m["n_scored"], m["n_levels_observed"], fmt(m["exact_accuracy_rounded"], pct=True),
-                         fmt(m["within_one_level"], pct=True), fmt(m["mae_expected_level"], 3), fmt(m["ranked_probability_score"])])
+                         fmt(m["within_one_level"], pct=True), fmt(m["mae_expected_level"], 3), fmt(m["ranked_probability_score"]),
+                         fmt(m.get("spearman_expected_level"), 3)])
     if ord_rows:
         add("## Ordinal slices")
         add("")
-        add(md_table(ord_rows, ["slice", "n", "levels", "exact (rounded)", "within 1 level", "MAE (expected level)", "RPS"]))
+        add(md_table(ord_rows, ["slice", "n", "levels", "exact (rounded)", "within 1 level", "MAE (expected level)", "RPS", "Spearman"]))
         add("")
         add("The score type returns an expected zero-based level index, so MAE is computed on that expected value and exact accuracy on its rounding. "
             "Levels are treated as equally spaced, which SST-5 does not actually guarantee.")
+        add("")
+
+    # ranking
+    rank_rows = []
+    for key in sorted(slices):
+        rk = slices[key].get("ranking")
+        if not rk:
+            continue
+        rank_rows.append([key, rk["n_queries"], fmt(rk["ndcg@10"]), fmt(rk["mrr@10"]), fmt(rk["recall@10"]),
+                          fmt(rk["bm25_ndcg@10"]), fmt(rk["oracle_ndcg@10"]), fmt(rk["shortlist_recall"], pct=True)])
+    if rank_rows:
+        add("## Ranking slices")
+        add("")
+        add(md_table(rank_rows, ["slice", "queries", "nDCG@10", "MRR@10", "Recall@10", "BM25 nDCG@10", "ceiling nDCG@10", "shortlist recall"]))
+        add("")
+        add("Each query reranks the same BM25 top-20 shortlist. `BM25 nDCG@10` is the shortlist's own order, so the model "
+            "helps only where it beats that column. `ceiling nDCG@10` is the best possible order of the shortlist, and "
+            "`shortlist recall` is the share of judged-relevant documents it contains; no reranker can exceed either. "
+            "nDCG uses linear gain against every judged document for the query.")
+        add("")
+
+    # subgroups
+    sg_rows = []
+    for key in sorted(slices):
+        for group, v in (slices[key].get("by_subgroup") or {}).items():
+            sg_rows.append([key, group, v["n"], fmt(v["accuracy"], pct=True)])
+    if sg_rows:
+        add("## By subset")
+        add("")
+        add(md_table(sg_rows, ["slice", "subset", "n", "accuracy"]))
         add("")
 
     # position bias

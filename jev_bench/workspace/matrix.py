@@ -47,6 +47,9 @@ MODELS_PATH = C.ROOT / "models.json"
 # Upper bound for the cost estimate: Jev counted 6.0M input tokens over 8,035
 # requests, Liquid d1 3.0M over 8,016. Real spend is in each row's cost_usd.
 TOKENS_PER_CASE = 750
+# Per-slice mean of the builders' 4-characters-per-token estimate, filled by
+# load_slices; ranking requests carry 20 documents and run far above 750.
+SLICE_TOKENS: dict[str, float] = {}
 
 NA, PENDING, PARTIAL, DONE = "n/a", "pending", "partial", "done"
 SHORT = {
@@ -57,6 +60,9 @@ SHORT = {
     "sst5": "SST5", "vqa_rad": "VQA", "mcpbench_server_routing": "MBsr",
     "mcpbench_tool_selection": "MBts", "mcpmark_server_routing": "MMsr",
     "mcpmark_tool_selection": "MMts",
+    "scifact_rank_noul": "SFn", "scifact_rank_choice": "SFc", "nfcorpus_rank_noul": "NFn",
+    "nfcorpus_rank_choice": "NFc", "nfcorpus_rank_graded": "NFg", "helpsteer2_helpfulness": "HS2",
+    "rewardbench2": "RB2",
 }
 CELL_W = 5
 HOST_W = 11  # "Cloud GPU" plus a gap
@@ -78,6 +84,9 @@ def load_slices() -> tuple[list[str], dict[str, set[str]], set[str]]:
     for key in keys:
         cases = C.read_cases(key)
         ids[key] = {c["case_id"] for c in cases}
+        est = [c["est_tokens"] for c in cases if c.get("est_tokens")]
+        if est:
+            SLICE_TOKENS[key] = sum(est) / len(est)
         if any(c.get("image_path") or c.get("_images") for c in cases):
             image.add(key)
     return keys, ids, image
@@ -142,7 +151,7 @@ def estimate(models, grid, keys, selection) -> tuple[int, float, bool]:
         if price is None:
             unpriced = unpriced or n > 0
         else:
-            usd += n * TOKENS_PER_CASE / 1e6 * price
+            usd += n * max(TOKENS_PER_CASE, SLICE_TOKENS.get(keys[si], 0)) / 1e6 * price
     return requests, usd, unpriced
 
 

@@ -239,6 +239,10 @@ def main() -> int:
             "source_revision": case.get("revision"),
             "state_hash": case.get("state_hash"),
             "truncated_state": case["truncated"],
+            # ranking and scoring slices: ids, grades and subsets only, never text
+            "rank_protocol": case.get("rank_protocol"),
+            "rank_meta": case.get("rank_meta"),
+            "subgroup": case.get("subgroup"),
             "latency_ms": result.get("latency_ms"),
             "client_concurrency": args.concurrency,
             "attempts": result.get("attempts"),
@@ -247,7 +251,10 @@ def main() -> int:
         }
         if result["ok"]:
             payload = result["response"]
-            rec.update(C.parse_answer(payload, case["question_key"], case["task_type"]))
+            if case["task_type"] == "rank":
+                rec.update(C.parse_rank(payload, case))
+            else:
+                rec.update(C.parse_answer(payload, case["question_key"], case["task_type"]))
             rec.update(C.usage_of(payload))
             if case["task_type"] == "choice" and not rec.get("parse_error"):
                 if str(rec.get("pred")) not in case["question"]["criteria"]:

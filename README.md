@@ -70,6 +70,19 @@ Thirteen more hosted decision models, including Cloudflare Clef and Perplexity
 pplx-decider, plus Liquid's open d1-3B and d1-omni-600M, are wired in and
 waiting on runs. See [the decision-models runbook](jev_bench/05_DECISION_MODELS.md).
 
+## Ranking and scoring
+
+Beyond classification, JevBench tests decision models as **rerankers** and as
+**judges**. Results are pending.
+
+| Benchmark | What it tests | How the model is asked |
+|---|---|---|
+| SciFact, NFCorpus | Reranking a fixed BM25 top-20 of scientific and medical abstracts; nDCG@10 | Jev-style (one noul per document in one request) and all-at-once (one choice over the 20); graded relevance on NFCorpus |
+| HelpSteer2 | Rating answer helpfulness 0–4 like a human annotator; Spearman correlation | One score question |
+| RewardBench 2 | Picking the one correct response of four; accuracy per subset | One choice, asked in two orders |
+
+How each works and why: [the ranking and scoring runbook](jev_bench/06_RANK_SCORE.md).
+
 ## What a typed decision model is
 
 A typed decision model does not write text. It reads a state and a set of typed
