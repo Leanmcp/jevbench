@@ -41,6 +41,19 @@ DJEV_URL = "http://127.0.0.1:18000/v1/request"
 LIQUID_URL = "https://api.liquid.ai/decisions/v1/systemone"
 LIQUID_MODEL = "d1:free"
 LIQUID_API_KEY_ENV = "LIQUID_API_KEY"
+# One alpha Decisions endpoint routes to every hosted decision model on
+# OpenRouter (Clef, Clef-flash, pplx-decider, Liquid d1, Jev) under one key.
+OPENROUTER_URL = "https://openrouter.ai/api/alpha/decisions"
+OPENROUTER_API_KEY_ENV = "OPENROUTER_API_KEY"
+# Local d1-3B / d1-omni-600M served by workspace/serve_d1_local.py.
+D1_LOCAL_URL = "http://127.0.0.1:18100/v1/request"
+
+# Which environment variable holds the key for each keyed endpoint.
+KEY_ENV_BY_URL = {
+    JEV_URL: API_KEY_ENV,
+    LIQUID_URL: LIQUID_API_KEY_ENV,
+    OPENROUTER_URL: OPENROUTER_API_KEY_ENV,
+}
 
 # State is truncated to this many characters before sending, and every truncated
 # case is flagged. ATBench trajectories average about 1.52k tokens per its card,
@@ -82,14 +95,16 @@ def read_parquet(path: Path, columns: list[str] | None = None) -> list[dict]:
 
 
 def read_jsonl(path: Path) -> list[dict]:
-    return [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line.strip()]
+    # split on \n only: str.splitlines also breaks on U+2028 and similar
+    # separators, which occur inside dataset text and are legal in a JSON line.
+    return [json.loads(line) for line in path.read_text(encoding="utf-8").split("\n") if line.strip()]
 
 
 def read_json_any(path: Path) -> list[dict]:
     text = path.read_text(encoding="utf-8")
     if text.lstrip().startswith("["):
         return json.loads(text)
-    return [json.loads(line) for line in text.splitlines() if line.strip()]
+    return [json.loads(line) for line in text.split("\n") if line.strip()]
 
 
 def read_csv(path: Path) -> list[dict]:
@@ -528,7 +543,7 @@ def key_status(env_var: str = API_KEY_ENV) -> dict:
 class DecisionClient:
     """One typed decision per request against Jev or a local djev."""
 
-    def __init__(self, endpoint: str = JEV_URL, model: str | None = JEV_MODEL, require_key: bool = True, timeout: float = 60.0, max_retries: int = 6, options: dict | None = None):
+    def __init__(self, endpoint: str = JEV_URL, model: str | None = JEV_MODEL, require_key: bool = True, timeout: float = 60.0, max_retries: int = 6, options: dict | None = None, state_as_string: bool = False):
         self.endpoint = endpoint
         # `model` is what goes on the wire. djev's documented request contract has
         # only state/questions/options, so sending a model field there may be
@@ -537,9 +552,11 @@ class DecisionClient:
         # djev accepts options {seed, samples, diagnostics}. Pinning seed=0 and
         # samples=1 is what makes a djev run reproducible; Jev ignores it.
         self.options = options
+        # Some APIs (Span-01) accept only a string state; the same JSON is sent as text.
+        self.state_as_string = state_as_string
         self.timeout = timeout
         self.max_retries = max_retries
-        self.key_env = LIQUID_API_KEY_ENV if endpoint == LIQUID_URL else API_KEY_ENV
+        self.key_env = KEY_ENV_BY_URL.get(endpoint, API_KEY_ENV)
         self._key = os.environ.get(self.key_env)
         if require_key and not self._key:
             raise RuntimeError(
@@ -547,7 +564,11 @@ class DecisionClient:
             )
 
     def build_request(self, case: dict) -> dict:
-        body: dict[str, Any] = {"state": case["state"], "questions": {case["question_key"]: case["question"]}}
+        # Ranking cases in the Jev style carry many questions against one state.
+        questions = case.get("questions") or {case["question_key"]: case["question"]}
+        body: dict[str, Any] = {"state": case["state"], "questions": questions}
+        if self.state_as_string and not isinstance(body["state"], str):
+            body["state"] = state_json(body["state"])
         if case.get("_images"):
             body["images"] = case["_images"]
         if self.model:
@@ -578,6 +599,13 @@ class DecisionClient:
                 detail = exc.read().decode("utf-8", "replace")[:400]
                 last_error = f"HTTP {exc.code}: {_scrub(detail)}"
                 retryable = exc.code in {408, 425, 429, 500, 502, 503, 504}
+                if exc.code == 429:
+                    # A rate limit clears on the provider's clock, not ours: wait
+                    # as long as it asks, else back off as hard as for DNS.
+                    retry_after = (exc.headers or {}).get("Retry-After", "")
+                    if retry_after.strip().isdigit():
+                        time.sleep(min(int(retry_after), 60))
+                    backoff_base = 4.0
             except urllib.error.URLError as exc:
                 last_error = f"URLError: {_scrub(str(exc.reason))}"
                 retryable = True
@@ -596,7 +624,7 @@ class DecisionClient:
 
 def _scrub(text: str) -> str:
     """Belt and braces: if a key ever appears in an error body, do not persist it."""
-    for env_var in (API_KEY_ENV, LIQUID_API_KEY_ENV):
+    for env_var in set(KEY_ENV_BY_URL.values()):
         key = os.environ.get(env_var)
         if key:
             text = text.replace(key, "[redacted]")
@@ -647,12 +675,38 @@ def parse_answer(payload: dict, question_key: str, task_type: str) -> dict:
     return out
 
 
+def parse_rank(payload: dict, case: dict) -> dict:
+    """One score per candidate document: p(true) from a batch of nouls, or the
+    choice probability on each document. Ties break by presentation key."""
+    answers = (payload or {}).get("answers") or {}
+    keys = list(case["rank_meta"]["candidates"])
+    if case.get("rank_protocol") == "choice":
+        ans = answers.get(case["question_key"])
+        probs = ans.get("probabilities") if isinstance(ans, dict) else None
+        if not isinstance(probs, dict):
+            return {"parse_error": "choice probabilities missing"}
+        scores = {k: float(probs.get(k, 0.0)) for k in keys}
+    else:
+        scores = {}
+        for k in keys:
+            ans = answers.get(k)
+            val = ans.get("noul") if isinstance(ans, dict) else None
+            if not isinstance(val, (int, float)):
+                return {"parse_error": f"no noul answer for {k}"}
+            scores[k] = float(val)
+    top = min(keys, key=lambda k: (-scores[k], k))
+    return {"answer_type": "rank", "doc_scores": scores, "pred": top}
+
+
 def usage_of(payload: dict) -> dict:
     usage = (payload or {}).get("usage") or {}
     return {
         "input_tokens": usage.get("input_tokens"),
         "output_tokens": usage.get("output_tokens"),
         "model_reported": (payload or {}).get("model"),
+        # OpenRouter only: billed USD and the upstream provider that served it.
+        "cost_usd": usage.get("cost"),
+        "provider_reported": (payload or {}).get("provider"),
     }
 
 

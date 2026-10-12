@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="560" height="128" viewBox="0 0 560 128" role="img" aria-labelledby="t d">
+  <title id="t">JevBench</title>
+  <desc id="d">JevBench logo: three bars of a probability distribution, the tallest highlighted as the decision, beside the JevBench wordmark.</desc>
+  <style>
+    .tile { fill: #0f172a; }
+    .bar { fill: #475569; }
+    .pick { fill: #22d3ee; }
+    .axis { stroke: #64748b; }
+    .word { fill: #0f172a; }
+    .bench { fill: #0891b2; }
+    .tag { fill: #475569; }
+    @media (prefers-color-scheme: dark) {
+      .tile { fill: #1e293b; }
+      .word { fill: #f1f5f9; }
+      .bench { fill: #22d3ee; }
+      .tag { fill: #94a3b8; }
+    }
+  </style>
+
+  <!-- mark: a typed decision is a distribution over allowed options -->
+  <rect class="tile" x="8" y="8" width="112" height="112" rx="24"/>
+  <rect class="bar"  x="30" y="70" width="18" height="30" rx="4"/>
+  <rect class="pick" x="55" y="30" width="18" height="70" rx="4"/>
+  <rect class="bar"  x="80" y="84" width="18" height="16" rx="4"/>
+  <line class="axis" x1="26" y1="104" x2="102" y2="104" stroke-width="3" stroke-linecap="round"/>
+
+  <!-- wordmark -->
+  <text x="144" y="74" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif"
+        font-size="56" font-weight="700" letter-spacing="-1.5">
+    <tspan class="word">Jev</tspan><tspan class="bench">Bench</tspan>
+  </text>
+  <text class="tag" x="146" y="104" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif"
+        font-size="19" font-weight="500">Open benchmark for typed decision models</text>
+</svg>

@@ -14,9 +14,13 @@ reproduce it. We aim to acknowledge reports within five working days.
 JevBench is an evaluation harness. The areas where a security problem matters
 most are:
 
-- **API keys.** `run_eval.py` reads the hosted model's key from the
-  `TYPESAFE_API_KEY` environment variable. It must never be written to
-  predictions, logs or error messages. Any path that leaks it is in scope.
+- **API keys.** `run_eval.py` reads hosted models' keys from environment
+  variables: `TYPESAFE_API_KEY`, `LIQUID_API_KEY` and `OPENROUTER_API_KEY`. None
+  may ever be written to predictions, logs or error messages. Any path that
+  leaks one is in scope.
+- **Local model server.** `workspace/serve_d1_local.py` binds to loopback only
+  and loads Hugging Face code with `trust_remote_code`. A path that exposes it
+  beyond the machine is in scope.
 - **Released artifacts.** Predictions must never contain source text, and
   sources whose licence forbids redistribution (SST-5) must be released without
   their text. `workspace/stage_release.py` checks both before a release.

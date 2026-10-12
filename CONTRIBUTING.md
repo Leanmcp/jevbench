@@ -35,9 +35,10 @@ Add dependencies with `uv add <package>`. Do not use `pip install`.
 
 ## Adding a model
 
-`run_eval.py --endpoint` accepts `jev`, `djev`, `liquid`, or a full URL. A new model can
-be evaluated without code changes if it serves the same typed-decision request
-format. Always do a dry run first, then a small trial:
+`run_eval.py --endpoint` accepts `jev`, `djev`, `liquid`, `openrouter`, `d1local`,
+or a full URL. A new model can be evaluated without code changes if it serves the
+same typed-decision request format. A model listed on OpenRouter's Decisions API
+needs only its id: add it to `MODELS` in `jev_bench/scripts/43_run_openrouter.sh`. Always do a dry run first, then a small trial:
 
 ```bash
 uv run workspace/run_eval.py --dry-run

@@ -1,0 +1,176 @@
+{
+  "sources": {
+    "scifact": {
+      "corpus": {
+        "repo": "BeIR/scifact",
+        "revision": "b3b5335604bf5ee3c4447671af975ea25143d4f5",
+        "file": "corpus/corpus-00000-of-00001.parquet"
+      },
+      "queries": {
+        "repo": "BeIR/scifact",
+        "revision": "b3b5335604bf5ee3c4447671af975ea25143d4f5",
+        "file": "queries/queries-00000-of-00001.parquet"
+      },
+      "qrels": {
+        "repo": "BeIR/scifact-qrels",
+        "revision": "2938d17dc3b09882fdb8c12bbbe2e2dc0e75a029",
+        "file": "test.tsv"
+      },
+      "license": "cc-by-sa-4.0",
+      "redistributable": true,
+      "exposure": "public BEIR benchmark; possible training exposure",
+      "notes": "Queries are scientific claims; relevant abstracts support or refute them. Test qrels are binary (grade 1)."
+    },
+    "nfcorpus": {
+      "corpus": {
+        "repo": "BeIR/nfcorpus",
+        "revision": "b5026a0e96e8a7ac4f95f482a596389289d46269",
+        "file": "corpus/corpus-00000-of-00001.parquet"
+      },
+      "queries": {
+        "repo": "BeIR/nfcorpus",
+        "revision": "b5026a0e96e8a7ac4f95f482a596389289d46269",
+        "file": "queries/queries-00000-of-00001.parquet"
+      },
+      "qrels": {
+        "repo": "BeIR/nfcorpus-qrels",
+        "revision": "a451b3b26d3ae1358f259c1a3a4dd61fcea35a65",
+        "file": "test.tsv"
+      },
+      "license": "cc-by-sa-4.0",
+      "redistributable": true,
+      "exposure": "public BEIR benchmark; possible training exposure",
+      "notes": "Lay health questions against PubMed abstracts. Test qrels are graded 1 (partially) and 2 (highly); unjudged documents count as 0."
+    },
+    "helpsteer2": {
+      "data": {
+        "repo": "nvidia/HelpSteer2",
+        "revision": "990b2711a36180dd19d9c94b8627844866f8982a",
+        "file": "validation.jsonl.gz"
+      },
+      "license": "cc-by-4.0",
+      "redistributable": true,
+      "exposure": "public reward-model training data; likely training exposure",
+      "notes": "Human ratings 0-4 per response. The validation split is used; helpfulness is the attribute scored."
+    },
+    "rewardbench2": {
+      "data": {
+        "repo": "allenai/reward-bench-2",
+        "revision": "7ff08853b0d5686e79b13fda8677024f566a104a",
+        "file": "data/test-00000-of-00001.parquet"
+      },
+      "license": "odc-by",
+      "redistributable": true,
+      "exposure": "public benchmark; possible training exposure",
+      "notes": "Best-of-4: one correct response, three rejected. The Ties subset allows several correct answers and is excluded."
+    }
+  },
+  "seed": 20261011,
+  "candidates_per_query": 20,
+  "doc_clip_chars": {
+    "title": 200,
+    "text": 500
+  },
+  "files_sha256": {
+    "BeIR/scifact@b3b5335604bf/corpus/corpus-00000-of-00001.parquet": "243324b35f03d82bd6d98a5f575966876e86cad7ce16e5333a35b1b793dc4f45",
+    "BeIR/scifact@b3b5335604bf/queries/queries-00000-of-00001.parquet": "1c37956c5dc8b810b60302323c24d1a9e79e26411ba8f5ad9d0888642e2a9034",
+    "BeIR/scifact-qrels@2938d17dc3b0/test.tsv": "0864bb985e0ca2367ba217977e72004d549054b2b06666ed9d4825ac7c21284c",
+    "BeIR/nfcorpus@b5026a0e96e8/corpus/corpus-00000-of-00001.parquet": "f2a1c0b570a5efdf23cfa36f5e573d062cc113c6e7251e22c69b323a33ea895e",
+    "BeIR/nfcorpus@b5026a0e96e8/queries/queries-00000-of-00001.parquet": "edd2b878b8130fb3b5e3c4b9428ddc1e67fbd6eedf8ae099fca3b87838ba6b29",
+    "BeIR/nfcorpus-qrels@a451b3b26d3a/test.tsv": "f8fba6ef3d4dd9c3a242a8ba4ae38276fc3622fce7dcbae764766d564542fd2a",
+    "nvidia/HelpSteer2@990b2711a361/validation.jsonl.gz": "610eeb5289494d613c4c0f70aade2df8df0b499f3a24e76d232f74e6909d010a",
+    "allenai/reward-bench-2@7ff08853b0d5/data/test-00000-of-00001.parquet": "c8ec60efbd75d2f9dcba4121e6101f7a6015abc38a34e034ae2c7ae886265958"
+  },
+  "stats": {
+    "scifact": {
+      "queries": 300,
+      "queries_without_text": 0,
+      "queries_with_no_bm25_candidates": 0,
+      "no_candidate_examples": [],
+      "queries_with_fewer_than_k_candidates": 0,
+      "shortlist_contains_a_relevant_document": 0.8433333333333334,
+      "corpus_documents": 5183,
+      "candidates_per_query": 20
+    },
+    "nfcorpus": {
+      "queries": 298,
+      "queries_without_text": 0,
+      "queries_with_no_bm25_candidates": 25,
+      "no_candidate_examples": [
+        "PLAIN-1008: 'deafness'",
+        "PLAIN-1098: 'eggnog'",
+        "PLAIN-1214: 'Fosamax'",
+        "PLAIN-1309: 'halibut'",
+        "PLAIN-1496: 'leeks'",
+        "PLAIN-1611: 'mesquite'",
+        "PLAIN-1621: 'Mevacor'",
+        "PLAIN-1679: 'myelopathy'"
+      ],
+      "queries_with_fewer_than_k_candidates": 73,
+      "shortlist_contains_a_relevant_document": 0.7718120805369127,
+      "corpus_documents": 3633,
+      "candidates_per_query": 20
+    },
+    "helpsteer2": {
+      "rows": 1038,
+      "excluded_over_char_limit": 0,
+      "sampled": 500
+    },
+    "rewardbench2": {
+      "rows": 1865,
+      "excluded_by_subset": {
+        "Factuality": 16,
+        "Precise IF": 9,
+        "Safety": 1,
+        "Focus": 24,
+        "Ties": 102
+      },
+      "sampled_items": 600,
+      "cases_with_twins": 1200
+    }
+  },
+  "slices": {
+    "scifact_rank_noul": {
+      "cases": 300,
+      "families": 300,
+      "est_tokens_mean": 5743.136666666666,
+      "case_file_sha256": "b2ccc85808fbbc005367ca782a4017ad05c2944691737c97a7a839bcb1fd79f0"
+    },
+    "scifact_rank_choice": {
+      "cases": 300,
+      "families": 300,
+      "est_tokens_mean": 3249.826666666667,
+      "case_file_sha256": "a4ebe1066173b116b9584b31854805e82b2b989d5d99687bcb81ef28ff3d17c5"
+    },
+    "nfcorpus_rank_noul": {
+      "cases": 298,
+      "families": 298,
+      "est_tokens_mean": 4569.1711409395975,
+      "case_file_sha256": "78557163f0bc15f059128e56b88c4d351a9c5c332c3839f368b8b3d627149097"
+    },
+    "nfcorpus_rank_choice": {
+      "cases": 298,
+      "families": 298,
+      "est_tokens_mean": 2640.6744966442952,
+      "case_file_sha256": "99e2c924ac0f814b8755b86ca82d7519455176a61e15228ec091943c38e9ed6a"
+    },
+    "nfcorpus_rank_graded": {
+      "cases": 4924,
+      "families": 298,
+      "est_tokens_mean": 307.5800162469537,
+      "case_file_sha256": "7b3fad72d1dc8a09d4f88d31c76aaed597620e1958780e40f4c42bce7e43c107"
+    },
+    "helpsteer2_helpfulness": {
+      "cases": 500,
+      "families": 375,
+      "est_tokens_mean": 680.638,
+      "case_file_sha256": "b2e3730ad8043451432781961a97e1f34a09baf21a92b53287ab9451b5d4a6ec"
+    },
+    "rewardbench2": {
+      "cases": 1200,
+      "families": 594,
+      "est_tokens_mean": 1831.9233333333334,
+      "case_file_sha256": "a9bd4f25d44055b4f0b6cbcb160e48a0d1f8ae60eb868287fc38026bbb3d0c99"
+    }
+  }
+}

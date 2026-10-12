@@ -17,7 +17,7 @@ is a separate experiment and would change the latency numbers, so it is not
 mixed in here.
 
 Resumable: re-running the same --run-id skips case ids already recorded. The
-API key is read from TYPESAFE_API_KEY (LIQUID_API_KEY for Liquid), never logged, and scrubbed out of any
+API key is read from TYPESAFE_API_KEY (LIQUID_API_KEY for Liquid, OPENROUTER_API_KEY for OpenRouter), never logged, and scrubbed out of any
 error text before it is written to disk.
 
 Predictions store the decision, the probability vector, latency and token usage,
@@ -36,6 +36,9 @@ import time
 import common as C
 
 STOP_AFTER_CONSECUTIVE_FAILURES = 15
+# Out of credit or a bad key: no retry or wait will fix these, so stop at once.
+ACCOUNT_ERRORS = ("HTTP 401", "HTTP 402", "HTTP 403")
+EXIT_ACCOUNT_ERROR = 3
 
 
 def resolve_endpoint(name: str) -> str:
@@ -45,9 +48,13 @@ def resolve_endpoint(name: str) -> str:
         return C.DJEV_URL
     if name == "liquid":
         return C.LIQUID_URL
+    if name == "openrouter":
+        return C.OPENROUTER_URL
+    if name == "d1local":
+        return C.D1_LOCAL_URL
     if name.startswith("http"):
         return name
-    raise SystemExit(f"--endpoint must be 'jev', 'djev', 'liquid' or a URL, got {name!r}")
+    raise SystemExit(f"--endpoint must be 'jev', 'djev', 'liquid', 'openrouter', 'd1local' or a URL, got {name!r}")
 
 
 def load_done(path) -> set[str]:
@@ -64,7 +71,7 @@ def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--only", action="append", default=[], metavar="SLICE")
     ap.add_argument("--skip", action="append", default=[], metavar="SLICE")
-    ap.add_argument("--endpoint", default="jev", help="jev, djev, liquid, or a full URL")
+    ap.add_argument("--endpoint", default="jev", help="jev, djev, liquid, openrouter, d1local, or a full URL")
     ap.add_argument("--model", default=None, help="defaults to d1:free for Liquid, jev-1.13.0 otherwise")
     ap.add_argument("--run-id", default=None)
     ap.add_argument("--limit", type=int, default=None, help="cap cases per slice")
@@ -78,14 +85,19 @@ def main() -> int:
                     help="what to record as the model in meta.json, when it differs from what is sent (e.g. djev-0.1)")
     ap.add_argument("--seed", type=int, default=None, help="djev options.seed. Pass 0 for a reproducible run.")
     ap.add_argument("--samples", type=int, default=None, help="djev options.samples, 1-4. Averages independent one-step reads.")
+    ap.add_argument("--state-as-string", action="store_true",
+                    help="send the state as its JSON text, for APIs that accept only a string state (Span-01)")
     ap.add_argument("--save-raw", action="store_true",
                     help="also write the exact request and response body per case to raw.jsonl, for tracing and audit")
     args = ap.parse_args()
     endpoint = resolve_endpoint(args.endpoint)
     is_liquid = endpoint == C.LIQUID_URL
+    is_openrouter = endpoint == C.OPENROUTER_URL
+    if is_openrouter and not args.model:
+        ap.error("OpenRouter needs an explicit --model slug, e.g. cloudflare/clef")
     args.model = args.model or (C.LIQUID_MODEL if is_liquid else C.JEV_MODEL)
-    if is_liquid and (args.no_send_model or args.seed is not None or args.samples is not None):
-        ap.error("Liquid requires a model and does not document djev seed/samples options")
+    if (is_liquid or is_openrouter) and (args.no_send_model or args.seed is not None or args.samples is not None):
+        ap.error("hosted decision APIs require a model and do not document djev seed/samples options")
 
     options: dict = {}
     if args.seed is not None:
@@ -102,7 +114,7 @@ def main() -> int:
         print("No case files selected. Run workspace/build_cases.py first.")
         return 2
 
-    status = C.key_status(C.LIQUID_API_KEY_ENV if is_liquid else C.API_KEY_ENV)
+    status = C.key_status(C.KEY_ENV_BY_URL.get(endpoint, C.API_KEY_ENV))
     print(f"endpoint  {endpoint}")
     print(f"model     sent={'(omitted)' if args.no_send_model else args.model}  recorded as={label}")
     print(f"options   {options or '(none)'}")
@@ -112,8 +124,9 @@ def main() -> int:
         endpoint=endpoint,
         model=None if args.no_send_model else args.model,
         options=options or None,
-        require_key=(not args.dry_run) and (endpoint == C.JEV_URL or is_liquid),
+        require_key=(not args.dry_run) and endpoint in C.KEY_ENV_BY_URL,
         timeout=args.timeout,
+        state_as_string=args.state_as_string,
     )
 
     work: list[dict] = []
@@ -122,10 +135,10 @@ def main() -> int:
         if args.limit:
             cases = cases[: args.limit]
         work += cases
-    if is_liquid:
+    if is_liquid or is_openrouter:
         image_slices = sorted({c["slice"] for c in work if c.get("image_path") or c.get("_images")})
         if image_slices:
-            ap.error("Liquid D1 has no documented image input. Exclude these slices with --skip: " + ", ".join(image_slices))
+            ap.error("Image input is not wired for this hosted API yet. Exclude these slices with --skip: " + ", ".join(image_slices))
     print(f"slices    {len(keys)}: " + ", ".join(keys))
     print(f"cases     {len(work):,}")
 
@@ -150,13 +163,23 @@ def main() -> int:
     print(f"resuming  {len(done):,} already recorded, {len(todo):,} to send\n")
     meta_path = run_dir / "meta.json"
     prior_meta = json.loads(meta_path.read_text(encoding="utf-8")) if meta_path.exists() else {}
-    mcp_fingerprint = C.content_hash(C.state_json([
-        {"id": c["case_id"], "state": c["state"], "question": c["question"], "gold": c["gold"]}
-        for c in work if c["slice"].startswith(("mcpmark_", "mcpbench_"))
-    ]))
-    if prior_meta.get("mcp_cases_fingerprint") not in (None, mcp_fingerprint):
-        ap.error("MCP cases changed since this run began; choose a new --run-id")
-    if prior_meta and any(prior_meta.get(k) != v for k, v in {
+    # One fingerprint per MCP slice, compared only for slices sent now, so a run
+    # filled a few slices at a time is not mistaken for changed cases.
+    mcp_fingerprints = {
+        key: C.content_hash(C.state_json([
+            {"id": c["case_id"], "state": c["state"], "question": c["question"], "gold": c["gold"]}
+            for c in work if c["slice"] == key
+        ]))
+        for key in keys if key.startswith(("mcpmark_", "mcpbench_"))
+    }
+    prior_fps = prior_meta.get("mcp_cases_fingerprints") or {}
+    changed = [k for k, fp in mcp_fingerprints.items() if prior_fps.get(k) not in (None, fp)]
+    if changed:
+        ap.error("MCP cases changed since this run began (" + ", ".join(changed) + "); choose a new --run-id")
+    mcp_fingerprints = {**prior_fps, **mcp_fingerprints}
+    # Runs from before 30 Sep 2026 do not record model_sent_on_wire or
+    # request_options; compare only what the earlier run actually recorded.
+    if prior_meta and any(k in prior_meta and prior_meta[k] != v for k, v in {
         "endpoint": endpoint,
         "model_requested": label,
         "model_sent_on_wire": None if args.no_send_model else args.model,
@@ -166,6 +189,7 @@ def main() -> int:
     if not todo:
         print("Nothing left to send. Next: uv run workspace/score_runs.py --run-id " + run_id)
         return 0
+    by_slice = {**(prior_meta.get("n_cases_by_slice") or {}), **{key: sum(c["slice"] == key for c in work) for key in keys}}
     meta_path.write_text(
         json.dumps(
             {
@@ -176,11 +200,14 @@ def main() -> int:
                 "model_requested": label,
                 "model_sent_on_wire": None if args.no_send_model else args.model,
                 "request_options": options or None,
+                "state_as_string": args.state_as_string,
                 "started_at": time.strftime("%Y-%m-%dT%H:%M:%S%z"),
-                "slices": keys,
-                "n_cases_total": len(work),
-                "n_cases_by_slice": {key: sum(c["slice"] == key for c in work) for key in keys},
-                "mcp_cases_fingerprint": mcp_fingerprint,
+                # Merged with the earlier record, so a run filled one slice at a
+                # time (matrix.py) still lists every slice it holds.
+                "slices": sorted(set(prior_meta.get("slices", [])) | set(keys)),
+                "n_cases_total": sum(by_slice.values()),
+                "n_cases_by_slice": by_slice,
+                "mcp_cases_fingerprints": mcp_fingerprints,
                 "concurrency": args.concurrency,
                 "concurrency_history": prior_meta.get("concurrency_history", [prior_meta["concurrency"]] if "concurrency" in prior_meta else []) + [args.concurrency],
                 "limit_per_slice": args.limit,
@@ -196,7 +223,7 @@ def main() -> int:
     )
 
     lock = threading.Lock()
-    state = {"done": 0, "errors": 0, "consecutive": 0, "stop": False, "t0": time.time()}
+    state = {"done": 0, "errors": 0, "consecutive": 0, "stop": False, "account_error": False, "t0": time.time()}
 
     def handle(case: dict) -> dict:
         if state["stop"]:
@@ -216,6 +243,10 @@ def main() -> int:
             "source_revision": case.get("revision"),
             "state_hash": case.get("state_hash"),
             "truncated_state": case["truncated"],
+            # ranking and scoring slices: ids, grades and subsets only, never text
+            "rank_protocol": case.get("rank_protocol"),
+            "rank_meta": case.get("rank_meta"),
+            "subgroup": case.get("subgroup"),
             "latency_ms": result.get("latency_ms"),
             "client_concurrency": args.concurrency,
             "attempts": result.get("attempts"),
@@ -224,7 +255,10 @@ def main() -> int:
         }
         if result["ok"]:
             payload = result["response"]
-            rec.update(C.parse_answer(payload, case["question_key"], case["task_type"]))
+            if case["task_type"] == "rank":
+                rec.update(C.parse_rank(payload, case))
+            else:
+                rec.update(C.parse_answer(payload, case["question_key"], case["task_type"]))
             rec.update(C.usage_of(payload))
             if case["task_type"] == "choice" and not rec.get("parse_error"):
                 if str(rec.get("pred")) not in case["question"]["criteria"]:
@@ -248,7 +282,11 @@ def main() -> int:
             if rec["error"] or rec.get("parse_error"):
                 state["errors"] += 1
                 state["consecutive"] += 1
-                if state["consecutive"] >= args.stop_after:
+                if (rec["error"] or "").startswith(ACCOUNT_ERRORS) and not state["stop"]:
+                    state["stop"] = state["account_error"] = True
+                    print(f"\nStopping: the API refused this account. {rec['error'][:300]}")
+                # Requests already in flight keep failing after the stop; say it once.
+                if state["consecutive"] >= args.stop_after and not state["stop"]:
                     state["stop"] = True
                     print(f"\nStopping: {state['consecutive']} consecutive failures. Last: {rec.get('error') or rec.get('parse_error')}")
             else:
@@ -275,6 +313,8 @@ def main() -> int:
     if toks:
         print(f"input tokens reported by the API: total={sum(toks):,}  mean={sum(toks)/len(toks):.0f}")
     print(f"\nNext: uv run workspace/score_runs.py --run-id {run_id}")
+    if state["account_error"]:
+        return EXIT_ACCOUNT_ERROR
     return 1 if state["stop"] or state["errors"] else 0
 
 

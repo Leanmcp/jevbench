@@ -236,10 +236,93 @@ def score_ordinal(recs: list[dict]) -> dict:
         "within_one_level": statistics.fmean(1.0 if abs(g - p) <= 1 else 0.0 for g, p in zip(golds, preds)),
         "mae_expected_level": statistics.fmean(abs(g - e) for g, e in zip(golds, exps)),
         "mae_rounded": statistics.fmean(abs(g - p) for g, p in zip(golds, preds)),
+        "spearman_expected_level": spearman([float(g) for g in golds], exps),
         "ranked_probability_score": statistics.fmean(rps) if rps else None,
         "n_levels_observed": k,
         "note": "Levels are treated as equally spaced, which SST-5 does not guarantee.",
     }
+
+
+def spearman(xs: list[float], ys: list[float]) -> float | None:
+    """Rank correlation with average ranks for ties; None if either side is constant."""
+    def ranks(vals):
+        order = sorted(range(len(vals)), key=lambda i: vals[i])
+        out = [0.0] * len(vals)
+        i = 0
+        while i < len(order):
+            j = i
+            while j + 1 < len(order) and vals[order[j + 1]] == vals[order[i]]:
+                j += 1
+            for k in range(i, j + 1):
+                out[order[k]] = (i + j) / 2
+            i = j + 1
+        return out
+    if len(xs) < 3:
+        return None
+    rx, ry = ranks(xs), ranks(ys)
+    mx, my = statistics.fmean(rx), statistics.fmean(ry)
+    sx = math.sqrt(sum((a - mx) ** 2 for a in rx))
+    sy = math.sqrt(sum((b - my) ** 2 for b in ry))
+    if not sx or not sy:
+        return None
+    return sum((a - mx) * (b - my) for a, b in zip(rx, ry)) / (sx * sy)
+
+
+RANK_CUTOFF = 10
+
+
+def dcg(grades: list[int]) -> float:
+    # Linear gain, as trec_eval and BEIR's pytrec_eval compute nDCG.
+    return sum(g / math.log2(i + 2) for i, g in enumerate(grades))
+
+
+def rank_metrics(scores: dict[str, float], gold: dict[str, int], ideal: list[int], bm25_order: list[str]) -> dict:
+    """Metrics for one query. The ideal ordering uses every judged document for
+    the query, not only the shortlist, so missing a relevant document costs."""
+    k = RANK_CUTOFF
+    order = sorted(scores, key=lambda d: (-scores[d], d))
+    gains = [gold.get(d, 0) for d in order]
+    idcg = dcg(ideal[:k])
+    n_rel = sum(1 for g in ideal if g > 0)
+    bm25 = [gold.get(d, 0) for d in bm25_order]
+    return {
+        "ndcg@10": dcg(gains[:k]) / idcg if idcg else 0.0,
+        "mrr@10": next((1 / (i + 1) for i, g in enumerate(gains[:k]) if g > 0), 0.0),
+        "recall@10": sum(1 for g in gains[:k] if g > 0) / n_rel if n_rel else 0.0,
+        "bm25_ndcg@10": dcg(bm25[:k]) / idcg if idcg else 0.0,
+        "oracle_ndcg@10": dcg(sorted(gold.values(), reverse=True)[:k]) / idcg if idcg else 0.0,
+        "shortlist_recall": sum(1 for g in gold.values() if g > 0) / n_rel if n_rel else 0.0,
+    }
+
+
+def ranking_per_query(recs: list[dict], task_type: str) -> list[tuple[str, dict]]:
+    """(family_id, metrics) per query. A rank case is one query already; graded
+    pairs are grouped by query and ranked by expected level."""
+    if task_type == "rank":
+        return [(r["family_id"], rank_metrics(r["doc_scores"], r["gold"], r["rank_meta"]["ideal_grades"],
+                                              r["rank_meta"]["bm25_order"])) for r in recs if r.get("doc_scores")]
+    pairs = [r for r in recs if (r.get("rank_meta") or {}).get("doc")]
+    if not pairs:
+        return []
+    groups: dict[str, list[dict]] = collections.defaultdict(list)
+    for r in pairs:
+        groups[r["family_id"]].append(r)
+    out = []
+    for family, rows in sorted(groups.items()):
+        scores = {r["rank_meta"]["doc"]: float(r["expected_level"]) for r in rows}
+        gold = {r["rank_meta"]["doc"]: int(r["gold"]) for r in rows}
+        bm25_order = [r["rank_meta"]["doc"] for r in sorted(rows, key=lambda r: r["rank_meta"]["bm25_rank"])]
+        out.append((family, rank_metrics(scores, gold, rows[0]["rank_meta"]["ideal_grades"], bm25_order)))
+    return out
+
+
+def summarise_ranking(per_query: list[tuple[str, dict]]) -> dict:
+    names = per_query[0][1].keys()
+    out = {name: statistics.fmean(m[name] for _, m in per_query) for name in names}
+    out["n_queries"] = len(per_query)
+    out["note"] = ("Reranking a fixed BM25 top-20. shortlist_recall and oracle_ndcg@10 cap what any reranker "
+                   "can reach; bm25_ndcg@10 is the shortlist's own order.")
+    return out
 
 
 def headline_units(recs: list[dict], task_type: str) -> tuple[str, list[list[float]]]:
@@ -346,14 +429,26 @@ def main() -> int:
                 str(r["gold"]) == str(r["pred"]) for r in usable
             ) / planned if planned else None
         if usable:
-            if task_type == "choice":
+            per_query = ranking_per_query(usable, task_type)
+            if task_type == "rank":
+                entry["metrics"] = {}
+            elif task_type == "choice":
                 entry["metrics"] = score_choice(usable)
             elif task_type == "noul":
                 entry["metrics"] = score_noul(usable, slice_key)
             else:
                 entry["metrics"] = score_ordinal(usable)
 
-            name, units = headline_units(usable, task_type)
+            if per_query:
+                entry["ranking"] = summarise_ranking(per_query)
+                name, units = "ndcg@10", [[m["ndcg@10"]] for _, m in per_query]
+            else:
+                name, units = headline_units(usable, task_type)
+            if task_type == "choice" and any(r.get("subgroup") for r in usable):
+                groups = collections.defaultdict(list)
+                for r in usable:
+                    groups[r.get("subgroup") or "none"].append(str(r["gold"]) == str(r["pred"]))
+                entry["by_subgroup"] = {g: {"n": len(v), "accuracy": statistics.fmean(v)} for g, v in sorted(groups.items())}
             if mcp_metric:
                 entry["metrics"][mcp_metric] = entry["metrics"]["accuracy"]
                 name = mcp_metric
@@ -364,7 +459,7 @@ def main() -> int:
                 "ci95_bootstrap_by_family": list(ci) if ci else None,
                 "n_families": len(units),
             }
-            entry["position_bias"] = position_bias(usable, task_type)
+            entry["position_bias"] = None if task_type == "rank" else position_bias(usable, task_type)
 
             lat = [r["latency_ms"] for r in usable if r.get("latency_ms")]
             toks = [r["input_tokens"] for r in usable if r.get("input_tokens")]

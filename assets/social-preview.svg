@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="640" viewBox="0 0 1280 640">
+  <!-- Upload the PNG render as the GitHub social preview (Settings > General). -->
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0b1220"/>
+      <stop offset="1" stop-color="#132238"/>
+    </linearGradient>
+  </defs>
+  <rect width="1280" height="640" fill="url(#bg)"/>
+
+  <!-- mark -->
+  <g transform="translate(96 150)">
+    <rect width="200" height="200" rx="44" fill="#1e293b"/>
+    <rect x="38"  y="110" width="34" height="54"  rx="7" fill="#475569"/>
+    <rect x="83"  y="38"  width="34" height="126" rx="7" fill="#22d3ee"/>
+    <rect x="128" y="136" width="34" height="28"  rx="7" fill="#475569"/>
+    <line x1="32" y1="172" x2="168" y2="172" stroke="#64748b" stroke-width="5" stroke-linecap="round"/>
+  </g>
+
+  <g font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif">
+    <text x="352" y="250" font-size="112" font-weight="800" letter-spacing="-3">
+      <tspan fill="#f8fafc">Jev</tspan><tspan fill="#22d3ee">Bench</tspan>
+    </text>
+    <text x="356" y="318" font-size="38" font-weight="500" fill="#cbd5e1">Open benchmark for typed decision models</text>
+
+    <text x="98" y="470" font-size="30" font-weight="600" fill="#e2e8f0">Liquid D1  ·  Jev 1.13  ·  djev-0.1  ·  Laya 421M</text>
+    <text x="98" y="520" font-size="28" fill="#94a3b8">12 text slices  ·  32,813 scored decisions  ·  medicine, exams, intent, safety</text>
+    <text x="98" y="590" font-size="24" fill="#64748b">github.com/Leanmcp/jevbench</text>
+  </g>
+</svg>

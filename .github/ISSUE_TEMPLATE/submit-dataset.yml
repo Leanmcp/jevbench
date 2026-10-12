@@ -1,0 +1,60 @@
+name: Submit a dataset
+description: Propose a dataset for JevBench and pick the models to benchmark it against.
+title: "Dataset: "
+labels: ["dataset"]
+body:
+  - type: input
+    id: name
+    attributes:
+      label: Dataset name
+    validations:
+      required: true
+  - type: input
+    id: url
+    attributes:
+      label: Link
+      description: Hugging Face or source URL, ideally with a fixed revision.
+    validations:
+      required: true
+  - type: input
+    id: license
+    attributes:
+      label: Licence
+    validations:
+      required: true
+  - type: dropdown
+    id: type
+    attributes:
+      label: Decision type
+      options:
+        - Yes or no (noul)
+        - One of a fixed set (choice)
+        - Level on a rubric (score)
+        - Ranking candidates
+        - Not sure
+    validations:
+      required: true
+  - type: textarea
+    id: tests
+    attributes:
+      label: What it tests
+      description: One or two sentences, and which field holds the answer.
+    validations:
+      required: true
+  - type: checkboxes
+    id: models
+    attributes:
+      label: Benchmark it against
+      options:
+        - label: All models on the leaderboard
+        - label: Jev 1.13
+        - label: Liquid D1
+        - label: Cloudflare Clef, Clef-flash, Clef-omni
+        - label: Perplexity pplx-decider v1.1
+        - label: GPT-6 Luna Decisions
+        - label: Microsoft Decision 1
+        - label: Open models (djev, Laya, Liquid d1-3B)
+  - type: input
+    id: other_models
+    attributes:
+      label: Other models

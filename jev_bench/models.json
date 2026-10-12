@@ -1,0 +1,31 @@
+{
+  "_doc": "One entry per model for workspace/matrix.py. run_id is where new cells are written; also_read lists older runs whose results count as done. endpoint is a run_eval.py --endpoint value. model is sent on the wire; null means --no-send-model. price_per_m_input is USD, for the cost estimate only. images: whether image slices apply. hosting: API, Cloud GPU or Local, for display. max_options: the most options per question the API accepts; larger slices show as not applicable. state_as_string: send the state as JSON text. no_new_runs: keep existing results but offer no new cells, with the reason.",
+  "models": [
+    {"name": "Jev 1.13", "hosting": "API", "run_id": "jev-1.13.0-20260926T133639", "endpoint": "jev", "model": "jev-1.13.0", "label": "jev-1.13.0", "concurrency": 4, "price_per_m_input": null, "images": false},
+    {"name": "Liquid D1 (hosted)", "hosting": "API", "run_id": "liquid-d1-full", "endpoint": "liquid", "model": "d1:free", "label": "liquid-d1", "concurrency": 1, "no_new_runs": "free tier too slow for new slices; use Liquid D1 via OpenRouter", "price_per_m_input": 0, "images": false},
+    {"name": "djev-0.1", "hosting": "Cloud GPU", "run_id": "djev-full", "also_read": ["djev-multimodal"], "endpoint": "djev", "model": null, "label": "djev-0.1", "options": {"seed": 0, "samples": 1}, "concurrency": 16, "price_per_m_input": null, "images": true,
+     "needs": "the djev GPU VM and tunnel: bash scripts/10_gpu_up.sh"},
+    {"name": "Laya 421M", "hosting": "Local", "run_id": "laya-en-full", "endpoint": "http://127.0.0.1:8000/v1/systemone", "model": null, "label": "english", "concurrency": 4, "price_per_m_input": null, "images": false,
+     "needs": "the Laya server on 127.0.0.1:8000 (see Laya_Architecture/)"},
+
+    {"name": "Liquid D1 via OpenRouter", "hosting": "API", "run_id": "or-liquid-d1-full", "endpoint": "openrouter", "model": "liquid/d1", "label": "or-liquid-d1", "concurrency": 100, "price_per_m_input": 0.04, "images": false},
+    {"name": "Clef", "hosting": "API", "run_id": "or-cloudflare-clef-full", "endpoint": "openrouter", "model": "cloudflare/clef", "label": "or-cloudflare-clef", "concurrency": 100, "price_per_m_input": 0.24, "images": false},
+    {"name": "Clef-flash", "hosting": "API", "run_id": "or-cloudflare-clef-flash-full", "endpoint": "openrouter", "model": "cloudflare/clef-flash", "label": "or-cloudflare-clef-flash", "concurrency": 100, "price_per_m_input": 0.038, "images": false},
+    {"name": "Clef-omni", "hosting": "API", "run_id": "or-cloudflare-clef-omni-full", "endpoint": "openrouter", "model": "cloudflare/clef-omni", "label": "or-cloudflare-clef-omni", "concurrency": 100, "price_per_m_input": 0.15, "images": false},
+    {"name": "pplx-decider v1.1", "hosting": "API", "run_id": "or-perplexity-pplx-decider-v1.1-27b-full", "endpoint": "openrouter", "model": "perplexity/pplx-decider-v1.1-27b", "label": "or-perplexity-pplx-decider-v1.1-27b", "concurrency": 100, "price_per_m_input": 0.02, "images": false},
+    {"name": "GPT-6 Luna Decisions", "hosting": "API", "run_id": "or-openai-gpt-6-luna-decisions-full", "endpoint": "openrouter", "model": "openai/gpt-6-luna-decisions", "label": "or-openai-gpt-6-luna-decisions", "concurrency": 100, "price_per_m_input": 0.10, "images": false},
+    {"name": "Microsoft Decision 1", "hosting": "API", "run_id": "or-microsoft-microsoft-decision-1-full", "endpoint": "openrouter", "model": "microsoft/microsoft-decision-1", "label": "or-microsoft-microsoft-decision-1", "concurrency": 100, "price_per_m_input": 0.042, "images": false},
+    {"name": "Solar Decide", "hosting": "API", "run_id": "or-upstage-solar-decide-full", "endpoint": "openrouter", "model": "upstage/solar-decide", "label": "or-upstage-solar-decide", "concurrency": 100, "max_options": 26, "price_per_m_input": 0.05, "images": false},
+    {"name": "Solar Decide Flash", "hosting": "API", "run_id": "or-upstage-solar-decide-flash-full", "endpoint": "openrouter", "model": "upstage/solar-decide-flash", "label": "or-upstage-solar-decide-flash", "concurrency": 100, "max_options": 26, "price_per_m_input": 0.05, "images": false},
+    {"name": "Drex v1.5", "hosting": "API", "run_id": "or-nace-ai-drex-v1.5-full", "endpoint": "openrouter", "model": "nace-ai/drex-v1.5", "label": "or-nace-ai-drex-v1.5", "concurrency": 100, "price_per_m_input": 0.04, "images": false},
+    {"name": "Mercury Decide", "hosting": "API", "run_id": "or-inception-mercury-decide-full", "endpoint": "openrouter", "model": "inception/mercury-decide", "label": "or-inception-mercury-decide", "concurrency": 100, "price_per_m_input": 0.02, "images": false},
+    {"name": "TEv1 4B (exp.)", "hosting": "API", "run_id": "or-togethercomputer-tev1-4b-experimental-full", "endpoint": "openrouter", "model": "togethercomputer/tev1-4b-experimental", "label": "or-togethercomputer-tev1-4b-experimental", "concurrency": 100, "max_options": 20, "price_per_m_input": 0.042, "images": false},
+    {"name": "Kev 4B", "hosting": "API", "run_id": "or-jaredpalmer-kev-4b-full", "endpoint": "openrouter", "model": "jaredpalmer/kev-4b", "label": "or-jaredpalmer-kev-4b", "concurrency": 100, "price_per_m_input": 0.042, "images": false},
+    {"name": "Span-01", "hosting": "API", "run_id": "or-respan-span-01-full", "endpoint": "openrouter", "model": "respan/span-01", "label": "or-respan-span-01", "concurrency": 100, "state_as_string": true, "price_per_m_input": 0.02, "images": false},
+
+    {"name": "Liquid d1-3B (local)", "hosting": "Local", "run_id": "liquid-d1-3B-full", "endpoint": "d1local", "model": null, "label": "liquid-d1-3B", "served_model": "LiquidAI/d1-3B", "concurrency": 2, "price_per_m_input": 0, "images": false,
+     "needs": "uv run workspace/serve_d1_local.py --model LiquidAI/d1-3B"},
+    {"name": "Liquid d1-omni-600M (local)", "hosting": "Local", "run_id": "liquid-d1-omni-600M-full", "endpoint": "d1local", "model": null, "label": "liquid-d1-omni-600M", "served_model": "LiquidAI/d1-omni-600M", "concurrency": 2, "price_per_m_input": 0, "images": false,
+     "needs": "uv run workspace/serve_d1_local.py --model LiquidAI/d1-omni-600M"}
+  ]
+}
