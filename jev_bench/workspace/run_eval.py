@@ -36,6 +36,9 @@ import time
 import common as C
 
 STOP_AFTER_CONSECUTIVE_FAILURES = 15
+# Out of credit or a bad key: no retry or wait will fix these, so stop at once.
+ACCOUNT_ERRORS = ("HTTP 401", "HTTP 402", "HTTP 403")
+EXIT_ACCOUNT_ERROR = 3
 
 
 def resolve_endpoint(name: str) -> str:
@@ -216,7 +219,7 @@ def main() -> int:
     )
 
     lock = threading.Lock()
-    state = {"done": 0, "errors": 0, "consecutive": 0, "stop": False, "t0": time.time()}
+    state = {"done": 0, "errors": 0, "consecutive": 0, "stop": False, "account_error": False, "t0": time.time()}
 
     def handle(case: dict) -> dict:
         if state["stop"]:
@@ -268,7 +271,11 @@ def main() -> int:
             if rec["error"] or rec.get("parse_error"):
                 state["errors"] += 1
                 state["consecutive"] += 1
-                if state["consecutive"] >= args.stop_after:
+                if (rec["error"] or "").startswith(ACCOUNT_ERRORS) and not state["stop"]:
+                    state["stop"] = state["account_error"] = True
+                    print(f"\nStopping: the API refused this account. {rec['error'][:300]}")
+                # Requests already in flight keep failing after the stop; say it once.
+                if state["consecutive"] >= args.stop_after and not state["stop"]:
                     state["stop"] = True
                     print(f"\nStopping: {state['consecutive']} consecutive failures. Last: {rec.get('error') or rec.get('parse_error')}")
             else:
@@ -295,6 +302,8 @@ def main() -> int:
     if toks:
         print(f"input tokens reported by the API: total={sum(toks):,}  mean={sum(toks)/len(toks):.0f}")
     print(f"\nNext: uv run workspace/score_runs.py --run-id {run_id}")
+    if state["account_error"]:
+        return EXIT_ACCOUNT_ERROR
     return 1 if state["stop"] or state["errors"] else 0
 
 

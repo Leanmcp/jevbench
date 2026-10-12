@@ -417,15 +417,23 @@ def main() -> int:
         return 0
 
     failed = []
+    refused_endpoints: set[str] = set()
     try:
         for mi, acts in plan.items():
             if mi in blocked:
                 continue
             m = models[mi]
+            if m["endpoint"] in refused_endpoints:
+                blocked[mi] = f"{m['endpoint']} refused the account earlier in this run"
+                continue
             print(f"\n=== {m['name']}  ({m['run_id']})")
             if acts["rerun"]:
                 drop_slices(m["run_id"], set(acts["rerun"]))
-            if run_model(m, acts["run"] + acts["rerun"]) != 0:
+            code = run_model(m, acts["run"] + acts["rerun"])
+            if code == 3:  # run_eval.EXIT_ACCOUNT_ERROR: out of credit or bad key
+                refused_endpoints.add(m["endpoint"])
+                print(f"\n{m['endpoint']} refused the account (credit or key). Skipping its other models; fix it and run the matrix again.")
+            if code != 0:
                 failed.append(m["name"])
     except KeyboardInterrupt:
         print("\nStopped. Finished cases are saved; run the matrix again to continue.")
