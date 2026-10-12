@@ -135,7 +135,9 @@ def build_grid(models: list[dict], keys: list[str], ids: dict[str, set[str]], im
             if key in image and not m.get("images"):
                 row.append({"state": NA, "done": 0, "total": total, "in_other_run": False, "why": "no image input"})
                 continue
-            if m.get("no_new_runs") and not (primary[key] | set().union(*(o[key] for o in others))) & ids[key]:
+            # A frozen model keeps what it finished; anything short of done, including
+            # a slice a stopped run began, is not offered again.
+            if m.get("no_new_runs") and len((primary[key] | set().union(*(o[key] for o in others))) & ids[key]) < total:
                 row.append({"state": NA, "done": 0, "total": total, "in_other_run": False, "why": m["no_new_runs"]})
                 continue
             if m.get("max_options") and SLICE_MAX_OPTIONS.get(key, 0) > m["max_options"]:
