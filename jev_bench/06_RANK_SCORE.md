@@ -47,7 +47,7 @@ to 200, as rerankers do to fit 20 documents into one request.
 | Slice | Source | What it tests | Cases | Licence |
 |---|---|---|---|---|
 | `scifact_rank_noul`, `scifact_rank_choice` | [BeIR/scifact](https://huggingface.co/datasets/BeIR/scifact) | Scientific claims against about 5,000 abstracts: which papers support or refute the claim. Needs scientific understanding, not word overlap. Relevance is yes/no | 300 queries each | CC BY-SA 4.0 |
-| `nfcorpus_rank_noul`, `nfcorpus_rank_choice`, `nfcorpus_rank_graded` | [BeIR/nfcorpus](https://huggingface.co/datasets/BeIR/nfcorpus) | Lay health questions against about 3,600 PubMed abstracts. Relevance is graded (partially or highly relevant), so partial matches count | 323 queries; graded 6,460 pairs | CC BY-SA 4.0 |
+| `nfcorpus_rank_noul`, `nfcorpus_rank_choice`, `nfcorpus_rank_graded` | [BeIR/nfcorpus](https://huggingface.co/datasets/BeIR/nfcorpus) | Lay health questions against about 3,600 PubMed abstracts. Relevance is graded (partially or highly relevant), so partial matches count | 298 queries; graded 4,924 pairs | CC BY-SA 4.0 |
 | `helpsteer2_helpfulness` | [nvidia/HelpSteer2](https://huggingface.co/datasets/nvidia/HelpSteer2) | Rate a response's helpfulness 0 to 4 as a human annotator did. The core of a decision model as a judge. Scored by Spearman correlation and MAE against the human rating | 500 | CC BY 4.0 |
 | `rewardbench2` | [allenai/reward-bench-2](https://huggingface.co/datasets/allenai/reward-bench-2) | Pick the one correct response of four, where the three wrong ones are subtly flawed. Reward-model accuracy, reported per subset (Factuality, Precise IF, Math, Safety, Focus). Each item is asked twice in two orders to measure position bias. Chance is 25% | 600 items, 1,200 cases | ODC-BY |
 
@@ -79,6 +79,12 @@ time uv run workspace/matrix.py             # the new columns appear; select and
   over 16,000 characters are left out and counted in
   `data/rank_score_build_manifest.json`. Truncating a response can remove the
   very error that makes it wrong.
+- **25 NFCorpus queries are left out.** They are single topic words from
+  NutritionFacts.org tags (`eggnog`, `Fosamax`, `halibut`) that occur in no
+  abstract, so BM25 finds no candidate. A further 73 queries get fewer than 20
+  candidates. Every model sees the same 298 queries, so comparisons hold, but
+  scores run slightly above the official NFCorpus setup, which counts those
+  queries as zero. Counts are in `data/rank_score_build_manifest.json`.
 - **Unjudged documents count as not relevant**, the standard assumption, which
   understates a model that finds relevant but unjudged documents.
 - **Training exposure.** All four are public; HelpSteer2 is reward-model

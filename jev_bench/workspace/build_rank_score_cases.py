@@ -197,6 +197,8 @@ def build_rank(name: str, spec: dict, files: dict[str, Path], stats: dict) -> di
     if name == "nfcorpus":
         out[f"{name}_rank_graded"] = []
     covered = missing_query = no_candidates = 0
+    no_candidate_examples: list[str] = []
+    short_lists = 0
 
     for qid in sorted(qrels):
         if qid not in queries:
@@ -205,7 +207,9 @@ def build_rank(name: str, spec: dict, files: dict[str, Path], stats: dict) -> di
         shortlist = bm25.top(queries[qid], K)
         if not shortlist:   # no query term occurs in the corpus
             no_candidates += 1
+            no_candidate_examples.append(f"{qid}: {queries[qid][:70]!r}")
             continue
+        short_lists += len(shortlist) < K
         shown = list(shortlist)
         random.Random(f"{SEED}:{name}:{qid}").shuffle(shown)
         keys = [f"D{i:02d}" for i in range(len(shown))]
@@ -245,6 +249,8 @@ def build_rank(name: str, spec: dict, files: dict[str, Path], stats: dict) -> di
     built = len(qrels) - missing_query - no_candidates
     stats[name] = {"queries": built, "queries_without_text": missing_query,
                    "queries_with_no_bm25_candidates": no_candidates,
+                   "no_candidate_examples": no_candidate_examples[:8],
+                   "queries_with_fewer_than_k_candidates": short_lists,
                    "shortlist_contains_a_relevant_document": covered / max(1, built),
                    "corpus_documents": len(corpus), "candidates_per_query": K}
     return out
@@ -359,8 +365,11 @@ def check_case(case: dict) -> list[str]:
         criteria = case["question"]["criteria"]
         if str(case["gold"]) not in criteria:
             hard.append(f"{cid}: gold is not an option key")
-        if criteria[str(case["gold"])][:200] in blob:
-            hard.append(f"{cid}: the correct response appears in the state")
+        # Same floor as verify_cases.MIN_LEAK_LEN: a two-character answer such as
+        # "a)" occurs in any prompt that lists options and is not a leak.
+        correct = criteria[str(case["gold"])]
+        if len(correct.strip()) >= 24 and correct[:200] in blob:
+            hard.append(f"{cid}: the correct response appears in the state ({len(criteria[str(case['gold'])])} chars: {criteria[str(case['gold'])][:60]!r})")
     if case["state_chars"] > 20_000:
         hard.append(f"{cid}: state over 20,000 characters")
     asked = case["questions"] if case["questions"] is not None else {"decision": case["question"]}
@@ -387,7 +396,7 @@ def main() -> int:
         cases = result[key]
         hard = [msg for case in cases for msg in check_case(case)]
         if hard:
-            raise SystemExit(f"{key}: {len(hard)} check failure(s), first: {hard[0]}")
+            raise SystemExit(f"{key}: {len(hard)} check failure(s):\n  " + "\n  ".join(hard))
         C.write_cases(key, cases)
         tokens = [c["est_tokens"] for c in cases]
         manifest["slices"][key] = {"cases": len(cases), "families": len({c["family_id"] for c in cases}),

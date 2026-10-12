@@ -329,7 +329,7 @@ def drop_slices(run_id: str, slices: set[str]) -> None:
         return
     backup = path.with_name(f"predictions.jsonl.bak-{time.strftime('%Y%m%dT%H%M%S')}")
     backup.write_bytes(path.read_bytes())
-    keep = [line for line in path.read_text(encoding="utf-8").splitlines() if line.strip() and json.loads(line).get("slice") not in slices]
+    keep = [line for line in path.read_text(encoding="utf-8").split("\n") if line.strip() and json.loads(line).get("slice") not in slices]
     path.write_text("".join(line + "\n" for line in keep), encoding="utf-8")
     print(f"  backed up to {backup.name}, dropped {', '.join(sorted(slices))}")
 

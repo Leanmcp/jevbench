@@ -95,14 +95,16 @@ def read_parquet(path: Path, columns: list[str] | None = None) -> list[dict]:
 
 
 def read_jsonl(path: Path) -> list[dict]:
-    return [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line.strip()]
+    # split on \n only: str.splitlines also breaks on U+2028 and similar
+    # separators, which occur inside dataset text and are legal in a JSON line.
+    return [json.loads(line) for line in path.read_text(encoding="utf-8").split("\n") if line.strip()]
 
 
 def read_json_any(path: Path) -> list[dict]:
     text = path.read_text(encoding="utf-8")
     if text.lstrip().startswith("["):
         return json.loads(text)
-    return [json.loads(line) for line in text.splitlines() if line.strip()]
+    return [json.loads(line) for line in text.split("\n") if line.strip()]
 
 
 def read_csv(path: Path) -> list[dict]:
