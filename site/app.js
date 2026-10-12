@@ -259,8 +259,10 @@ function scrollGridToSelection() {
   const wrap = $("#results .scroll");
   const first = [...$("#grid thead tr").children].slice(1).find((th) => !th.classList.contains("off"));
   if (!wrap || !first || !(sel.cat || sel.ds)) { if (wrap) wrap.scrollLeft = 0; return; }
-  const rowhead = $("#grid thead .rowhead").offsetWidth;
-  wrap.scrollTo({ left: Math.max(0, first.offsetLeft - rowhead - 8), behavior: REDUCED ? "auto" : "smooth" });
+  // Measured on screen: the column's distance from the sticky Model column.
+  const rowhead = $("#grid thead .rowhead").getBoundingClientRect().right;
+  const target = wrap.scrollLeft + first.getBoundingClientRect().left - rowhead;
+  wrap.scrollTo({ left: Math.max(0, target), behavior: REDUCED ? "auto" : "smooth" });
 }
 
 /* ---------------- dataset explorer ---------------- */

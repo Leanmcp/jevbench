@@ -81,7 +81,7 @@ h2 { font-size: 24px; margin: 0; font-weight: 700; letter-spacing: -.02em; }
 .grid th, .grid td { border: 1px solid var(--faint); padding: 0; }
 .grid thead th { height: 150px; vertical-align: bottom; background: var(--bg); position: relative; }
 .grid .rowhead { position: sticky; left: 0; background: var(--bg); text-align: left; padding: 0 10px; white-space: nowrap; font-size: 14px; font-weight: 500; border-right: 1px solid var(--fg); z-index: 1; }
-.grid thead .rowhead { z-index: 3; vertical-align: bottom; padding-bottom: 8px; color: var(--dim); }
+.grid thead .rowhead { z-index: 300; vertical-align: bottom; padding-bottom: 8px; color: var(--dim); }
 .colbtn { all: unset; cursor: pointer; display: block; width: 50px; height: 146px; position: relative; }
 .colbtn span { position: absolute; left: 20px; bottom: 8px; transform: rotate(-60deg); transform-origin: left bottom; white-space: nowrap; font-size: 12.5px; }
 .colbtn:hover span, .colbtn[aria-pressed="true"] span { text-decoration: underline; }
