@@ -196,13 +196,16 @@ def build_rank(name: str, spec: dict, files: dict[str, Path], stats: dict) -> di
     out: dict[str, list[dict]] = {f"{name}_rank_noul": [], f"{name}_rank_choice": []}
     if name == "nfcorpus":
         out[f"{name}_rank_graded"] = []
-    covered = missing_query = 0
+    covered = missing_query = no_candidates = 0
 
     for qid in sorted(qrels):
         if qid not in queries:
             missing_query += 1
             continue
         shortlist = bm25.top(queries[qid], K)
+        if not shortlist:   # no query term occurs in the corpus
+            no_candidates += 1
+            continue
         shown = list(shortlist)
         random.Random(f"{SEED}:{name}:{qid}").shuffle(shown)
         keys = [f"D{i:02d}" for i in range(len(shown))]
@@ -239,8 +242,10 @@ def build_rank(name: str, spec: dict, files: dict[str, Path], stats: dict) -> di
                     question=C.score_q(C.UNTRUSTED_PREFIX + f"How relevant is `document` to {task['what']}?", GRADED_LEVELS),
                     rank_protocol="graded", rank_meta=pair_meta))
 
-    stats[name] = {"queries": len(qrels) - missing_query, "queries_without_text": missing_query,
-                   "shortlist_contains_a_relevant_document": covered / max(1, len(qrels) - missing_query),
+    built = len(qrels) - missing_query - no_candidates
+    stats[name] = {"queries": built, "queries_without_text": missing_query,
+                   "queries_with_no_bm25_candidates": no_candidates,
+                   "shortlist_contains_a_relevant_document": covered / max(1, built),
                    "corpus_documents": len(corpus), "candidates_per_query": K}
     return out
 
@@ -358,8 +363,10 @@ def check_case(case: dict) -> list[str]:
             hard.append(f"{cid}: the correct response appears in the state")
     if case["state_chars"] > 20_000:
         hard.append(f"{cid}: state over 20,000 characters")
-    asked = case["questions"] or {"decision": case["question"]}
-    if any(len(q["instructions"]) > 2000 for q in asked.values()):
+    asked = case["questions"] if case["questions"] is not None else {"decision": case["question"]}
+    if not asked or any(q is None for q in asked.values()):
+        hard.append(f"{cid}: no question to ask")
+    elif any(len(q["instructions"]) > 2000 for q in asked.values()):
         hard.append(f"{cid}: instructions over 2,000 characters")
     return hard
 
