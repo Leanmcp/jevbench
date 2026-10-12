@@ -92,7 +92,6 @@ function lock(cat, ds) {
   if (ds !== undefined) { sel.ds = sel.ds === ds ? null : ds; sel.cat = cat; }
   else { sel.cat = sel.cat === cat ? null : cat; sel.ds = null; }
   peek.cat = peek.ds = undefined;
-  history.replaceState(null, "", sel.ds || sel.cat ? "#index=" + encodeURIComponent(sel.ds || sel.cat) : location.pathname);
   renderAll();
   scrollGridToSelection();
 }
@@ -328,7 +327,6 @@ function pickDataset(key, linked, scroll) {
   Object.assign(ex, { key, i: 0, model: null, reveal: false });
   for (const c of $("#ds-cards").children) c.setAttribute("aria-pressed", "false");
   renderCards();
-  if (linked) history.replaceState(null, "", "#ds=" + key);
   renderExample();
   if (scroll) $("#ds-head").scrollIntoView({ behavior: REDUCED ? "auto" : "smooth", block: "start" });
 }

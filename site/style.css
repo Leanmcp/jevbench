@@ -41,7 +41,8 @@ hr { border: 0; border-top: 1px solid var(--fg); margin: 40px 0; }
   text-decoration: none; cursor: pointer;
 }
 .btn:hover, .btn[aria-pressed="true"] { background: var(--fg); color: var(--bg); }
-.btn.peek { background: var(--faint); }
+/* preview tint only while not hovered, so hover always shows solid inverted text */
+.btn.peek:not(:hover) { background: var(--faint); color: var(--fg); }
 
 main { max-width: 1000px; margin: 0 auto; padding: 0 20px; }
 .intro { padding: 48px 0 28px; }
