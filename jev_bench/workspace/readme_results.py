@@ -19,6 +19,7 @@ from jevbench_index import CLUSTERS, MERGE, index_for, slice_info, unsupported_k
 
 README = C.ROOT.parent / "README.md"
 START, END = "<!-- results:start -->", "<!-- results:end -->"
+MODELS_START, MODELS_END = "<!-- models:start -->", "<!-- models:end -->"
 GROUPS = ["Safety", "Medicine", "Exams", "Language", "Tools", "Ranking", "Judging", "Images"]
 PCT = {"accuracy", "server_routing_accuracy", "tool_selection_accuracy"}
 SHORT = {
@@ -154,15 +155,20 @@ def main() -> int:
         "\\* under 99.5% of cases answered, from refusals or errors. "
         "† Liquid D1 through OpenRouter, the same hosted service.",
         "",
-        "Explore every cell, with intervals and examples, on the [website](https://leanmcp.github.io/jevbench/).",
-        "",
-        *model_rows,
+        "Explore every cell, with intervals and examples, on the [website](https://leanmcp.github.io/jevbench/). "
+        "Where each model runs: [Models](#models).",
         END,
     ])
+    models_block = "\n".join([MODELS_START, *model_rows, MODELS_END])
     text = README.read_text(encoding="utf-8")
     if START not in text or END not in text:
         raise SystemExit(f"README.md has no {START} ... {END} block")
     text = re.sub(re.escape(START) + r".*?" + re.escape(END), lambda _: block, text, flags=re.S)
+    # The models table lives at the very end of the README, in its own block.
+    if MODELS_START in text:
+        text = re.sub(re.escape(MODELS_START) + r".*?" + re.escape(MODELS_END), lambda _: models_block, text, flags=re.S)
+    else:
+        text = text.rstrip() + "\n\n## Models\n\n" + models_block + "\n"
     README.write_text(text, encoding="utf-8")
     print(f"wrote {len(lines) - 2} rows x {len(columns)} models into README.md")
     return 0

@@ -91,27 +91,7 @@ Every model on every dataset, from the scored runs on 2026-10-11. Accuracy in %,
 
 – not run, or not supported by that API (option limits, question types, no image input). \* under 99.5% of cases answered, from refusals or errors. † Liquid D1 through OpenRouter, the same hosted service.
 
-Explore every cell, with intervals and examples, on the [website](https://leanmcp.github.io/jevbench/).
-
-| Model | Runs on | Served through |
-|---|---|---|
-| Jev 1.13 | API | TypeSafe API |
-| Liquid D1 | API | Liquid API and OpenRouter |
-| djev-0.1 | Cloud GPU | GCP A100 |
-| Laya 421M | Local | local server |
-| Clef | API | OpenRouter |
-| Clef-flash | API | OpenRouter |
-| Clef-omni | API | OpenRouter |
-| pplx-decider v1.1 | API | OpenRouter |
-| GPT-6 Luna Decisions | API | OpenRouter |
-| Microsoft Decision 1 | API | OpenRouter |
-| Solar Decide | API | OpenRouter |
-| Solar Decide Flash | API | OpenRouter |
-| Drex v1.5 | API | OpenRouter |
-| Mercury Decide | API | OpenRouter |
-| TEv1 4B (exp.) | API | OpenRouter |
-| Kev 4B | API | OpenRouter |
-| Span-01 | API | OpenRouter |
+Explore every cell, with intervals and examples, on the [website](https://leanmcp.github.io/jevbench/). Where each model runs: [Models](#models).
 <!-- results:end -->
 
 ### What the paper adds
@@ -241,3 +221,27 @@ recorded per row in the released cases. Model weights keep their own licences.
   url          = {https://www.preprints.org/manuscript/202610.0181}
 }
 ```
+
+## Models
+
+<!-- models:start -->
+| Model | Runs on | Served through |
+|---|---|---|
+| Jev 1.13 | API | TypeSafe API |
+| Liquid D1 | API | Liquid API and OpenRouter |
+| djev-0.1 | Cloud GPU | GCP A100 |
+| Laya 421M | Local | local server |
+| Clef | API | OpenRouter |
+| Clef-flash | API | OpenRouter |
+| Clef-omni | API | OpenRouter |
+| pplx-decider v1.1 | API | OpenRouter |
+| GPT-6 Luna Decisions | API | OpenRouter |
+| Microsoft Decision 1 | API | OpenRouter |
+| Solar Decide | API | OpenRouter |
+| Solar Decide Flash | API | OpenRouter |
+| Drex v1.5 | API | OpenRouter |
+| Mercury Decide | API | OpenRouter |
+| TEv1 4B (exp.) | API | OpenRouter |
+| Kev 4B | API | OpenRouter |
+| Span-01 | API | OpenRouter |
+<!-- models:end -->
