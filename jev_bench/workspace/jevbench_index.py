@@ -18,10 +18,10 @@ takes images.
 from __future__ import annotations
 
 CLUSTERS = {
-    "Safety": ["aegis2", "aegis2_response", "atbench500", "jailbreak_classification", "prompt_injections"],
-    "Knowledge": ["medmcqa", "medqa_usmle", "pubmedqa", "mmlu_pro", "scienceqa_text"],
-    "Classification": ["banking77", "sst5"],
-    "Tools": ["mcpbench_server_routing", "mcpbench_tool_selection", "mcpmark_server_routing", "mcpmark_tool_selection"],
+    "Science": ["medmcqa", "medqa_usmle", "pubmedqa", "mmlu_pro", "scienceqa_text"],
+    "Tool calling": ["mcpbench_server_routing", "mcpbench_tool_selection", "mcpmark_server_routing", "mcpmark_tool_selection"],
+    "Business": ["banking77", "sst5"],
+    "Selection": ["aegis2", "aegis2_response", "atbench500", "jailbreak_classification", "prompt_injections"],
     "Ranking": ["scifact_rank_noul", "nfcorpus_rank_noul"],
     "Judging": ["helpsteer2_helpfulness", "rewardbench2"],
 }

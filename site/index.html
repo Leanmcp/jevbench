@@ -10,116 +10,84 @@
   <meta property="og:image" content="social-preview.png">
   <meta name="twitter:card" content="summary_large_image">
   <link rel="icon" href="logo.svg">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script>
+    // Set the theme before first paint so the page never flashes the wrong one.
+    try { const t = localStorage.getItem("jevbench-theme"); if (t) document.documentElement.dataset.theme = t; } catch (e) {}
+  </script>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <header class="top">
-    <a class="brand" href="#top" aria-label="JevBench home">
-      <svg viewBox="0 0 112 112" class="brand-mark" aria-hidden="true">
-        <rect width="112" height="112" rx="24" class="tile"/>
-        <rect x="22" y="62" width="18" height="30" rx="4" class="bar"/>
-        <rect x="47" y="22" width="18" height="70" rx="4" class="pick"/>
-        <rect x="72" y="76" width="18" height="16" rx="4" class="bar"/>
-      </svg>
-      <span>JevBench</span>
-    </a>
+  <header class="bar">
+    <a class="word" href="#top">JevBench</a>
     <nav aria-label="Sections">
       <a href="#index">Index</a>
       <a href="#results">Results</a>
-      <a href="#ranking">Ranking</a>
-      <a href="#explorer">Datasets</a>
+      <a href="#datasets">Datasets</a>
       <a href="#submit">Submit</a>
       <a href="#cite">Cite</a>
     </nav>
+    <button class="btn" id="theme" type="button" aria-label="Switch colour theme">Dark</button>
   </header>
 
   <main id="top">
-    <section class="hero">
-      <div class="hero-mark" aria-hidden="true">
-        <span style="--h:.30"></span><span style="--h:.92"></span><span style="--h:.18"></span><span style="--h:.46"></span><span style="--h:.10"></span>
-      </div>
-      <div class="hero-copy">
-        <h1>JevBench</h1>
-        <p class="lede">Open benchmark for typed decision models</p>
-        <div class="actions">
-          <a class="btn primary" id="paper-link" href="#">Paper</a>
-          <a class="btn" id="pdf-link" href="#">PDF</a>
-          <a class="btn" id="dataset-link" href="#">Dataset</a>
-          <a class="btn" id="github-link" href="#">GitHub</a>
-          <a class="btn" href="#cite">Cite</a>
-        </div>
-        <dl class="facts" id="facts"></dl>
-      </div>
+    <section class="intro">
+      <h1>JevBench</h1>
+      <p>Open benchmark for typed decision models.</p>
+      <p class="links">
+        <a class="btn" id="paper-link" href="#">Paper</a>
+        <a class="btn" id="pdf-link" href="#">PDF</a>
+        <a class="btn" id="dataset-link" href="#">Dataset</a>
+        <a class="btn" id="github-link" href="#">GitHub</a>
+        <a class="btn" href="#cite">Cite</a>
+      </p>
     </section>
 
-    <section id="index" class="block">
-      <div class="block-head">
-        <h2>Index</h2>
-        <div class="chips" id="index-chips" role="group" aria-label="Rank by"></div>
+    <section id="index">
+      <div class="head">
+        <h2 id="chart-title">JevBench Index</h2>
+        <span class="sub" id="chart-sub"></span>
       </div>
-      <div class="rank-chart" id="index-chart"></div>
-      <p class="note" id="index-note"></p>
+      <div class="chart" id="chart" role="list"></div>
+      <div class="cats" id="cats" role="group" aria-label="Category"></div>
+      <div class="subs" id="subs" role="group" aria-label="Dataset"></div>
+      <p class="small" id="chart-note"></p>
     </section>
 
-    <section id="results" class="block">
-      <div class="block-head">
-        <h2>Results</h2>
-        <div class="controls">
-          <div class="chips" id="group-chips" role="group" aria-label="Dataset group"></div>
-          <div class="chips" id="host-chips" role="group" aria-label="Where the model runs"></div>
-        </div>
-      </div>
-      <div class="table-wrap" id="heat-wrap">
-        <table class="heat" id="heat"></table>
-      </div>
-      <div class="spotlight" id="spotlight" aria-live="polite"></div>
+    <hr>
+
+    <section id="results">
+      <div class="head"><h2>Results</h2><span class="sub" id="results-sub"></span></div>
+      <div class="scroll"><table class="grid" id="grid"></table></div>
+      <p class="small">Hover a cell for its interval and coverage. Click a dataset name to chart it.</p>
     </section>
 
-    <section id="ranking" class="block">
-      <div class="block-head">
-        <h2>Ranking</h2>
-        <div class="chips" id="rank-chips" role="group" aria-label="Ranking dataset"></div>
-      </div>
-      <div class="legend" id="rank-legend"></div>
-      <div class="rank-chart" id="rank-chart"></div>
-    </section>
+    <hr>
 
-    <section id="explorer" class="block">
-      <div class="block-head">
+    <section id="datasets">
+      <div class="head">
         <h2>Datasets</h2>
-        <label class="select">
-          <span class="sr-only">Dataset</span>
-          <select id="ds-select"></select>
-        </label>
+        <label><span class="sr">Dataset</span><select id="ds-select"></select></label>
       </div>
-      <div class="ds-meta" id="ds-meta"></div>
-      <div class="stepper" id="stepper" role="group" aria-label="Example"></div>
+      <p class="meta" id="ds-meta"></p>
+      <div class="steps" id="steps" role="group" aria-label="Example"></div>
       <div class="example" id="example"></div>
     </section>
 
-    <section id="submit" class="block submit">
+    <hr>
+
+    <section id="submit">
       <h2>Submit</h2>
-      <div class="submit-grid">
-        <a class="submit-card" id="submit-dataset" href="#">
-          <strong>Submit a dataset</strong>
-          <span>Pick the models to benchmark it against</span>
-        </a>
-        <a class="submit-card" id="submit-model" href="#">
-          <strong>Add a model</strong>
-          <span>Pick the datasets to run it on</span>
-        </a>
+      <div class="two">
+        <a class="box" id="submit-dataset" href="#"><b>Submit a dataset</b><span>Pick the models to benchmark it against.</span></a>
+        <a class="box" id="submit-model" href="#"><b>Add a model</b><span>Pick the datasets to run it on.</span></a>
       </div>
     </section>
 
-    <section id="cite" class="block">
-      <div class="block-head">
-        <h2>Cite</h2>
-        <button class="btn" id="copy-cite" type="button">Copy BibTeX</button>
-      </div>
-      <pre class="bib" id="bib"></pre>
+    <hr>
+
+    <section id="cite">
+      <div class="head"><h2>Cite</h2><button class="btn" id="copy-cite" type="button">Copy BibTeX</button></div>
+      <pre id="bib"></pre>
     </section>
   </main>
 

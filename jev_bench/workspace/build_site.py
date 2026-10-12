@@ -20,7 +20,7 @@ import shutil
 import time
 
 import common as C
-from jevbench_index import CLUSTERS, MERGE, index_for, slice_info, unsupported_keys
+from jevbench_index import CLUSTERS, MERGE, index_for, slice_info, to_100, unsupported_keys
 
 SITE = C.ROOT.parent / "site"
 EXAMPLES_PER_DATASET = 10
@@ -213,7 +213,10 @@ def main() -> int:
         parent = sources.get(C.parent_key(key)) if not key.startswith(("mcp", "scifact", "nfcorpus", "helpsteer", "rewardbench")) else None
         redistributable = cases[0].get("redistributable", parent.get("redistributable", True) if parent else True)
         metric = next((results[mm][key]["metric"] for mm in results if key in results[mm]), None)
+        cluster = next((c for c, ks in CLUSTERS.items() if key in ks), "Images" if group == "Images" else group)
+        bm25 = next((r[key]["bm25_ndcg@10"] for r in ranking.values() if key in r and "bm25_ndcg@10" in r[key]), None)
         datasets.append({"key": key, "name": name, "group": group, "url": url, "adversarial": adversarial,
+                         "cluster": cluster, "bm25": None if bm25 is None else round(100 * bm25, 1),
                          "task_type": cases[0]["task_type"], "cases": len(cases), "metric": metric,
                          "lower_is_better": metric in LOWER_IS_BETTER,
                          "license": cases[0].get("license") or (parent or {}).get("license"),
@@ -236,15 +239,22 @@ def main() -> int:
         for k, v in raw.get(MERGE.get(m["name"], ""), {}).items():
             if not (slices.get(k) or {}).get("headline"):
                 slices[k] = v
-        ix = index_for(slices, unsupported_keys(m, info))
+        unsupported = unsupported_keys(m, info)
+        ix = index_for(slices, unsupported)
+        per_dataset = {}
+        for k in (k for ks in CLUSTERS.values() for k in ks):
+            v = 0.0 if k in unsupported else to_100(k, slices.get(k))
+            if v is not None:
+                per_dataset[k] = round(v, 1)
         index_rows.append({"name": m["name"].replace(" (hosted)", ""), "hosting": m.get("hosting", "API"),
                            "index": None if ix["index"] is None else round(ix["index"], 1),
                            "clusters": {k: None if v is None else round(v, 1) for k, v in ix["clusters"].items()},
                            "zeroed": [DATASETS[k][0] for k in ix["zeroed"]], "missing": len(ix["missing"]),
-                           "covered": ix["clusters_counted"], "complete": ix["complete"]})
+                           "covered": ix["clusters_counted"], "complete": ix["complete"],
+                           "scores": per_dataset, "unsupported": sorted(unsupported)})
 
     payload = {"generated": time.strftime("%Y-%m-%d"), "paper": PAPER, "citation": CITATION,
-               "index": index_rows, "clusters": list(CLUSTERS),
+               "index": index_rows, "clusters": CLUSTERS,
                "models": shown_models, "datasets": datasets, "results": results,
                "ranking": ranking, "examples": examples}
     SITE.mkdir(exist_ok=True)
