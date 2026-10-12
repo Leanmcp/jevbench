@@ -591,6 +591,13 @@ class DecisionClient:
                 detail = exc.read().decode("utf-8", "replace")[:400]
                 last_error = f"HTTP {exc.code}: {_scrub(detail)}"
                 retryable = exc.code in {408, 425, 429, 500, 502, 503, 504}
+                if exc.code == 429:
+                    # A rate limit clears on the provider's clock, not ours: wait
+                    # as long as it asks, else back off as hard as for DNS.
+                    retry_after = (exc.headers or {}).get("Retry-After", "")
+                    if retry_after.strip().isdigit():
+                        time.sleep(min(int(retry_after), 60))
+                    backoff_base = 4.0
             except urllib.error.URLError as exc:
                 last_error = f"URLError: {_scrub(str(exc.reason))}"
                 retryable = True
