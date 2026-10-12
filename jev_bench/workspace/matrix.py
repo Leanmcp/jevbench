@@ -6,6 +6,7 @@
     uv run workspace/matrix.py --pending       # select every pending cell, confirm, run
     uv run workspace/matrix.py --pending --model clef   # only rows whose name matches
     uv run workspace/matrix.py --concurrency 50          # parallel requests for every API model
+    uv run workspace/matrix.py --pending --hosting API  # every pending API cell, no grid
 
 Rows are the models in models.json, columns are the case files in data/cases/.
 A cell is done when every case in that slice has a successful prediction in the
@@ -13,10 +14,11 @@ model's run, so nothing already measured is sent again. Partial cells resume
 from where they stopped.
 
 Keys in the grid:
-    arrows / hjkl   move
+    arrows          move
     space           select the cell (pending -> run, done -> rerun)
     p               select every pending cell (again to clear)
-    r / c           select the pending cells in this row / column
+    a / g / o       select the pending cells of API / Cloud GPU / Local models
+    l (or r) / c    select the pending cells in this line (row) / column
     x               clear the selection
     enter           review the plan and run it
     q               quit without running
@@ -242,24 +244,30 @@ def run_ui(stdscr, models, keys, grid) -> dict | None:
         n_req, usd, unpriced = estimate(models, grid, keys, selection)
         summary = f"selected {len(selection)} cells, {n_req:,} requests, about ${usd:.2f}{' + unpriced' if unpriced else ''}"
         put(h - 2, 0, (message or summary)[: w - 1], WARN if message else curses.A_BOLD)
-        put(h - 1, 0, "←↑↓→ move  space select  p all pending  r row  c column  x clear  enter run  q quit"[: w - 1], curses.A_DIM)
+        put(h - 1, 0, "←↑↓→ move  space cell  p all  a API  g GPU  o local  l line  c column  x clear  enter run  q quit"[: w - 1], curses.A_DIM)
         message = ""
         stdscr.refresh()
 
         ch = stdscr.getch()
-        if ch in (curses.KEY_UP, ord("k")):
+        if ch == curses.KEY_UP:
             cy = max(0, cy - 1)
-        elif ch in (curses.KEY_DOWN, ord("j")):
+        elif ch == curses.KEY_DOWN:
             cy = min(len(models) - 1, cy + 1)
-        elif ch in (curses.KEY_LEFT, ord("h")):
+        elif ch == curses.KEY_LEFT:
             cx = max(0, cx - 1)
-        elif ch in (curses.KEY_RIGHT, ord("l")):
+        elif ch == curses.KEY_RIGHT:
             cx = min(len(keys) - 1, cx + 1)
         elif ch == ord(" "):
             toggle(cy, cx)
         elif ch == ord("p"):
             toggle_group([(i, j) for i in range(len(models)) for j in range(len(keys))])
-        elif ch == ord("r"):
+        elif ch in (ord("a"), ord("g"), ord("o")):
+            host = {ord("a"): "API", ord("g"): "Cloud GPU", ord("o"): "Local"}[ch]
+            rows = [i for i, m in enumerate(models) if m.get("hosting") == host]
+            toggle_group([(i, j) for i in rows for j in range(len(keys))])
+            if not rows:
+                message = f"no {host} models in this view"
+        elif ch in (ord("l"), ord("r")):
             toggle_group([(cy, j) for j in range(len(keys))])
         elif ch == ord("c"):
             toggle_group([(i, cx) for i in range(len(models))])
@@ -268,7 +276,7 @@ def run_ui(stdscr, models, keys, grid) -> dict | None:
         elif ch in (curses.KEY_ENTER, 10, 13):
             if selection:
                 return selection
-            message = "nothing selected: space selects a cell, p selects every pending cell"
+            message = "nothing selected: space selects a cell; p all, a API, g GPU, o local"
         elif ch in (ord("q"), 27):
             return None
 
@@ -347,6 +355,7 @@ def main() -> int:
     ap.add_argument("--sources", action="store_true", help="print which result files each model was read from, and exit")
     ap.add_argument("--pending", action="store_true", help="select every pending cell without the grid")
     ap.add_argument("--model", action="append", default=[], help="only models whose name contains this (repeatable)")
+    ap.add_argument("--hosting", choices=["API", "Cloud GPU", "Local"], help="only models hosted this way")
     ap.add_argument("--yes", action="store_true", help="skip the final confirmation")
     ap.add_argument("--concurrency", type=int, default=None, help="parallel requests for every API model, overriding models.json")
     args = ap.parse_args()
@@ -356,6 +365,8 @@ def main() -> int:
         for m in models:
             if m.get("hosting") == "API":
                 m["concurrency"] = args.concurrency
+    if args.hosting:
+        models = [m for m in models if m.get("hosting") == args.hosting]
     if args.model:
         models = [m for m in models if any(s.lower() in m["name"].lower() for s in args.model)]
         if not models:
