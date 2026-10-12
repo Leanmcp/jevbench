@@ -53,6 +53,7 @@ SLICE_TOKENS: dict[str, float] = {}
 # Largest option count per slice, filled by load_slices, checked against a
 # model's max_options so a hard API limit shows as not applicable.
 SLICE_MAX_OPTIONS: dict[str, int] = {}
+SLICE_TYPE: dict[str, str] = {}
 
 NA, PENDING, PARTIAL, DONE = "n/a", "pending", "partial", "done"
 SHORT = {
@@ -91,6 +92,7 @@ def load_slices() -> tuple[list[str], dict[str, set[str]], set[str]]:
         if est:
             SLICE_TOKENS[key] = sum(est) / len(est)
         SLICE_MAX_OPTIONS[key] = max((c.get("n_options") or 0) for c in cases)
+        SLICE_TYPE[key] = cases[0]["task_type"]
         if any(c.get("image_path") or c.get("_images") for c in cases):
             image.add(key)
     return keys, ids, image
@@ -139,6 +141,10 @@ def build_grid(models: list[dict], keys: list[str], ids: dict[str, set[str]], im
             # a slice a stopped run began, is not offered again.
             if m.get("no_new_runs") and len((primary[key] | set().union(*(o[key] for o in others))) & ids[key]) < total:
                 row.append({"state": NA, "done": 0, "total": total, "in_other_run": False, "why": m["no_new_runs"]})
+                continue
+            if m.get("task_types") and SLICE_TYPE.get(key) not in m["task_types"]:
+                row.append({"state": NA, "done": 0, "total": total, "in_other_run": False,
+                            "why": f"{SLICE_TYPE.get(key)} questions; this API accepts only {', '.join(m['task_types'])}"})
                 continue
             if m.get("max_options") and SLICE_MAX_OPTIONS.get(key, 0) > m["max_options"]:
                 row.append({"state": NA, "done": 0, "total": total, "in_other_run": False,
