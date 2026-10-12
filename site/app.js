@@ -57,7 +57,7 @@ $("#copy-cite").addEventListener("click", async (e) => {
 });
 {
   const scored = Object.values(D.results).reduce((n, row) => n + Object.keys(row).length, 0);
-  const facts = [[MODELS.length, "models"], [D.datasets.length, "datasets"], [scored, "scored model-dataset pairs"]];
+  const facts = [[(D.index || []).length || MODELS.length, "models"], [D.datasets.length, "datasets"], [scored, "scored model-dataset pairs"]];
   for (const [n, label] of facts) $("#facts").append(el("div", {}, el("dt", {}, label), el("dd", {}, n.toLocaleString())));
 }
 const issueBase = D.paper.github + "/issues/new?template=";
