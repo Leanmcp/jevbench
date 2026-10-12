@@ -165,8 +165,7 @@ venv.bak/
 # Rope project settings
 .ropeproject
 
-# mkdocs documentation
-/site
+# site/ is the JevBench website (built by jev_bench/workspace/build_site.py), so it is tracked.
 
 # mypy
 .mypy_cache/

@@ -1,0 +1,45 @@
+name: Add a model
+description: Ask for a decision model to be benchmarked and pick the datasets to run it on.
+title: "Model: "
+labels: ["model"]
+body:
+  - type: input
+    id: name
+    attributes:
+      label: Model name
+    validations:
+      required: true
+  - type: dropdown
+    id: access
+    attributes:
+      label: How it is served
+      options:
+        - Hosted API
+        - On OpenRouter's Decisions API
+        - Open weights
+    validations:
+      required: true
+  - type: input
+    id: url
+    attributes:
+      label: Docs or weights link
+    validations:
+      required: true
+  - type: input
+    id: license
+    attributes:
+      label: Licence or terms
+  - type: checkboxes
+    id: datasets
+    attributes:
+      label: Run it on
+      options:
+        - label: Every dataset
+        - label: Safety
+        - label: Medicine
+        - label: Exams
+        - label: Language
+        - label: Tools (MCP)
+        - label: Ranking (SciFact, NFCorpus)
+        - label: Judging (HelpSteer2, RewardBench 2)
+        - label: Images
