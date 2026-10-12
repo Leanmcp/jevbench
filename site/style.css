@@ -245,3 +245,6 @@ a.pill:hover { border-color: var(--accent); color: var(--ink); }
   .hero-mark span { animation: none; }
   .fill { transition: none; }
 }
+
+/* index note */
+.note { color: var(--muted); font-size: 14px; margin: 12px 0 0; max-width: 80ch; }

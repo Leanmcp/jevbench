@@ -314,7 +314,35 @@ function renderExample() {
   $("#example").replaceChildren(left, answersPanel(e, d));
 }
 
+/* ---------------- index ---------------- */
+let indexBy = "Index";
+function renderIndex() {
+  const rows = D.index || [];
+  if (!rows.length) { $("#index").hidden = true; return; }
+  chipRow($("#index-chips"), ["Index", ...D.clusters], indexBy, (c) => { indexBy = c; renderIndex(); });
+  const score = (r) => (indexBy === "Index" ? r.index : r.clusters[indexBy]);
+  const ranked = rows.filter((r) => score(r) !== null).sort((a, b) => score(b) - score(a));
+  const pending = rows.filter((r) => score(r) === null);
+  const grid = el("div", { class: "bars" });
+  ranked.forEach((r, i) => {
+    const row = barRow(`${i + 1}. ${r.name}`, score(r), 100, { text: score(r).toFixed(1) + (r.zeroed.length && indexBy === "Index" ? "‡" : "") });
+    const lines = [r.name, `Index ${r.index ?? "incomplete"}`, ...D.clusters.map((c) => `${c} ${r.clusters[c] ?? "–"}`)];
+    if (r.zeroed.length) lines.push(`Counted as 0, the API rejects them: ${r.zeroed.join(", ")}`);
+    row[1].tabIndex = 0;
+    for (const [ev, fn] of [["mouseenter", (e) => showTip(e.currentTarget, lines)], ["focus", (e) => showTip(e.currentTarget, lines)], ["mouseleave", hideTip], ["blur", hideTip]])
+      row[1].addEventListener(ev, fn);
+    grid.append(...row);
+  });
+  $("#index-chart").replaceChildren(grid);
+  $("#index-note").textContent = [
+    "Every dataset on 0 to 100, averaged within each cluster, then the clusters averaged.",
+    ranked.some((r) => r.zeroed.length) && indexBy === "Index" ? " ‡ datasets the model's API rejects count as 0." : "",
+    pending.length ? ` Waiting on runs: ${pending.map((r) => r.name).join(", ")}.` : "",
+  ].join("");
+}
+
 /* ---------------- boot ---------------- */
+renderIndex();
 renderHeat();
 renderSpot();
 renderRanking();

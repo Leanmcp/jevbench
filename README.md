@@ -24,30 +24,99 @@
 
 ## Results
 
-Accuracy (%) on 8,014 cases answered by all four systems. Bold marks the best
-model on each slice.
+<!-- results:start -->
+### JevBench Index
 
-| Slice | n | Liquid D1 | Jev 1.13 | djev-0.1 | Laya 421M |
-|---|---:|---:|---:|---:|---:|
-| ScienceQA (text) | 1000 | **95.8** | 95.7 | 84.7 | 53.4 |
-| Jailbreak classification | 400 | 96.5 | **97.5** | 96.5 | 93.0 |
-| MedQA-USMLE | 1000 | 86.6 | **87.3** | 71.2 | 26.1 |
-| Aegis 2.0 prompts | 500 | **86.6** | 82.8 | 81.0 | 54.2 |
-| BANKING77 (77 intents) | 1000 | **85.7** | 81.3 | 71.4 | 36.3 |
-| ATBench agent safety | 500 | 78.6 | **93.0** | 75.8 | 65.4 |
-| Aegis 2.0 responses | 500 | 78.8 | **81.2** | 69.2 | 52.8 |
-| MedMCQA | 1000 | 77.0 | **78.1** | 53.8 | 26.9 |
-| Prompt injections | 116 | 71.6 | 73.3 | 64.7 | **81.0** |
-| PubMedQA | 500 | 70.4 | **70.6** | 62.2 | 32.8 |
-| MMLU-Pro | 998 | 66.4 | **80.6** | 42.2 | 12.5 |
-| SST-5, MAE (lower is better) | 500 | 0.508 | **0.507** | 0.544 | 0.849 |
+One number per model: every dataset on 0-100, averaged within six clusters, then the six clusters averaged. A model is ranked once it has every dataset in the index. ‡ the model's API rejects some datasets outright (too many options, or question types it does not take); those count as 0.
 
-No single model leads everywhere. D1 is ahead on BANKING77 (+4.4 points over
-Jev) and Aegis prompts (+3.8); Jev is ahead on ATBench (+14.4) and MMLU-Pro
-(+14.1). These are point estimates; the paper gives bootstrap intervals and
-paired comparisons for the original three systems.
+| # | Model | **Index** | Safety | Knowledge | Classification | Tools | Ranking | Judging |
+|---:|---|---:|---:|---:|---:|---:|---:|---:|
+| 1 | pplx-decider v1.1 | **78.0** | 84.3 | 80.4 | 84.6 | 89.1 | 56.9 | 72.8 |
+| 2 | Mercury Decide | **76.6** | 81.6 | 76.4 | 89.0 | 89.3 | 55.9 | 67.4 |
+| 3 | Jev 1.13 | **76.5** | 85.6 | 82.5 | 84.3 | 86.8 | 56.4 | 63.7 |
+| 4 | Clef | **76.1** | 86.6 | 77.1 | 90.7 | 87.6 | 55.9 | 59.0 |
+| 5 | Microsoft Decision 1 | **75.6** | 84.2 | 76.5 | 86.4 | 85.9 | 54.9 | 65.8 |
+| 6 | GPT-6 Luna Decisions | **73.4** | 79.1 | 76.3 | 82.5 | 86.4 | 54.8 | 61.1 |
+| 7 | Clef-omni | **72.0** | 79.1 | 76.6 | 90.9 | 81.2 | 53.9 | 50.2 |
+| 8 | Clef-flash | **71.8** | 78.5 | 75.3 | 91.4 | 81.9 | 54.3 | 49.2 |
+| 9 | Solar Decide | **60.3**‡ | 79.4 | 76.7 | 42.5 | 60.6 | 44.0 | 58.7 |
+| 10 | TEv1 4B (exp.) | **56.9**‡ | 69.0 | 66.7 | 43.5 | 58.4 | 54.7 | 49.0 |
+| 11 | Solar Decide Flash | **55.1**‡ | 74.4 | 64.2 | 41.0 | 52.0 | 49.5 | 49.3 |
+|  | Liquid D1 | incomplete (3 missing) | 82.4 | 79.2 | 86.5 | 84.0 | – | – |
+|  | djev-0.1 | incomplete (8 missing) | 77.4 | 62.8 | 78.9 | – | – | – |
+|  | Laya 421M | incomplete (8 missing) | 69.3 | 30.3 | 57.5 | – | – | – |
+|  | Drex v1.5 | incomplete (1 missing) | 75.2 | 71.8 | 85.5 | 81.4 | – | 46.0 |
+|  | Kev 4B | incomplete (3 missing) | 73.2 | 65.6 | 85.9 | 76.1 | – | – |
+|  | Span-01 | incomplete (2 missing) | – | 0.0 | 0.0 | 0.0 | 0.0 | 0.0 |
 
-Beyond accuracy, the paper reports:
+### Every dataset
+
+Every model on every dataset, from the scored runs on 2026-10-11. Accuracy in %, except where the row says otherwise; ranking rows are nDCG@10 on a fixed BM25 top-20, with BM25's own score in the label. Bold is the best on each row.
+
+| Dataset | n | Jev 1.13 | Liquid D1 | djev | Laya | Clef | Clef-flash | Clef-omni | pplx v1.1 | GPT-6 Luna | MS Decision 1 | Solar | Solar Flash | Drex | Mercury | TEv1 4B | Kev 4B | Span-01 |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| **Safety** | | | | | | | | | | | | | | | | | | |
+| [Aegis 2.0 prompts](https://huggingface.co/datasets/nvidia/Aegis-AI-Content-Safety-Dataset-2.0) | 500 | 82.8 | **86.6** | 81.0 | 54.2 | 83.2 | 83.2 | 84.8 | 86.0 | 74.8 | 82.0 | 80.8 | 73.6 | 79.2 | 84.0 | 76.8 | 84.0 | 81.8 |
+| [Aegis 2.0 responses](https://huggingface.co/datasets/nvidia/Aegis-AI-Content-Safety-Dataset-2.0) | 500 | 81.2 | 78.8 | 69.2 | 52.8 | 78.6 | 79.0 | 79.0 | 80.8 | 72.6 | **82.2** | 75.4 | 72.0 | 72.8 | 77.2 | 67.8 | 79.4 | 74.8 |
+| [ATBench](https://huggingface.co/datasets/AI45Research/ATBench) | 500 | 93.0 | 78.6 | 75.8 | 65.4 | **93.8** | 76.8 | 67.4 | 74.6 | 87.8 | 86.8 | 73.8 | 50.0 | 77.0 | 68.8 | 53.6 | 48.6 | 62.8 |
+| [Jailbreak classification](https://huggingface.co/datasets/jackhhao/jailbreak-classification) | 400 | **97.5** | 96.5 | 96.5 | 93.0 | 97.0 | 94.2 | 92.5 | 89.8 | 96.8 | 96.5 | 96.5 | 97.0 | 92.0 | 96.8 | 91.7 | 94.8 | – |
+| [Prompt injections](https://huggingface.co/datasets/deepset/prompt-injections) | 116 | 73.3 | 71.6 | 64.7 | 81.0 | 80.2 | 59.5 | 71.6 | **90.5** | 63.8 | 73.3 | 70.7 | 79.3 | 55.2 | 81.0 | 55.2 | 59.5 | – |
+| **Medicine** | | | | | | | | | | | | | | | | | | |
+| [MedMCQA](https://huggingface.co/datasets/openlifescienceai/medmcqa) | 1,000 | **78.1** | 77.0 | 53.8 | 26.9 | 72.5 | 70.4 | 72.5 | 75.7 | 77.3* | 75.9 | 72.2 | 63.4 | 66.6 | 72.6 | 61.0 | 56.4 | – |
+| [MedQA-USMLE](https://huggingface.co/datasets/GBaker/MedQA-USMLE-4-options) | 1,000 | 87.3 | 86.6 | 71.2 | 26.1 | 84.3 | 76.6 | 79.5 | **88.9** | 87.6 | 80.7 | 83.1 | 72.2 | 75.5 | 84.9 | 68.9 | 67.2 | – |
+| [PubMedQA](https://huggingface.co/datasets/qiaojin/PubMedQA) | 500 | **70.6** | 70.4 | 62.2 | 32.8 | 67.8 | 69.6 | 67.4 | 69.6 | 62.8 | 68.0 | 59.4 | 52.4 | 65.2 | 65.6 | 66.8 | 64.6 | – |
+| **Exams** | | | | | | | | | | | | | | | | | | |
+| [MMLU-Pro](https://huggingface.co/datasets/TIGER-Lab/MMLU-Pro) | 1,000 | **80.6** | 66.4 | 42.3 | 12.5 | 66.8 | 67.6 | 71.5 | 70.8 | 59.9 | 64.7 | 72.5 | 47.2 | 61.0 | 64.5 | 48.4 | 52.7 | – |
+| [ScienceQA](https://huggingface.co/datasets/derek-thomas/ScienceQA) | 1,000 | 95.7 | 95.8 | 84.7 | 53.4 | 93.9 | 92.3 | 92.1 | **97.0** | 94.1 | 93.2 | 96.2 | 85.6 | 90.6 | 94.2 | 88.5 | 86.9 | – |
+| **Language** | | | | | | | | | | | | | | | | | | |
+| [BANKING77](https://huggingface.co/datasets/mteb/banking77) | 1,000 | 81.3 | 85.7 | 71.4 | 36.3 | 94.8 | **96.1** | 94.8 | 81.8 | 78.6 | 86.4 | – | – | 84.9 | 89.9 | – | 85.3 | – |
+| [SST-5](https://huggingface.co/datasets/SetFit/sst5), MAE ↓ | 500 | 0.51 | 0.51 | 0.54 | 0.85 | 0.54 | 0.53 | 0.52 | 0.51 | 0.54 | 0.54 | 0.60 | 0.72 | 0.56 | **0.48** | 0.52 | 0.54 | – |
+| **Tools** | | | | | | | | | | | | | | | | | | |
+| [MCP-Bench routing](https://github.com/Accenture/mcp-bench) | 112 | 95.5 | 90.2 | – | – | 95.5 | 87.5 | 85.7 | 98.2 | 96.3* | 94.6 | – | – | 92.9 | **100.0** | – | 81.2 | – |
+| [MCP-Bench tools](https://github.com/Accenture/mcp-bench) | 26 | **100.0** | **100.0** | – | – | **100.0** | 92.3 | 92.3 | **100.0** | **100.0** | **100.0** | **100.0** | 73.1 | **100.0** | **100.0** | 88.5 | 73.1 | – |
+| [MCPMark routing](https://github.com/eval-sys/mcpmark) | 338 | 51.5 | 45.9 | – | – | 55.0 | 47.6 | 46.7 | **58.0** | 49.1* | 48.8 | 47.9 | 40.5 | 32.8 | 57.1 | 45.0 | 50.0 | – |
+| [MCPMark tools](https://github.com/eval-sys/mcpmark) | 18 | **100.0** | **100.0** | – | – | **100.0** | **100.0** | **100.0** | **100.0** | **100.0** | **100.0** | 94.4 | 94.4 | **100.0** | **100.0** | **100.0** | **100.0** | – |
+| **Ranking** | | | | | | | | | | | | | | | | | | |
+| [NFCorpus, all at once](https://huggingface.co/datasets/BeIR/nfcorpus) (BM25 0.332) | 298 | 0.361 | – | – | – | 0.371* | 0.366* | 0.357* | 0.366 | 0.356* | 0.364* | 0.305* | 0.304* | **0.371** | 0.355 | 0.357* | 0.352 | – |
+| [NFCorpus, graded](https://huggingface.co/datasets/BeIR/nfcorpus) (BM25 0.332) | 4,924 | 0.377 | – | – | – | 0.376 | 0.379 | **0.380** | 0.378 | 0.365 | 0.373 | 0.354 | 0.364 | 0.375 | 0.367 | 0.354 | 0.305 | – |
+| [NFCorpus, Jev-style](https://huggingface.co/datasets/BeIR/nfcorpus) (BM25 0.332) | 298 | 0.378 | – | – | – | 0.373 | 0.369 | 0.361 | **0.381** | 0.368 | 0.368 | 0.324 | 0.330 | 0.373 | 0.375 | 0.361 | – | – |
+| [SciFact, all at once](https://huggingface.co/datasets/BeIR/scifact) (BM25 0.661) | 300 | 0.739 | – | – | – | 0.752 | 0.738 | 0.723 | **0.753** | 0.749* | 0.737 | 0.630 | 0.637 | – | 0.726 | 0.722 | – | – |
+| [SciFact, Jev-style](https://huggingface.co/datasets/BeIR/scifact) (BM25 0.661) | 300 | 0.750 | – | – | – | 0.745 | 0.717 | 0.716 | **0.756** | 0.729 | 0.730 | 0.557 | 0.660 | – | 0.743 | 0.733 | – | – |
+| **Judging** | | | | | | | | | | | | | | | | | | |
+| [HelpSteer2](https://huggingface.co/datasets/nvidia/HelpSteer2), Spearman | 500 | 0.482 | 0.547† | – | – | 0.510 | 0.384 | 0.444 | **0.641** | 0.492 | 0.566 | 0.423 | 0.354 | 0.435 | 0.555 | 0.337 | 0.333 | – |
+| [RewardBench 2](https://huggingface.co/datasets/allenai/reward-bench-2) | 1,200 | 79.2 | – | – | – | 66.9 | 60.0 | 56.0 | **81.5** | 72.9* | 74.9 | 75.0 | 63.2 | 48.6 | 79.3 | 64.3 | – | – |
+| **Images** | | | | | | | | | | | | | | | | | | |
+| [ScienceQA images](https://huggingface.co/datasets/derek-thomas/ScienceQA) | 500 | – | – | **82.8** | – | – | – | – | – | – | – | – | – | – | – | – | – | – |
+| [VQA-RAD](https://huggingface.co/datasets/flaviagiammarino/vqa-rad) | 251 | – | – | **78.1** | – | – | – | – | – | – | – | – | – | – | – | – | – | – |
+
+– not run, or not supported by that API (option limits, question types, no image input). \* under 99.5% of cases answered, from refusals or errors. † Liquid D1 through OpenRouter, the same hosted service.
+
+Explore every cell, with intervals and examples, on the [website](https://leanmcp.github.io/jevbench/).
+
+| Model | Runs on | Served through |
+|---|---|---|
+| Jev 1.13 | API | TypeSafe API |
+| Liquid D1 | API | Liquid API and OpenRouter |
+| djev-0.1 | Cloud GPU | GCP A100 |
+| Laya 421M | Local | local server |
+| Clef | API | OpenRouter |
+| Clef-flash | API | OpenRouter |
+| Clef-omni | API | OpenRouter |
+| pplx-decider v1.1 | API | OpenRouter |
+| GPT-6 Luna Decisions | API | OpenRouter |
+| Microsoft Decision 1 | API | OpenRouter |
+| Solar Decide | API | OpenRouter |
+| Solar Decide Flash | API | OpenRouter |
+| Drex v1.5 | API | OpenRouter |
+| Mercury Decide | API | OpenRouter |
+| TEv1 4B (exp.) | API | OpenRouter |
+| Kev 4B | API | OpenRouter |
+| Span-01 | API | OpenRouter |
+<!-- results:end -->
+
+### What the paper adds
+
+Beyond accuracy, the paper reports, for Jev, D1, djev and Laya:
 
 - **Threshold effects.** Jev separates prompt injections almost perfectly
   (AUROC 0.978) but scores 73.3% at the default 0.5 cut-off, because its
@@ -58,23 +127,12 @@ Beyond accuracy, the paper reports:
 - **Calibration and zero mass on the gold option**, and **image-grounded
   decisions** for djev (82.8% on ScienceQA rows with images).
 
-### The systems
-
-| System | Access | Model |
-|---|---|---|
-| Liquid D1 | Hosted API | Unpublished |
-| Jev 1.13 | Hosted API | Unpublished |
-| djev-0.1 | Open source | DiffusionGemma 26B-A4B, a text diffusion language model |
-| Laya 421M | Open source | ModernBERT-large encoder with decision heads |
-
-Thirteen more hosted decision models, including Cloudflare Clef and Perplexity
-pplx-decider, plus Liquid's open d1-3B and d1-omni-600M, are wired in and
-waiting on runs. See [the decision-models runbook](jev_bench/05_DECISION_MODELS.md).
+How models are added and what each costs: [the decision-models runbook](jev_bench/05_DECISION_MODELS.md).
 
 ## Ranking and scoring
 
 Beyond classification, JevBench tests decision models as **rerankers** and as
-**judges**. Results are pending.
+**judges**; their results are in the table above.
 
 | Benchmark | What it tests | How the model is asked |
 |---|---|---|

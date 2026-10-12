@@ -20,6 +20,7 @@ import shutil
 import time
 
 import common as C
+from jevbench_index import CLUSTERS, MERGE, index_for, slice_info, unsupported_keys
 
 SITE = C.ROOT.parent / "site"
 EXAMPLES_PER_DATASET = 10
@@ -173,6 +174,7 @@ def main() -> int:
     results: dict[str, dict] = {}
     ranking: dict[str, dict] = {}
     shown_models = []
+    raw: dict[str, dict] = {}
     for m in models:
         path = C.RUNS / m["run_id"] / "scores.json"
         extra = [C.RUNS / r / "scores.json" for r in m.get("also_read", [])]
@@ -180,6 +182,7 @@ def main() -> int:
         for p in [*extra, path]:
             if p.exists():
                 slices.update(json.loads(p.read_text(encoding="utf-8"))["slices"])
+        raw[m["name"]] = slices
         row = {}
         for key, s in slices.items():
             h = s.get("headline")
@@ -223,7 +226,24 @@ def main() -> int:
             rows.append(view)
         examples[key] = rows
 
+    # The JevBench Index, computed exactly as readme_results.py does.
+    info = slice_info(C.read_cases, {k for ks in CLUSTERS.values() for k in ks})
+    index_rows = []
+    for m in models:
+        if m["name"] in MERGE.values() or not raw.get(m["name"]):
+            continue
+        slices = dict(raw[m["name"]])
+        for k, v in raw.get(MERGE.get(m["name"], ""), {}).items():
+            if not (slices.get(k) or {}).get("headline"):
+                slices[k] = v
+        ix = index_for(slices, unsupported_keys(m, info))
+        index_rows.append({"name": m["name"].replace(" (hosted)", ""), "hosting": m.get("hosting", "API"),
+                           "index": None if ix["index"] is None else round(ix["index"], 1),
+                           "clusters": {k: None if v is None else round(v, 1) for k, v in ix["clusters"].items()},
+                           "zeroed": [DATASETS[k][0] for k in ix["zeroed"]], "missing": len(ix["missing"])})
+
     payload = {"generated": time.strftime("%Y-%m-%d"), "paper": PAPER, "citation": CITATION,
+               "index": index_rows, "clusters": list(CLUSTERS),
                "models": shown_models, "datasets": datasets, "results": results,
                "ranking": ranking, "examples": examples}
     SITE.mkdir(exist_ok=True)
