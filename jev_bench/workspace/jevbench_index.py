@@ -10,7 +10,7 @@ Datasets a model has not run yet are left out: each cluster averages the
 datasets it has, and the index averages the clusters it has, reported with how
 many of the six it covers, e.g. 73.0 (4/6). A dataset the model's API
 rejects outright (option limits, question types) counts as 0, since the model
-cannot do it. Ranking uses the Jev-style protocol only, so each ranking dataset
+cannot do it. Ranking uses the per-document protocol only, so each ranking dataset
 counts once. Image slices are left out: only one model
 takes images.
 """

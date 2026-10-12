@@ -18,11 +18,11 @@ Step 2 is done three ways, one slice each:
 
 | Slice suffix | Request | Score per document |
 |---|---|---|
-| `_rank_noul` | **Jev-style.** One request per query. The state holds the query and all 20 documents; one noul per document, "is D07 relevant?". Jev's own reranker works this way | p(true) |
+| `_rank_noul` | **Per document.** One request per query. The state holds the query and all 20 documents; one noul per document, "is D07 relevant?". Jev's own reranker works this way | p(true) |
 | `_rank_choice` | One request per query, one choice over the 20 documents. The documents compete for one probability, so the model must compare them | probability on that document |
 | `_rank_graded` | One request per query-document pair, a three-level score (not / partially / highly relevant). NFCorpus only, because only its labels are graded | expected level |
 
-The two one-request protocols are a direct comparison: judging each document
+The per-document and all-at-once protocols are a direct comparison: judging each document
 alone against choosing between them.
 
 Candidates are presented in a seeded random order, not BM25 order, so position

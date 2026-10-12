@@ -564,7 +564,7 @@ class DecisionClient:
             )
 
     def build_request(self, case: dict) -> dict:
-        # Ranking cases in the Jev style carry many questions against one state.
+        # Per-document ranking cases carry many questions against one state.
         questions = case.get("questions") or {case["question_key"]: case["question"]}
         body: dict[str, Any] = {"state": case["state"], "questions": questions}
         if self.state_as_string and not isinstance(body["state"], str):

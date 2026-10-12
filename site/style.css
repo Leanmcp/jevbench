@@ -93,7 +93,9 @@ h2 { font-size: 24px; margin: 0; font-weight: 700; letter-spacing: -.02em; }
 .cell.inv { color: #fff; }
 .cell.best { font-weight: 700; text-decoration: underline; }
 .cell.empty { background: var(--bg); color: var(--dim); }
-.grid .off { opacity: .18; }
+/* outside the selection: lighter, never gone; titles stay readable */
+.grid td.off { opacity: .45; }
+.grid th.on .colbtn span { font-weight: 700; }
 
 /* explorer */
 select { font-size: 14px; padding: 4px 8px; border: 1px solid var(--fg); background: var(--bg); color: var(--fg); max-width: 80vw; }

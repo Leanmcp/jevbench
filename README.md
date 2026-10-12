@@ -79,9 +79,9 @@ Every model on every dataset, from the scored runs on 2026-10-11. Accuracy in %,
 | **Ranking** | | | | | | | | | | | | | | | | | | |
 | [NFCorpus, all at once](https://huggingface.co/datasets/BeIR/nfcorpus) (BM25 0.332) | 298 | 0.361 | – | – | – | 0.371* | 0.366* | 0.357* | 0.366 | 0.356* | 0.364* | 0.305* | 0.304* | **0.371** | 0.355 | 0.357* | 0.352 | – |
 | [NFCorpus, graded](https://huggingface.co/datasets/BeIR/nfcorpus) (BM25 0.332) | 4,924 | 0.377 | – | – | – | 0.376 | 0.379 | **0.380** | 0.378 | 0.365 | 0.373 | 0.354 | 0.364 | 0.375 | 0.367 | 0.354 | 0.305 | – |
-| [NFCorpus, Jev-style](https://huggingface.co/datasets/BeIR/nfcorpus) (BM25 0.332) | 298 | 0.378 | – | – | – | 0.373 | 0.369 | 0.361 | **0.381** | 0.368 | 0.368 | 0.324 | 0.330 | 0.373 | 0.375 | 0.361 | – | – |
+| [NFCorpus, per document](https://huggingface.co/datasets/BeIR/nfcorpus) (BM25 0.332) | 298 | 0.378 | – | – | – | 0.373 | 0.369 | 0.361 | **0.381** | 0.368 | 0.368 | 0.324 | 0.330 | 0.373 | 0.375 | 0.361 | – | – |
 | [SciFact, all at once](https://huggingface.co/datasets/BeIR/scifact) (BM25 0.661) | 300 | 0.739 | – | – | – | 0.752 | 0.738 | 0.723 | **0.753** | 0.749* | 0.737 | 0.630 | 0.637 | – | 0.726 | 0.722 | – | – |
-| [SciFact, Jev-style](https://huggingface.co/datasets/BeIR/scifact) (BM25 0.661) | 300 | 0.750 | – | – | – | 0.745 | 0.717 | 0.716 | **0.756** | 0.729 | 0.730 | 0.557 | 0.660 | – | 0.743 | 0.733 | – | – |
+| [SciFact, per document](https://huggingface.co/datasets/BeIR/scifact) (BM25 0.661) | 300 | 0.750 | – | – | – | 0.745 | 0.717 | 0.716 | **0.756** | 0.729 | 0.730 | 0.557 | 0.660 | – | 0.743 | 0.733 | – | – |
 | **Judging** | | | | | | | | | | | | | | | | | | |
 | [HelpSteer2](https://huggingface.co/datasets/nvidia/HelpSteer2), Spearman | 500 | 0.482 | 0.547† | – | – | 0.510 | 0.384 | 0.444 | **0.641** | 0.492 | 0.566 | 0.423 | 0.354 | 0.435 | 0.555 | 0.337 | 0.333 | – |
 | [RewardBench 2](https://huggingface.co/datasets/allenai/reward-bench-2) | 1,200 | 79.2 | – | – | – | 66.9 | 60.0 | 56.0 | **81.5** | 72.9* | 74.9 | 75.0 | 63.2 | 48.6 | 79.3 | 64.3 | – | – |
@@ -116,7 +116,7 @@ Beyond classification, JevBench tests decision models as **rerankers** and as
 
 | Benchmark | What it tests | How the model is asked |
 |---|---|---|
-| SciFact, NFCorpus | Reranking a fixed BM25 top-20 of scientific and medical abstracts; nDCG@10 | Jev-style (one noul per document in one request) and all-at-once (one choice over the 20); graded relevance on NFCorpus |
+| SciFact, NFCorpus | Reranking a fixed BM25 top-20 of scientific and medical abstracts; nDCG@10 | Per document (one yes/no question per document, in one request) and all-at-once (one choice over the 20); graded relevance on NFCorpus |
 | HelpSteer2 | Rating answer helpfulness 0–4 like a human annotator; Spearman correlation | One score question |
 | RewardBench 2 | Picking the one correct response of four; accuracy per subset | One choice, asked in two orders |
 

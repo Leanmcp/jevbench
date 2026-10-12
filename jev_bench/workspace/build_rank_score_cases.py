@@ -6,7 +6,7 @@
 Ranking (SciFact, NFCorpus). Every model reranks the same 20 candidates per
 query: a BM25 shortlist built here, deterministically, from the pinned corpus.
 
-    *_rank_noul    Jev-style. One request per query. The state holds the query
+    *_rank_noul    Per document. One request per query. The state holds the query
                    and all 20 documents, with one noul per document ("is D07
                    relevant?"). Documents are ranked by p(true).
     *_rank_choice  One request per query, one choice over the 20 documents.

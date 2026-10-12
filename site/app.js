@@ -227,7 +227,7 @@ function renderGrid() {
     return [k, [Math.min(...vals), Math.max(...vals)]];
   }));
   const head = el("tr", {}, el("th", { class: "rowhead" }, "Model"), gridKeys.map((k, i) => el("th", {
-    class: lit && !lit.has(k) ? "off" : null, style: `z-index:${200 - i}`,
+    class: lit ? (lit.has(k) ? "on" : "off") : null, style: `z-index:${200 - i}`,
   }, el("button", { class: "colbtn", type: "button", "aria-pressed": String(sel.ds === k), "aria-label": `Chart ${DS[k].name}`,
     onclick: () => { lock(DS[k].cluster, k); $("#index").scrollIntoView({ behavior: REDUCED ? "auto" : "smooth" }); },
   }, el("span", {}, DS[k].name)))));
