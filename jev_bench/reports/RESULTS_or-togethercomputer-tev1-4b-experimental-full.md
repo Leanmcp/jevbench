@@ -1,6 +1,6 @@
 # jev-bench results: or-togethercomputer-tev1-4b-experimental-full
 
-Scored 2026-10-11T20:05:42-0700. Model requested `or-togethercomputer-tev1-4b-experimental`, endpoint `https://openrouter.ai/api/alpha/decisions`, manifest pinned 2026-09-26. One typed question per request, except `*_rank_noul` slices, which ask one noul per candidate document in a single request.
+Scored 2026-10-15T23:43:27-0700. Model requested `or-togethercomputer-tev1-4b-experimental`, endpoint `https://openrouter.ai/api/alpha/decisions`, manifest pinned 2026-09-26. One typed question per request, except `*_rank_noul` slices, which ask one noul per candidate document in a single request.
 
 ## Headline
 
@@ -18,7 +18,7 @@ Scored 2026-10-11T20:05:42-0700. Model requested `or-togethercomputer-tev1-4b-ex
 | medmcqa | choice | 1000 | 100.0% | **0.6100** | [0.569, 0.649] | accuracy |
 | medqa_usmle | choice | 1000 | 100.0% | **0.6890** | [0.652, 0.728] | accuracy |
 | mmlu_pro | choice | 1000 | 100.0% | **0.4840** | [0.445, 0.521] | accuracy |
-| nfcorpus_rank_choice | rank | 298 | 95.6% | **0.3571** | [0.322, 0.394] | ndcg@10 |
+| nfcorpus_rank_choice | rank | 298 | 96.0% | **0.3560** | [0.321, 0.392] | ndcg@10 |
 | nfcorpus_rank_graded | score | 4924 | 100.0% | **0.3535** | [0.320, 0.389] | ndcg@10 |
 | nfcorpus_rank_noul | rank | 298 | 100.0% | **0.3606** | [0.326, 0.396] | ndcg@10 |
 | prompt_injections | noul | 116 | 100.0% | **0.5517** | [0.466, 0.647] | accuracy |
@@ -73,7 +73,7 @@ The score type returns an expected zero-based level index, so MAE is computed on
 
 | slice | queries | nDCG@10 | MRR@10 | Recall@10 | BM25 nDCG@10 | ceiling nDCG@10 | shortlist recall |
 |---|---|---|---|---|---|---|---|
-| nfcorpus_rank_choice | 285 | 0.3571 | 0.6072 | 0.1645 | 0.3316 | 0.4698 | 18.9% |
+| nfcorpus_rank_choice | 286 | 0.3560 | 0.6060 | 0.1640 | 0.3309 | 0.4686 | 18.9% |
 | nfcorpus_rank_graded | 298 | 0.3535 | 0.5955 | 0.1699 | 0.3319 | 0.4651 | 19.1% |
 | nfcorpus_rank_noul | 298 | 0.3606 | 0.5933 | 0.1709 | 0.3319 | 0.4651 | 19.1% |
 | scifact_rank_choice | 299 | 0.7217 | 0.7017 | 0.8128 | 0.6627 | 0.8328 | 82.9% |
@@ -121,7 +121,7 @@ Each query reranks the same BM25 top-20 shortlist. `BM25 nDCG@10` is the shortli
 | medmcqa | 466 | 561 | 1658 | 162 | 162,126 | 0 |
 | medqa_usmle | 575 | 955 | 1837 | 327 | 326,708 | 0 |
 | mmlu_pro | 606 | 725 | 2101 | 342 | 342,153 | 0 |
-| nfcorpus_rank_choice | 2611 | 3178 | 3197 | 2491 | 709,863 | 0 |
+| nfcorpus_rank_choice | 2611 | 3178 | 3197 | 2492 | 712,632 | 0 |
 | nfcorpus_rank_graded | 595 | 802 | 2137 | 333 | 1,638,409 | 0 |
 | nfcorpus_rank_noul | 12161 | 21193 | 25641 | 45551 | 13,574,243 | 271 |
 | prompt_injections | 1976 | 14911 | 15269 | 201 | 23,321 | 24 |
@@ -140,7 +140,7 @@ Measured end to end from this client at concurrency 100, which is a property of 
 - **MCP coverage.** Headlines use valid returned decisions. `scores.json` also reports accuracy over planned cases, counting errors and missing predictions as wrong. Multiple checkpoints from one task share the bootstrap family; small subsets do not support broad ranking claims.
 - **Truncated states.** atbench500: 34, jailbreak_classification: 1. Those cases were not shown the full record, so the slice is not a faithful full-input evaluation.
 - **Training exposure.** banking77 (reported), medqa_usmle (likely), mmlu_pro (likely), scienceqa_text (likely), sst5 (reported). Held-out rows from a task a model was trained on measure in-domain generalisation, not transfer. Do not average across this flag.
-- **Failed requests.** banking77: 114, jailbreak_classification: 1, nfcorpus_rank_choice: 13, rewardbench2: 2, scifact_rank_choice: 1. Coverage below 100% means the headline is computed on the cases that answered, which flatters a model that fails on hard inputs.
+- **Failed requests.** banking77: 114, jailbreak_classification: 1, nfcorpus_rank_choice: 12, rewardbench2: 2, scifact_rank_choice: 1. Coverage below 100% means the headline is computed on the cases that answered, which flatters a model that fails on hard inputs.
 - **One question per request.** Latency here is per single decision. Jev's published advantage grows when many questions share one state, and that configuration is not measured here.
 - **`best_threshold_accuracy` in scores.json is optimistic** by construction: it is chosen on the same data it scores. Pick operating thresholds on a calibration split before quoting one.
 - **Vendor-adjacent framing.** Instructions and criteria here are ours. A different wording is a different benchmark, which is why the exact adapter is in the repo.

@@ -30,7 +30,9 @@ from typing import Any, Callable, Iterable
 ROOT = Path(__file__).resolve().parent.parent
 SOURCES_PATH = ROOT / "sources.json"
 DATA = ROOT / "data"
-CASES = DATA / "cases"
+# JEV_CASES_DIR points every step at another case set, e.g. data/cases_zh_full
+# from translate_cases.py. Relative paths resolve from the jev_bench root.
+CASES = ROOT / os.environ["JEV_CASES_DIR"] if os.environ.get("JEV_CASES_DIR") else DATA / "cases"
 RUNS = DATA / "runs"
 REPORTS = ROOT / "reports"
 

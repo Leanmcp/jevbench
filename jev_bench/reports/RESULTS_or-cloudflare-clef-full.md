@@ -1,6 +1,6 @@
 # jev-bench results: or-cloudflare-clef-full
 
-Scored 2026-10-11T19:48:43-0700. Model requested `or-cloudflare-clef`, endpoint `https://openrouter.ai/api/alpha/decisions`, manifest pinned 2026-09-26. One typed question per request, except `*_rank_noul` slices, which ask one noul per candidate document in a single request.
+Scored 2026-10-15T23:38:30-0700. Model requested `or-cloudflare-clef`, endpoint `https://openrouter.ai/api/alpha/decisions`, manifest pinned 2026-09-26. One typed question per request, except `*_rank_noul` slices, which ask one noul per candidate document in a single request.
 
 ## Headline
 
@@ -19,7 +19,7 @@ Scored 2026-10-11T19:48:43-0700. Model requested `or-cloudflare-clef`, endpoint 
 | medmcqa | choice | 1000 | 100.0% | **0.7250** | [0.688, 0.761] | accuracy |
 | medqa_usmle | choice | 1000 | 100.0% | **0.8430** | [0.812, 0.872] | accuracy |
 | mmlu_pro | choice | 1000 | 100.0% | **0.6680** | [0.631, 0.708] | accuracy |
-| nfcorpus_rank_choice | rank | 298 | 98.7% | **0.3708** | [0.335, 0.408] | ndcg@10 |
+| nfcorpus_rank_choice | rank | 298 | 100.0% | **0.3692** | [0.335, 0.406] | ndcg@10 |
 | nfcorpus_rank_graded | score | 4924 | 100.0% | **0.3764** | [0.342, 0.413] | ndcg@10 |
 | nfcorpus_rank_noul | rank | 298 | 100.0% | **0.3732** | [0.337, 0.410] | ndcg@10 |
 | prompt_injections | noul | 116 | 100.0% | **0.8017** | [0.724, 0.871] | accuracy |
@@ -76,7 +76,7 @@ The score type returns an expected zero-based level index, so MAE is computed on
 
 | slice | queries | nDCG@10 | MRR@10 | Recall@10 | BM25 nDCG@10 | ceiling nDCG@10 | shortlist recall |
 |---|---|---|---|---|---|---|---|
-| nfcorpus_rank_choice | 294 | 0.3708 | 0.6147 | 0.1713 | 0.3329 | 0.4680 | 19.3% |
+| nfcorpus_rank_choice | 298 | 0.3692 | 0.6199 | 0.1705 | 0.3319 | 0.4651 | 19.1% |
 | nfcorpus_rank_graded | 298 | 0.3764 | 0.6177 | 0.1749 | 0.3319 | 0.4651 | 19.1% |
 | nfcorpus_rank_noul | 298 | 0.3732 | 0.6166 | 0.1727 | 0.3319 | 0.4651 | 19.1% |
 | scifact_rank_choice | 300 | 0.7520 | 0.7376 | 0.8251 | 0.6605 | 0.8300 | 82.6% |
@@ -128,7 +128,7 @@ Each query reranks the same BM25 top-20 shortlist. `BM25 nDCG@10` is the shortli
 | medmcqa | 503 | 758 | 1346 | 209 | 209,014 | 0 |
 | medqa_usmle | 508 | 741 | 1385 | 374 | 373,536 | 0 |
 | mmlu_pro | 500 | 775 | 1275 | 409 | 409,206 | 0 |
-| nfcorpus_rank_choice | 2159 | 6450 | 6931 | 2556 | 751,583 | 0 |
+| nfcorpus_rank_choice | 2140 | 6450 | 6931 | 2526 | 752,758 | 0 |
 | nfcorpus_rank_graded | 538 | 1648 | 2613 | 374 | 1,843,503 | 1 |
 | nfcorpus_rank_noul | 1735 | 3913 | 4497 | 4765 | 1,419,832 | 0 |
 | prompt_injections | 477 | 744 | 870 | 238 | 27,613 | 0 |
@@ -147,7 +147,6 @@ Measured end to end from this client at concurrency 100, which is a property of 
 - **MCP coverage.** Headlines use valid returned decisions. `scores.json` also reports accuracy over planned cases, counting errors and missing predictions as wrong. Multiple checkpoints from one task share the bootstrap family; small subsets do not support broad ranking claims.
 - **Truncated states.** atbench500: 34, jailbreak_classification: 1. Those cases were not shown the full record, so the slice is not a faithful full-input evaluation.
 - **Training exposure.** banking77 (reported), medqa_usmle (likely), mmlu_pro (likely), scienceqa_text (likely), sst5 (reported). Held-out rows from a task a model was trained on measure in-domain generalisation, not transfer. Do not average across this flag.
-- **Failed requests.** nfcorpus_rank_choice: 4. Coverage below 100% means the headline is computed on the cases that answered, which flatters a model that fails on hard inputs.
 - **One question per request.** Latency here is per single decision. Jev's published advantage grows when many questions share one state, and that configuration is not measured here.
 - **`best_threshold_accuracy` in scores.json is optimistic** by construction: it is chosen on the same data it scores. Pick operating thresholds on a calibration split before quoting one.
 - **Vendor-adjacent framing.** Instructions and criteria here are ours. A different wording is a different benchmark, which is why the exact adapter is in the repo.

@@ -1,6 +1,6 @@
 # jev-bench results: or-cloudflare-clef-omni-full
 
-Scored 2026-10-11T19:52:53-0700. Model requested `or-cloudflare-clef-omni`, endpoint `https://openrouter.ai/api/alpha/decisions`, manifest pinned 2026-09-26. One typed question per request, except `*_rank_noul` slices, which ask one noul per candidate document in a single request.
+Scored 2026-10-15T23:38:40-0700. Model requested `or-cloudflare-clef-omni`, endpoint `https://openrouter.ai/api/alpha/decisions`, manifest pinned 2026-09-26. One typed question per request, except `*_rank_noul` slices, which ask one noul per candidate document in a single request.
 
 ## Headline
 

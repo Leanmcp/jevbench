@@ -13,7 +13,8 @@
 set -Eeuo pipefail
 cd "$(dirname "${BASH_SOURCE[0]}")/.."
 
-# Decision models listed on OpenRouter on 2026-10-11 that are not yet benchmarked.
+# Decision models listed on OpenRouter on 2026-10-11 that are not yet benchmarked
+# (scaledown/classify-1 added 2026-10-15).
 # Left out: typesafe/jev-1.13 and liquid/d1 (already run direct), ~typesafe/jev-latest
 # (a moving alias) and the :free variants (rate-limited copies of paid ones).
 MODELS=(
@@ -30,6 +31,7 @@ MODELS=(
   togethercomputer/tev1-4b-experimental
   jaredpalmer/kev-4b
   respan/span-01
+  scaledown/classify-1
 )
 
 MODE="${1:-}"
@@ -50,6 +52,12 @@ run_one() {
   local label="or-${model//\//-}"
   local common=(--endpoint openrouter --model "$model" --label "$label"
     --skip vqa_rad --skip scienceqa_image --concurrency "$CONCURRENCY" --timeout 300)
+  # These APIs reject an object state (ScaleDown: "state must be a string or an
+  # object with only text, document, and document_mime_type"), so send it as
+  # JSON text. Keep in step with state_as_string in models.json.
+  case "$model" in
+    respan/span-01|scaledown/classify-1) common+=(--state-as-string) ;;
+  esac
   echo "== $model  ($label)"
   case "$MODE" in
     dry-run)

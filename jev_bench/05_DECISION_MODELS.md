@@ -26,6 +26,7 @@ serves; both fit on a laptop.
 | `togethercomputer/tev1-4b-experimental` | OpenRouter | 0.042 | not checked |
 | `jaredpalmer/kev-4b` | OpenRouter | 0.042 | not checked |
 | `respan/span-01` | OpenRouter | 0.02 | not checked; listed with context length 0 |
+| `scaledown/classify-1` | OpenRouter | 0.04 | hosted service; a constrained decoding model (CDM), added 15 October 2026 |
 | `LiquidAI/d1-3B` (3.1B) | local, `serve_d1_local.py` | free | LFM Open License v1.0 (`lfm1.0` on the card) |
 | `LiquidAI/d1-omni-600M` (587M) | local, `serve_d1_local.py` | free | LFM Open License v1.0 |
 
@@ -40,6 +41,18 @@ free under USD 10M annual revenue and needs a paid licence above it. Its
 published summary places no restriction on publishing benchmark results. The
 hosted Liquid d1 already run in `liquid-d1-full` is a service, covered by
 Liquid's service terms rather than this licence; see `03_LIQUID_D1.md`.
+
+`scaledown/classify-1` is ScaleDown's constrained decoding model (CDM). It is
+not autoregressive: it reads the input once in a single prefill and points to
+the answer instead of generating it token by token, which is why output is free.
+It answers through the same Decisions endpoint, so it runs on the same cases as
+every other model here. `models.json` tags it with `"architecture"`, and the
+README and website show the tag. ScaleDown's Extract and Summarize CDMs return
+text rather than decisions, so this benchmark does not cover them.
+
+Its API rejects an object state with HTTP 400 ("state must be a string or an
+object with only text, document, and document_mime_type"), so it runs with
+`state_as_string`, like Span-01: the same state, sent as JSON text.
 
 ## What a full run costs
 
@@ -56,8 +69,9 @@ so expect each model to land between those.
 | the 0.04 group | 0.12 to 0.25 |
 | Clef-flash | 0.11 to 0.23 |
 | pplx-decider v1.1, Mercury, Span | 0.06 to 0.12 |
+| ScaleDown Classify-1 | 0.12 to 0.24 |
 
-All thirteen OpenRouter models together come to roughly USD 3 to 6.
+All fourteen OpenRouter models together come to roughly USD 3 to 6.
 
 ## Run order
 

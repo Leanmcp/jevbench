@@ -1,6 +1,6 @@
 # jev-bench results: or-nace-ai-drex-v1.5-full
 
-Scored 2026-10-11T19:58:08-0700. Model requested `or-nace-ai-drex-v1.5`, endpoint `https://openrouter.ai/api/alpha/decisions`, manifest pinned 2026-09-26. One typed question per request, except `*_rank_noul` slices, which ask one noul per candidate document in a single request.
+Scored 2026-10-15T23:42:47-0700. Model requested `or-nace-ai-drex-v1.5`, endpoint `https://openrouter.ai/api/alpha/decisions`, manifest pinned 2026-09-26. One typed question per request, except `*_rank_noul` slices, which ask one noul per candidate document in a single request.
 
 ## Headline
 
@@ -24,8 +24,10 @@ Scored 2026-10-11T19:58:08-0700. Model requested `or-nace-ai-drex-v1.5`, endpoin
 | nfcorpus_rank_noul | rank | 298 | 100.0% | **0.3734** | [0.337, 0.411] | ndcg@10 |
 | prompt_injections | noul | 116 | 100.0% | **0.5517** | [0.466, 0.638] | accuracy |
 | pubmedqa | choice | 500 | 100.0% | **0.6520** | [0.610, 0.694] | accuracy |
-| rewardbench2 | choice | 428 | 100.0% | **0.4860** | [0.424, 0.541] | accuracy |
+| rewardbench2 | choice | 1200 | 100.0% | **0.6933** | [0.661, 0.726] | accuracy |
 | scienceqa_text | choice | 1000 | 100.0% | **0.9060** | [0.882, 0.930] | accuracy |
+| scifact_rank_choice | rank | 300 | 100.0% | **0.7361** | [0.692, 0.780] | ndcg@10 |
+| scifact_rank_noul | rank | 300 | 100.0% | **0.7423** | [0.699, 0.785] | ndcg@10 |
 | sst5 | score | 500 | 100.0% | **0.5590** | [0.521, 0.600] | mae_expected_level |
 
 Confidence intervals are percentile bootstrap over 2000 resamples grouped by `family_id`, so a case and its reordered twin move together. Accuracy is higher-is-better; MAE is lower-is-better. The two are not comparable to each other.
@@ -43,7 +45,7 @@ Confidence intervals are percentile bootstrap over 2000 resamples grouped by `fa
 | medqa_usmle | 1000 | 4 | 75.5% | 0.7558 | 0.3535 | 0.6647 | 0 | 0.0606 | 1000 |
 | mmlu_pro | 1000 | 10 | 61.0% | 0.6118 | 0.5298 | 1.2948 | 0 | 0.1168 | 1000 |
 | pubmedqa | 500 | 3 | 65.2% | 0.5623 | 0.5018 | 0.9060 | 0 | 0.1570 | 500 |
-| rewardbench2 | 428 | 4 | 48.6% | 0.4735 | 0.6346 | 1.2177 | 0 | 0.0698 | 428 |
+| rewardbench2 | 1200 | 4 | 69.3% | 0.6926 | 0.4215 | 0.8245 | 0 | 0.0674 | 1200 |
 | scienceqa_text | 1000 | 4 | 90.6% | 0.9240 | 0.1297 | 0.2163 | 0 | 0.0299 | 1000 |
 
 Brier is the sum convention, `mean_i sum_k (p_ik - y_ik)^2`. NLL excludes cases where the gold option got exactly zero mass; that count is its own column rather than being clipped away. ECE over 10 equal-width bins on the top probability: the bin count changes the number, so it travels with it.
@@ -77,6 +79,8 @@ The score type returns an expected zero-based level index, so MAE is computed on
 | nfcorpus_rank_choice | 298 | 0.3711 | 0.6180 | 0.1729 | 0.3319 | 0.4651 | 19.1% |
 | nfcorpus_rank_graded | 298 | 0.3746 | 0.6137 | 0.1740 | 0.3319 | 0.4651 | 19.1% |
 | nfcorpus_rank_noul | 298 | 0.3734 | 0.6158 | 0.1731 | 0.3319 | 0.4651 | 19.1% |
+| scifact_rank_choice | 300 | 0.7361 | 0.7156 | 0.8217 | 0.6605 | 0.8300 | 82.6% |
+| scifact_rank_noul | 300 | 0.7423 | 0.7274 | 0.8192 | 0.6605 | 0.8300 | 82.6% |
 
 Each query reranks the same BM25 top-20 shortlist. `BM25 nDCG@10` is the shortlist's own order, so the model helps only where it beats that column. `ceiling nDCG@10` is the best possible order of the shortlist, and `shortlist recall` is the share of judged-relevant documents it contains; no reranker can exceed either. nDCG uses linear gain against every judged document for the query.
 
@@ -85,7 +89,10 @@ Each query reranks the same BM25 top-20 shortlist. `BM25 nDCG@10` is the shortli
 | slice | subset | n | accuracy |
 |---|---|---|---|
 | rewardbench2 | Factuality | 240 | 63.7% |
-| rewardbench2 | Precise IF | 188 | 29.3% |
+| rewardbench2 | Focus | 240 | 89.6% |
+| rewardbench2 | Math | 240 | 72.1% |
+| rewardbench2 | Precise IF | 240 | 31.7% |
+| rewardbench2 | Safety | 240 | 89.6% |
 
 ## Option-order sensitivity
 
@@ -99,7 +106,7 @@ Each query reranks the same BM25 top-20 shortlist. `BM25 nDCG@10` is the shortli
 | medmcqa | 500 | 66.4% | 66.8% | 60.4% | 12.4% |
 | medqa_usmle | 500 | 75.4% | 75.6% | 71.0% | 9.0% |
 | mmlu_pro | 500 | 60.4% | 61.6% | 54.4% | 13.2% |
-| rewardbench2 | 204 | 50.9% | 46.3% | 38.2% | 21.1% |
+| rewardbench2 | 594 | 70.7% | 68.0% | 62.1% | 14.6% |
 | scienceqa_text | 500 | 91.6% | 89.6% | 87.8% | 5.6% |
 
 `flipped by reordering` is the fraction of matched families where moving the options changed whether the answer was right. Reordering does not change the question, so anything materially above zero is position bias, not difficulty.
@@ -126,8 +133,10 @@ Each query reranks the same BM25 top-20 shortlist. `BM25 nDCG@10` is the shortli
 | nfcorpus_rank_noul | 2415 | 3227 | 4006 | 3943 | 1,174,886 | 0 |
 | prompt_injections | 848 | 1848 | 2673 | 131 | 15,165 | 0 |
 | pubmedqa | 822 | 2239 | 2475 | 419 | 209,318 | 0 |
-| rewardbench2 | 2162 | 16895 | 19224 | 1528 | 654,064 | 10 |
+| rewardbench2 | 3902 | 12040 | 17516 | 1715 | 2,058,346 | 356 |
 | scienceqa_text | 502 | 1190 | 1801 | 82 | 81,660 | 0 |
+| scifact_rank_choice | 4273 | 5480 | 5906 | 2849 | 854,593 | 112 |
+| scifact_rank_noul | 4320 | 5832 | 6484 | 5035 | 1,510,419 | 109 |
 | sst5 | 278 | 800 | 1803 | 56 | 28,203 | 0 |
 
 Measured end to end from this client at concurrency 100, which is a property of this machine and network as much as of the model. Token counts are the API's own `usage`, not an estimate.

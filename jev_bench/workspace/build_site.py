@@ -262,7 +262,7 @@ def main() -> int:
                 per_dataset[k] = round(v, 1)
         partner = next((p for p in models if p["name"] == MERGE.get(m["name"])), {})
         index_rows.append({"name": m["name"].replace(" (hosted)", ""), "hosting": m.get("hosting", "API"),
-                           "links": {**partner.get("links", {}), **m.get("links", {})}, "licence": m.get("licence"),
+                           "links": {**partner.get("links", {}), **m.get("links", {})}, "licence": m.get("licence"), "architecture": m.get("architecture"),
                            "index": None if ix["index"] is None else round(ix["index"], 1),
                            "clusters": {k: None if v is None else round(v, 1) for k, v in ix["clusters"].items()},
                            "zeroed": [DATASETS[k][0] for k in ix["zeroed"]], "missing": len(ix["missing"]),

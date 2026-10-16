@@ -1,6 +1,6 @@
 # jev-bench results: or-upstage-solar-decide-full
 
-Scored 2026-10-11T19:42:07-0700. Model requested `or-upstage-solar-decide`, endpoint `https://openrouter.ai/api/alpha/decisions`, manifest pinned 2026-09-26. One typed question per request, except `*_rank_noul` slices, which ask one noul per candidate document in a single request.
+Scored 2026-10-15T23:39:38-0700. Model requested `or-upstage-solar-decide`, endpoint `https://openrouter.ai/api/alpha/decisions`, manifest pinned 2026-09-26. One typed question per request, except `*_rank_noul` slices, which ask one noul per candidate document in a single request.
 
 ## Headline
 

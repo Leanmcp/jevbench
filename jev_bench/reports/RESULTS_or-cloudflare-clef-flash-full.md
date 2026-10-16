@@ -1,6 +1,6 @@
 # jev-bench results: or-cloudflare-clef-flash-full
 
-Scored 2026-10-11T19:50:17-0700. Model requested `or-cloudflare-clef-flash`, endpoint `https://openrouter.ai/api/alpha/decisions`, manifest pinned 2026-09-26. One typed question per request, except `*_rank_noul` slices, which ask one noul per candidate document in a single request.
+Scored 2026-10-15T23:38:35-0700. Model requested `or-cloudflare-clef-flash`, endpoint `https://openrouter.ai/api/alpha/decisions`, manifest pinned 2026-09-26. One typed question per request, except `*_rank_noul` slices, which ask one noul per candidate document in a single request.
 
 ## Headline
 
@@ -19,7 +19,7 @@ Scored 2026-10-11T19:50:17-0700. Model requested `or-cloudflare-clef-flash`, end
 | medmcqa | choice | 1000 | 100.0% | **0.7040** | [0.667, 0.739] | accuracy |
 | medqa_usmle | choice | 1000 | 100.0% | **0.7660** | [0.730, 0.800] | accuracy |
 | mmlu_pro | choice | 1000 | 100.0% | **0.6760** | [0.638, 0.713] | accuracy |
-| nfcorpus_rank_choice | rank | 298 | 98.7% | **0.3655** | [0.332, 0.402] | ndcg@10 |
+| nfcorpus_rank_choice | rank | 298 | 99.7% | **0.3660** | [0.330, 0.403] | ndcg@10 |
 | nfcorpus_rank_graded | score | 4924 | 100.0% | **0.3787** | [0.345, 0.416] | ndcg@10 |
 | nfcorpus_rank_noul | rank | 298 | 100.0% | **0.3686** | [0.333, 0.404] | ndcg@10 |
 | prompt_injections | noul | 116 | 100.0% | **0.5948** | [0.500, 0.681] | accuracy |
@@ -76,7 +76,7 @@ The score type returns an expected zero-based level index, so MAE is computed on
 
 | slice | queries | nDCG@10 | MRR@10 | Recall@10 | BM25 nDCG@10 | ceiling nDCG@10 | shortlist recall |
 |---|---|---|---|---|---|---|---|
-| nfcorpus_rank_choice | 294 | 0.3655 | 0.6173 | 0.1674 | 0.3311 | 0.4661 | 19.0% |
+| nfcorpus_rank_choice | 297 | 0.3660 | 0.6178 | 0.1692 | 0.3318 | 0.4655 | 19.1% |
 | nfcorpus_rank_graded | 298 | 0.3787 | 0.6326 | 0.1733 | 0.3319 | 0.4651 | 19.1% |
 | nfcorpus_rank_noul | 298 | 0.3686 | 0.6165 | 0.1725 | 0.3319 | 0.4651 | 19.1% |
 | scifact_rank_choice | 300 | 0.7376 | 0.7168 | 0.8234 | 0.6605 | 0.8300 | 82.6% |
@@ -128,7 +128,7 @@ Each query reranks the same BM25 top-20 shortlist. `BM25 nDCG@10` is the shortli
 | medmcqa | 380 | 578 | 803 | 209 | 209,014 | 0 |
 | medqa_usmle | 415 | 628 | 1418 | 374 | 373,536 | 0 |
 | mmlu_pro | 439 | 1047 | 1550 | 409 | 409,206 | 0 |
-| nfcorpus_rank_choice | 1506 | 6022 | 7447 | 2556 | 751,563 | 0 |
+| nfcorpus_rank_choice | 1492 | 6022 | 7447 | 2534 | 752,467 | 0 |
 | nfcorpus_rank_graded | 459 | 986 | 2951 | 374 | 1,843,503 | 0 |
 | nfcorpus_rank_noul | 2212 | 15168 | 20004 | 4765 | 1,419,832 | 7 |
 | prompt_injections | 339 | 440 | 856 | 238 | 27,613 | 0 |
@@ -147,7 +147,7 @@ Measured end to end from this client at concurrency 100, which is a property of 
 - **MCP coverage.** Headlines use valid returned decisions. `scores.json` also reports accuracy over planned cases, counting errors and missing predictions as wrong. Multiple checkpoints from one task share the bootstrap family; small subsets do not support broad ranking claims.
 - **Truncated states.** atbench500: 34, jailbreak_classification: 1. Those cases were not shown the full record, so the slice is not a faithful full-input evaluation.
 - **Training exposure.** banking77 (reported), medqa_usmle (likely), mmlu_pro (likely), scienceqa_text (likely), sst5 (reported). Held-out rows from a task a model was trained on measure in-domain generalisation, not transfer. Do not average across this flag.
-- **Failed requests.** nfcorpus_rank_choice: 4. Coverage below 100% means the headline is computed on the cases that answered, which flatters a model that fails on hard inputs.
+- **Failed requests.** nfcorpus_rank_choice: 1. Coverage below 100% means the headline is computed on the cases that answered, which flatters a model that fails on hard inputs.
 - **One question per request.** Latency here is per single decision. Jev's published advantage grows when many questions share one state, and that configuration is not measured here.
 - **`best_threshold_accuracy` in scores.json is optimistic** by construction: it is chosen on the same data it scores. Pick operating thresholds on a calibration split before quoting one.
 - **Vendor-adjacent framing.** Instructions and criteria here are ours. A different wording is a different benchmark, which is why the exact adapter is in the repo.

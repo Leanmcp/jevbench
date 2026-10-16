@@ -124,11 +124,11 @@ def main() -> int:
         index_rows.append(f"| {place} | {name} | {head} | {cl} |")
 
     order = ["Hugging Face", "Website", "Code", "Runbook"]
-    model_rows = ["| Model | Runs on | Licence | Links |", "|---|---|---|---|"]
+    model_rows = ["| Model | Runs on | Architecture | Licence | Links |", "|---|---|---|---|---|"]
     for m, _, _ in columns:
         links = sorted((m.get("links") or {}).items(), key=lambda kv: order.index(kv[0]) if kv[0] in order else 9)
         kind = "Open weights" if "Hugging Face" in dict(links) else m.get("hosting", "API")
-        model_rows.append(f"| {m['name']} | {kind} | {m.get('licence') or 'not checked'} | " + " · ".join(f"[{k}]({u})" for k, u in links) + " |")
+        model_rows.append(f"| {m['name']} | {kind} | {m.get('architecture') or '–'} | {m.get('licence') or 'not checked'} | " + " · ".join(f"[{k}]({u})" for k, u in links) + " |")
 
     block = "\n".join([
         START,

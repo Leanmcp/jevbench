@@ -140,7 +140,7 @@ def main() -> int:
         if image_slices:
             ap.error("Image input is not wired for this hosted API yet. Exclude these slices with --skip: " + ", ".join(image_slices))
     print(f"slices    {len(keys)}: " + ", ".join(keys))
-    print(f"cases     {len(work):,}")
+    print(f"cases     {len(work):,}  from {C.CASES}")
 
     if args.dry_run:
         sizes = []
@@ -201,6 +201,7 @@ def main() -> int:
                 "model_sent_on_wire": None if args.no_send_model else args.model,
                 "request_options": options or None,
                 "state_as_string": args.state_as_string,
+                "cases_dir": str(C.CASES.relative_to(C.ROOT)) if C.CASES.is_relative_to(C.ROOT) else str(C.CASES),
                 "started_at": time.strftime("%Y-%m-%dT%H:%M:%S%z"),
                 # Merged with the earlier record, so a run filled one slice at a
                 # time (matrix.py) still lists every slice it holds.
