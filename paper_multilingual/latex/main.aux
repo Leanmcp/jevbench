@@ -1,0 +1,160 @@
+\relax 
+\providecommand\hyper@newdestlabel[2]{}
+\providecommand\HyField@AuxAddToFields[1]{}
+\providecommand\HyField@AuxAddToCoFields[2]{}
+\citation{pai2026jevbench}
+\citation{yong2023lowresource,deng2023multilingualjailbreak,wang2023alllanguages}
+\citation{pai2026jevbench}
+\citation{ducel2022benderrule}
+\@writefile{toc}{\contentsline {section}{\numberline {1}Introduction}{1}{section.1}\protected@file@percent }
+\citation{pai2026jevbench}
+\citation{guo2017calibration}
+\citation{yong2023lowresource}
+\citation{deng2023multilingualjailbreak}
+\citation{wang2023alllanguages}
+\citation{kumar2025polyguard}
+\citation{conneau2018xnli}
+\citation{artetxe2020translation}
+\citation{singh2025globalmmlu}
+\@writefile{toc}{\contentsline {section}{\numberline {2}Background}{2}{section.2}\protected@file@percent }
+\newlabel{sec:background}{{2}{2}{Background}{section.2}{}}
+\@writefile{toc}{\contentsline {paragraph}{Typed decisions.}{2}{section*.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Decision threshold.}{2}{section*.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{AUROC.}{2}{section*.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Yes rate.}{2}{section*.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {3}Related work}{2}{section.3}\protected@file@percent }
+\newlabel{sec:related}{{3}{2}{Related work}{section.3}{}}
+\@writefile{toc}{\contentsline {paragraph}{Multilingual safety of generative models.}{2}{section*.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Multilingual guard models.}{2}{section*.6}\protected@file@percent }
+\citation{ducel2022benderrule}
+\citation{pai2026jevbench}
+\citation{jackhhao2023jailbreak}
+\citation{deepset2023promptinjections}
+\citation{ghosh2025aegis2}
+\citation{li2026atbench}
+\@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces Languages and translated cases. A case is kept only if every one of its translated strings passed the checks of Section~\ref {sec:checks}; the counts are the cases each language delivered, out of the English cases in the first row.}}{3}{table.1}\protected@file@percent }
+\newlabel{tab:langs}{{1}{3}{Languages and translated cases. A case is kept only if every one of its translated strings passed the checks of Section~\ref {sec:checks}; the counts are the cases each language delivered, out of the English cases in the first row}{table.1}{}}
+\@writefile{toc}{\contentsline {paragraph}{Translated benchmarks.}{3}{section*.7}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Naming the language.}{3}{section*.8}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {4}Building the multilingual benchmark}{3}{section.4}\protected@file@percent }
+\newlabel{sec:benchmark}{{4}{3}{Building the multilingual benchmark}{section.4}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.1}Source slices}{3}{subsection.4.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.2}Languages}{3}{subsection.4.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.3}Translation}{3}{subsection.4.3}\protected@file@percent }
+\newlabel{sec:translation}{{4.3}{3}{Translation}{subsection.4.3}{}}
+\@writefile{toc}{\contentsline {paragraph}{Translator.}{3}{section*.9}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{What is translated.}{4}{section*.10}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Instructions to the translator.}{4}{section*.11}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.4}Checks}{4}{subsection.4.4}\protected@file@percent }
+\newlabel{sec:checks}{{4.4}{4}{Checks}{subsection.4.4}{}}
+\@writefile{toc}{\contentsline {paragraph}{Two variants.}{4}{section*.12}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {5}Experimental setup}{4}{section.5}\protected@file@percent }
+\newlabel{sec:setup}{{5}{4}{Experimental setup}{section.5}{}}
+\@writefile{toc}{\contentsline {paragraph}{Models.}{4}{section*.13}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Pairing.}{4}{section*.14}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Metrics.}{4}{section*.15}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces Evaluated models, all reached through OpenRouter's Decisions endpoint. Licences as stated by the provider; ``hosted'' means only a service is offered.}}{5}{table.2}\protected@file@percent }
+\newlabel{tab:models}{{2}{5}{Evaluated models, all reached through OpenRouter's Decisions endpoint. Licences as stated by the provider; ``hosted'' means only a service is offered}{table.2}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {3}{\ignorespaces Mean over the 14 models with a finished run in every language. Accuracy (\%) is the mean over the five benchmarks at the 0.5 cut; $\Delta $ is the paired change from the same models' English answers on the same cases, in points. AUROC is the mean of the per-benchmark AUROC. The last column counts models with a finished run in the language; Tables~\ref {tab:delta} and~\ref {tab:perlang-zh}--\ref {tab:perlang-ru} cover every finished run.}}{5}{table.3}\protected@file@percent }
+\newlabel{tab:overall}{{3}{5}{Mean over the 14 models with a finished run in every language. Accuracy (\%) is the mean over the five benchmarks at the 0.5 cut; $\Delta $ is the paired change from the same models' English answers on the same cases, in points. AUROC is the mean of the per-benchmark AUROC. The last column counts models with a finished run in the language; Tables~\ref {tab:delta} and~\ref {tab:perlang-zh}--\ref {tab:perlang-ru} cover every finished run}{table.3}{}}
+\@writefile{toc}{\contentsline {paragraph}{Means over models.}{5}{section*.16}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {6}Results}{5}{section.6}\protected@file@percent }
+\newlabel{sec:results}{{6}{5}{Results}{section.6}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.1}Accuracy by language}{5}{subsection.6.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Close to English.}{5}{section*.17}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Moderately lower.}{5}{section*.18}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Substantially lower.}{5}{section*.19}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces Mean accuracy (\%) over the five safety benchmarks for the 14{} models, with the paired change from English in brackets. The vertical line marks English. The axis starts at 50\%, which a constant answer reaches on the balanced slices.}}{6}{figure.1}\protected@file@percent }
+\newlabel{fig:lang}{{1}{6}{Mean accuracy (\%) over the five safety benchmarks for the \MLnModels {} models, with the paired change from English in brackets. The vertical line marks English. The axis starts at 50\%, which a constant answer reaches on the balanced slices}{figure.1}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {4}{\ignorespaces Change in accuracy from English (points), per model and language, each on the cases both runs answered. Bold: the 95\% paired bootstrap interval (2{,}000 resamples over case families) excludes zero. $\cdot $: run not finished. The English column is the model's accuracy on all English cases.}}{6}{table.4}\protected@file@percent }
+\newlabel{tab:delta}{{4}{6}{Change in accuracy from English (points), per model and language, each on the cases both runs answered. Bold: the 95\% paired bootstrap interval (2{,}000 resamples over case families) excludes zero. $\cdot $: run not finished. The English column is the model's accuracy on all English cases}{table.4}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.2}Per model}{6}{subsection.6.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Some models are stable.}{6}{section*.20}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Some models lose in every language.}{6}{section*.21}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Strong English models are not always robust.}{6}{section*.22}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {5}{\ignorespaces Accuracy (\%) per benchmark at the 0.5 cut, mean over the 14 models finished in every language. English is the same models on all English cases.}}{7}{table.5}\protected@file@percent }
+\newlabel{tab:bench}{{5}{7}{Accuracy (\%) per benchmark at the 0.5 cut, mean over the 14 models finished in every language. English is the same models on all English cases}{table.5}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces Every model--language pair: change in mean AUROC against change in mean accuracy, both from English. Green: French, Chinese, Spanish, Russian; blue: Vietnamese, Arabic, Hindi; red: Swahili. Points near the vertical axis lost accuracy while keeping their ranking (a shifted operating point); points along the dashed diagonal lost both.}}{7}{figure.2}\protected@file@percent }
+\newlabel{fig:scatter}{{2}{7}{Every model--language pair: change in mean AUROC against change in mean accuracy, both from English. Green: French, Chinese, Spanish, Russian; blue: Vietnamese, Arabic, Hindi; red: Swahili. Points near the vertical axis lost accuracy while keeping their ranking (a shifted operating point); points along the dashed diagonal lost both}{figure.2}{}}
+\@writefile{toc}{\contentsline {paragraph}{Gains are real but rare.}{7}{section*.23}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.3}Per benchmark}{7}{subsection.6.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.4}Shifted threshold or lost discrimination}{7}{subsection.6.4}\protected@file@percent }
+\newlabel{sec:threshold}{{6.4}{7}{Shifted threshold or lost discrimination}{subsection.6.4}{}}
+\@writefile{toc}{\contentsline {paragraph}{A shifted operating point.}{7}{section*.24}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {6}{\ignorespaces Five of the largest drops, per benchmark. ``Yes'' is the share of cases the model calls positive (unsafe, jailbreak, injection) at 0.5; ``Gold'' is the share that is positive. A falling AUROC is lost discrimination; a yes-rate that moves far from the gold rate while AUROC holds is a shifted operating point.}}{8}{table.6}\protected@file@percent }
+\newlabel{tab:bias}{{6}{8}{Five of the largest drops, per benchmark. ``Yes'' is the share of cases the model calls positive (unsafe, jailbreak, injection) at 0.5; ``Gold'' is the share that is positive. A falling AUROC is lost discrimination; a yes-rate that moves far from the gold rate while AUROC holds is a shifted operating point}{table.6}{}}
+\@writefile{toc}{\contentsline {paragraph}{Lost discrimination.}{8}{section*.25}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Both directions are failures.}{8}{section*.26}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {7}What changes between languages: a case-level audit}{8}{section.7}\protected@file@percent }
+\newlabel{sec:examples}{{7}{8}{What changes between languages: a case-level audit}{section.7}{}}
+\@writefile{toc}{\contentsline {paragraph}{Genuine model failures.}{8}{section*.27}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {7}{\ignorespaces Cases with large changes between English and a translation. ``Right'': models correct out of 14{}, in English and in the translation. Gold is the dataset's label. All cases are Aegis~2.0 prompts except the two marked PI (prompt injections).}}{9}{table.7}\protected@file@percent }
+\newlabel{tab:examples}{{7}{9}{Cases with large changes between English and a translation. ``Right'': models correct out of \MLnModels {}, in English and in the translation. Gold is the dataset's label. All cases are Aegis~2.0 prompts except the two marked PI (prompt injections)}{table.7}{}}
+\@writefile{toc}{\contentsline {paragraph}{Changes made by the translation.}{9}{section*.28}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{One case in four languages.}{9}{section*.29}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{How much this affects the averages.}{9}{section*.30}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {8}Discussion}{9}{section.8}\protected@file@percent }
+\newlabel{sec:discussion}{{8}{9}{Discussion}{section.8}{}}
+\@writefile{toc}{\contentsline {paragraph}{Evaluate a guard in the languages it will see.}{9}{section*.31}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Report AUROC and the yes rate with accuracy.}{9}{section*.32}\protected@file@percent }
+\citation{yong2023lowresource,deng2023multilingualjailbreak}
+\citation{pai2026jevbench}
+\citation{he2025nondeterminism}
+\citation{guo2017calibration}
+\@writefile{toc}{\contentsline {paragraph}{Language as an attack surface.}{10}{section*.33}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Why some languages lose more.}{10}{section*.34}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Translated benchmarks need an audit.}{10}{section*.35}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {9}Limitations}{10}{section.9}\protected@file@percent }
+\newlabel{sec:limitations}{{9}{10}{Limitations}{section.9}{}}
+\@writefile{toc}{\contentsline {paragraph}{Machine translation without human review.}{10}{section*.36}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{The question is translated too.}{10}{section*.37}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Source data.}{10}{section*.38}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{One run, hosted models.}{10}{section*.39}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{One threshold.}{10}{section*.40}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Coverage.}{10}{section*.41}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {10}Reproducibility and artifacts}{10}{section.10}\protected@file@percent }
+\bibstyle{unsrtnat}
+\bibdata{references}
+\bibcite{pai2026jevbench}{{1}{2026}{{Pai and Xian}}{{}}}
+\bibcite{yong2023lowresource}{{2}{2023}{{Yong et~al.}}{{Yong, Menghini, and Bach}}}
+\bibcite{deng2023multilingualjailbreak}{{3}{2023}{{Deng et~al.}}{{Deng, Zhang, Pan, and Bing}}}
+\bibcite{wang2023alllanguages}{{4}{2023}{{Wang et~al.}}{{Wang, Tu, Chen, Yuan, Huang, Jiao, and Lyu}}}
+\bibcite{ducel2022benderrule}{{5}{2022}{{Ducel et~al.}}{{Ducel, Fort, Lejeune, and Lepage}}}
+\bibcite{guo2017calibration}{{6}{2017}{{Guo et~al.}}{{Guo, Pleiss, Sun, and Weinberger}}}
+\bibcite{kumar2025polyguard}{{7}{2025}{{Kumar et~al.}}{{Kumar, Jain, Yerukola, Jiang, Beniwal, Hartvigsen, and Sap}}}
+\bibcite{conneau2018xnli}{{8}{2018}{{Conneau et~al.}}{{Conneau, Rinott, Lample, Williams, Bowman, Schwenk, and Stoyanov}}}
+\bibcite{artetxe2020translation}{{9}{2020}{{Artetxe et~al.}}{{Artetxe, Labaka, and Agirre}}}
+\bibcite{singh2025globalmmlu}{{10}{2025}{{Singh et~al.}}{{Singh, Romanou, Fourrier, Adelani, et~al.}}}
+\bibcite{jackhhao2023jailbreak}{{11}{2023}{{Hao}}{{}}}
+\bibcite{deepset2023promptinjections}{{12}{2023}{{deepset}}{{}}}
+\bibcite{ghosh2025aegis2}{{13}{2025}{{Ghosh et~al.}}{{Ghosh, Varshney, Sreedhar, Padmakumar, Rebedea, Varghese, and Parisien}}}
+\bibcite{li2026atbench}{{14}{2026}{{Li et~al.}}{{Li, Luo, Xie, Fu, Yang, Shao, Ren, Qu, Fu, Yang, Shao, Hu, and Liu}}}
+\bibcite{he2025nondeterminism}{{15}{2025}{{He and Lab}}{{}}}
+\@writefile{toc}{\contentsline {section}{\numberline {A}Translation checks}{12}{appendix.A}\protected@file@percent }
+\newlabel{app:excluded}{{A}{12}{Translation checks}{appendix.A}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {B}Change in AUROC}{12}{appendix.B}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {C}Every language in detail}{12}{appendix.C}\protected@file@percent }
+\newlabel{app:perlang}{{C}{12}{Every language in detail}{appendix.C}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {D}Translation prompt}{12}{appendix.D}\protected@file@percent }
+\newlabel{app:prompt}{{D}{12}{Translation prompt}{appendix.D}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {8}{\ignorespaces Cases left out of each language, by the check that failed. A case counts once per kind of failure, so a row can sum to more than its total. ``Untranslated'': the output repeats most of the source words or script; ``Length'': the output is much shorter or longer than the source; ``JSON changed'': an ATBench fragment lost a tool name or its truncation marker; ``Call failed'': the translation call exited with an error. Cases whose strings were never sent count in the total but in no column.}}{13}{table.8}\protected@file@percent }
+\newlabel{tab:excluded}{{8}{13}{Cases left out of each language, by the check that failed. A case counts once per kind of failure, so a row can sum to more than its total. ``Untranslated'': the output repeats most of the source words or script; ``Length'': the output is much shorter or longer than the source; ``JSON changed'': an ATBench fragment lost a tool name or its truncation marker; ``Call failed'': the translation call exited with an error. Cases whose strings were never sent count in the total but in no column}{table.8}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {9}{\ignorespaces Change in mean AUROC from English, per model and language, on the same paired cases. AUROC does not depend on the 0.5 cut, so a drop in accuracy with an unchanged AUROC is a shift of the operating point.}}{13}{table.9}\protected@file@percent }
+\newlabel{tab:auroc}{{9}{13}{Change in mean AUROC from English, per model and language, on the same paired cases. AUROC does not depend on the 0.5 cut, so a drop in accuracy with an unchanged AUROC is a shift of the operating point}{table.9}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {10}{\ignorespaces Chinese (Sino-Tibetan; Han (Simplified) script). Accuracy (\%) per benchmark with the change from English in brackets, then the five-benchmark mean and the 95\% paired interval of its change.}}{13}{table.10}\protected@file@percent }
+\newlabel{tab:perlang-zh}{{10}{13}{Chinese (Sino-Tibetan; Han (Simplified) script). Accuracy (\%) per benchmark with the change from English in brackets, then the five-benchmark mean and the 95\% paired interval of its change}{table.10}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {11}{\ignorespaces Arabic (Afro-Asiatic, Semitic; Arabic script). Accuracy (\%) per benchmark with the change from English in brackets, then the five-benchmark mean and the 95\% paired interval of its change.}}{14}{table.11}\protected@file@percent }
+\newlabel{tab:perlang-ar}{{11}{14}{Arabic (Afro-Asiatic, Semitic; Arabic script). Accuracy (\%) per benchmark with the change from English in brackets, then the five-benchmark mean and the 95\% paired interval of its change}{table.11}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {12}{\ignorespaces Hindi (Indo-European, Indo-Aryan; Devanagari script). Accuracy (\%) per benchmark with the change from English in brackets, then the five-benchmark mean and the 95\% paired interval of its change.}}{14}{table.12}\protected@file@percent }
+\newlabel{tab:perlang-hi}{{12}{14}{Hindi (Indo-European, Indo-Aryan; Devanagari script). Accuracy (\%) per benchmark with the change from English in brackets, then the five-benchmark mean and the 95\% paired interval of its change}{table.12}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {13}{\ignorespaces Vietnamese (Austroasiatic; Latin script). Accuracy (\%) per benchmark with the change from English in brackets, then the five-benchmark mean and the 95\% paired interval of its change.}}{14}{table.13}\protected@file@percent }
+\newlabel{tab:perlang-vi}{{13}{14}{Vietnamese (Austroasiatic; Latin script). Accuracy (\%) per benchmark with the change from English in brackets, then the five-benchmark mean and the 95\% paired interval of its change}{table.13}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {14}{\ignorespaces Swahili (Niger-Congo, Bantu; Latin script). Accuracy (\%) per benchmark with the change from English in brackets, then the five-benchmark mean and the 95\% paired interval of its change.}}{15}{table.14}\protected@file@percent }
+\newlabel{tab:perlang-sw}{{14}{15}{Swahili (Niger-Congo, Bantu; Latin script). Accuracy (\%) per benchmark with the change from English in brackets, then the five-benchmark mean and the 95\% paired interval of its change}{table.14}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {15}{\ignorespaces Spanish (Indo-European, Romance; Latin script). Accuracy (\%) per benchmark with the change from English in brackets, then the five-benchmark mean and the 95\% paired interval of its change.}}{15}{table.15}\protected@file@percent }
+\newlabel{tab:perlang-es}{{15}{15}{Spanish (Indo-European, Romance; Latin script). Accuracy (\%) per benchmark with the change from English in brackets, then the five-benchmark mean and the 95\% paired interval of its change}{table.15}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {16}{\ignorespaces French (Indo-European, Romance; Latin script). Accuracy (\%) per benchmark with the change from English in brackets, then the five-benchmark mean and the 95\% paired interval of its change.}}{15}{table.16}\protected@file@percent }
+\newlabel{tab:perlang-fr}{{16}{15}{French (Indo-European, Romance; Latin script). Accuracy (\%) per benchmark with the change from English in brackets, then the five-benchmark mean and the 95\% paired interval of its change}{table.16}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {17}{\ignorespaces Russian (Indo-European, Slavic; Cyrillic script). Accuracy (\%) per benchmark with the change from English in brackets, then the five-benchmark mean and the 95\% paired interval of its change.}}{16}{table.17}\protected@file@percent }
+\newlabel{tab:perlang-ru}{{17}{16}{Russian (Indo-European, Slavic; Cyrillic script). Accuracy (\%) per benchmark with the change from English in brackets, then the five-benchmark mean and the 95\% paired interval of its change}{table.17}{}}
+\gdef \@abspage@last{16}

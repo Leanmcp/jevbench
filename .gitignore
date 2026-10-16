@@ -237,3 +237,6 @@ jev_bench/data/upstream/
 jev_bench/data/cases/mcp*.jsonl
 jev_bench/data/cases/previews/mcp*.json
 jev_bench/data/mcp_build_manifest.json
+
+# Local notes and generated analysis reports (not for the repo)
+local_notes/

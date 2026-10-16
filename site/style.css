@@ -201,3 +201,11 @@ body.locked { overflow: hidden; }
 .steps .pos { align-self: center; margin-left: 8px; font-size: 13px; color: var(--dim); }
 /* GitHub's mark (Primer Octicons mark-github), coloured with the text so it inverts on hover */
 .btn .ico { width: 15px; height: 15px; fill: currentColor; vertical-align: -2px; margin-right: 7px; }
+
+/* multilingual page: language tabs, the two texts of an example, method notes */
+.tabs { margin-top: 0; }
+.tabs .btn { font-size: 14px; }
+.kv .lang-k { margin-top: 16px; padding-top: 10px; border-top: 1px solid var(--faint); }
+#ex-body .answers { grid-template-columns: minmax(90px, 160px) 1fr 7.5em; }
+.method p { max-width: 80ch; margin: 10px 0; }
+.bar nav a[aria-current="page"] { text-decoration: none; }

@@ -1,0 +1,29 @@
+\begin{table}[p]
+\centering
+\caption{The added slices. MCP routing and tool selection: accuracy (\%). SciFact and NFCorpus: nDCG@10 of the per-document protocol on a fixed BM25 top-20 shortlist (BM25's own order scores 0.661 and 0.332). HelpSteer2: Spearman correlation of the expected helpfulness level with the human rating. RewardBench~2: accuracy (\%), chance 25\%. MB: MCP-Bench; MM: MCPMark. Bold: best on the column. $^{*}$: under 99.5\% of cases answered. --: not run, or rejected by the API.}
+\label{tab:ext_new}
+\small
+\setlength{\tabcolsep}{5pt}
+{%
+\begin{tabular}{@{}lrrrrrrrr@{}}
+\toprule
+Model & MB-rout. & MB-tool & MM-rout. & MM-tool & SciFact & NFCorp. & HS2 $\rho$ & RB2 \\
+\midrule
+pplx-decider v1.1 & 98.2 & \textbf{100.0} & \textbf{58.0} & \textbf{100.0} & \textbf{0.756} & 0.381 & \textbf{0.64} & \textbf{81.5} \\
+Mercury Decide & \textbf{100.0} & \textbf{100.0} & 57.1 & \textbf{100.0} & 0.743 & 0.375 & 0.55 & 79.3 \\
+Jev 1.13 & 95.5 & \textbf{100.0} & 51.5 & \textbf{100.0} & 0.750 & 0.378 & 0.48 & 79.3 \\
+Clef & 95.5 & \textbf{100.0} & 55.0 & \textbf{100.0} & 0.745 & 0.373 & 0.51 & 66.9 \\
+Microsoft Decision 1 & 94.6 & \textbf{100.0} & 48.8 & \textbf{100.0} & 0.730 & 0.368 & 0.57 & 74.9 \\
+Liquid D1 & 90.2 & \textbf{100.0} & 45.9 & \textbf{100.0} & 0.731 & \textbf{0.383} & 0.55 & 73.6 \\
+GPT-6 Luna Decisions & 96.4$^{*}$ & \textbf{100.0} & 49.1$^{*}$ & \textbf{100.0} & 0.729 & 0.368 & 0.49 & 73.1$^{*}$ \\
+Clef-omni & 85.7 & 92.3 & 46.8 & \textbf{100.0} & 0.716 & 0.361 & 0.44 & 56.0 \\
+Clef-flash & 87.5 & 92.3 & 47.6 & \textbf{100.0} & 0.717 & 0.369 & 0.38 & 60.0 \\
+Drex v1.5 & 92.9 & \textbf{100.0} & 32.8 & \textbf{100.0} & 0.742 & 0.373 & 0.43 & 69.3 \\
+Kev 4B & 81.3 & 73.1 & 50.0 & \textbf{100.0} & 0.713 & 0.351 & 0.33 & 63.3 \\
+ScaleDown Classify-1 & 85.7 & \textbf{100.0} & 43.2 & \textbf{100.0} & 0.566 & 0.312 & 0.40 & 67.8 \\
+Solar Decide & -- & \textbf{100.0} & 47.9 & 94.4 & 0.557 & 0.324 & 0.42 & 75.0 \\
+TEv1 4B (exp.) & -- & 88.5 & 45.0 & \textbf{100.0} & 0.733 & 0.361 & 0.34 & 64.3 \\
+Solar Decide Flash & -- & 73.1 & 40.5 & 94.4 & 0.660 & 0.330 & 0.35 & 63.3 \\
+\bottomrule
+\end{tabular}}
+\end{table}

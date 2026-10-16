@@ -1,0 +1,23 @@
+\begin{table}[t]
+\centering
+\caption{Languages and translated cases. A case is kept only if every one of its translated strings passed the checks of Section~\ref{sec:checks}; the counts are the cases each language delivered, out of the English cases in the first row.}
+\label{tab:langs}
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{@{}llllrrrrrr@{}}
+\toprule
+Code & Language & Family & Script & Jailbreak & Prompt inj. & Aegis prompts & Aegis responses & ATBench & Total \\
+\midrule
+en & English (source) & Indo-European, Germanic & Latin & 400 & 116 & 500 & 500 & 500 & 2{,}016 \\
+zh & Chinese & Sino-Tibetan & Han (Simplified) & 397 & 116 & 499 & 500 & 467 & 1{,}979 (98.2\%) \\
+ar & Arabic & Afro-Asiatic, Semitic & Arabic & 399 & 116 & 500 & 499 & 493 & 2{,}007 (99.6\%) \\
+hi & Hindi & Indo-European, Indo-Aryan & Devanagari & 397 & 116 & 500 & 499 & 487 & 1{,}999 (99.2\%) \\
+vi & Vietnamese & Austroasiatic & Latin & 394 & 115 & 497 & 499 & 463 & 1{,}968 (97.6\%) \\
+sw & Swahili & Niger-Congo, Bantu & Latin & 398 & 116 & 500 & 499 & 484 & 1{,}997 (99.1\%) \\
+es & Spanish & Indo-European, Romance & Latin & 396 & 113 & 499 & 500 & 451 & 1{,}959 (97.2\%) \\
+fr & French & Indo-European, Romance & Latin & 395 & 115 & 500 & 500 & 459 & 1{,}969 (97.7\%) \\
+ru & Russian & Indo-European, Slavic & Cyrillic & 399 & 116 & 500 & 500 & 490 & 2{,}005 (99.5\%) \\
+\bottomrule
+\end{tabular}}
+\end{table}

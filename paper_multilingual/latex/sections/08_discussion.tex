@@ -1,0 +1,39 @@
+\section{Discussion}
+\label{sec:discussion}
+
+\paragraph{Evaluate a guard in the languages it will see.} An English score
+does not transfer. GPT-6 Luna Decisions and Solar Decide are 0.2 points apart
+in English and more than 12 points apart in Swahili. A buyer deploying a guard for users who write in
+Hindi or Swahili should test it in those languages, on their own
+decision shape, before relying on it.
+
+\paragraph{Report AUROC and the yes rate with accuracy.} Accuracy at a fixed
+threshold cannot tell a guard that has moved its operating point from one that
+no longer discriminates (Section~\ref{sec:threshold}). The first can be
+corrected with a per-language threshold chosen on held-out data in that
+language; the second cannot. The yes rate makes the direction of a failure
+visible: a guard that flags nothing and a guard that flags everything score the
+same on a balanced slice and have opposite consequences.
+
+\paragraph{Language as an attack surface.} For generative models, translation
+into a low-resource language is a known jailbreak
+\citep{yong2023lowresource,deng2023multilingualjailbreak}. Our results suggest
+the same holds one layer earlier, at the guard. In Swahili, several models let
+plain harmful requests through that every model blocks in English. A system
+whose only defence is an English-tuned guard is therefore exposed to any user
+who writes in such a language. We do not test whether the downstream generator
+then complies; that would need an end-to-end evaluation.
+
+\paragraph{Why some languages lose more.} We do not know the training data of
+these models, so we cannot attribute the differences. The pattern is consistent
+with the amount of training text per language: the languages closest to English
+are those commonly treated as high-resource, and the one with the largest
+loss, Swahili, is commonly treated as lower-resource. It is not explained by script, since Swahili uses the Latin
+script. This explanation is a hypothesis, not a finding of this paper.
+
+\paragraph{Translated benchmarks need an audit.} Machine translation of safety
+data is cheap, and at the scale of a benchmark its errors are rare. They are
+not uniformly distributed: they concentrate in the cases whose harm lives in
+slang, slurs and deliberate misspelling. Publishing the per-case changes, as we
+do on the project website, lets a reader check whether a striking example is a
+model failure or a translation artifact.

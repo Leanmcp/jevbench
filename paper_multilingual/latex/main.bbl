@@ -1,0 +1,133 @@
+\begin{thebibliography}{15}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Pai and Xian(2026)]{pai2026jevbench}
+Dheeraj~Mohandas Pai and Lu~Xian.
+\newblock {JevBench}: An open evaluation framework for typed decision models.
+\newblock Preprints.org, 2026.
+\newblock URL \url{https://www.preprints.org/manuscript/202610.0181}.
+
+\bibitem[Yong et~al.(2023)Yong, Menghini, and Bach]{yong2023lowresource}
+Zheng-Xin Yong, Cristina Menghini, and Stephen~H. Bach.
+\newblock Low-resource languages jailbreak {GPT-4}, 2023.
+\newblock URL \url{https://arxiv.org/abs/2310.02446}.
+
+\bibitem[Deng et~al.(2023)Deng, Zhang, Pan, and
+  Bing]{deng2023multilingualjailbreak}
+Yue Deng, Wenxuan Zhang, Sinno~Jialin Pan, and Lidong Bing.
+\newblock Multilingual jailbreak challenges in large language models, 2023.
+\newblock URL \url{https://arxiv.org/abs/2310.06474}.
+
+\bibitem[Wang et~al.(2023)Wang, Tu, Chen, Yuan, Huang, Jiao, and
+  Lyu]{wang2023alllanguages}
+Wenxuan Wang, Zhaopeng Tu, Chang Chen, Youliang Yuan, Jen-tse Huang, Wenxiang
+  Jiao, and Michael~R. Lyu.
+\newblock All languages matter: On the multilingual safety of large language
+  models, 2023.
+\newblock URL \url{https://arxiv.org/abs/2310.00905}.
+
+\bibitem[Ducel et~al.(2022)Ducel, Fort, Lejeune, and
+  Lepage]{ducel2022benderrule}
+Fanny Ducel, Kar{\"e}n Fort, Ga{\"e}l Lejeune, and Yves Lepage.
+\newblock Do we name the languages we study? the {\#}{B}ender{R}ule in {LREC}
+  and {ACL} articles.
+\newblock In \emph{Proceedings of the Thirteenth Language Resources and
+  Evaluation Conference}, pages 564--573. European Language Resources
+  Association, 2022.
+\newblock URL \url{https://aclanthology.org/2022.lrec-1.60/}.
+
+\bibitem[Guo et~al.(2017)Guo, Pleiss, Sun, and Weinberger]{guo2017calibration}
+Chuan Guo, Geoff Pleiss, Yu~Sun, and Kilian~Q. Weinberger.
+\newblock On calibration of modern neural networks.
+\newblock In Doina Precup and Yee~Whye Teh, editors, \emph{Proceedings of the
+  34th International Conference on Machine Learning}, volume~70 of
+  \emph{Proceedings of Machine Learning Research}, pages 1321--1330. PMLR,
+  06--11 Aug 2017.
+\newblock URL \url{https://proceedings.mlr.press/v70/guo17a.html}.
+
+\bibitem[Kumar et~al.(2025)Kumar, Jain, Yerukola, Jiang, Beniwal, Hartvigsen,
+  and Sap]{kumar2025polyguard}
+Priyanshu Kumar, Devansh Jain, Akhila Yerukola, Liwei Jiang, Himanshu Beniwal,
+  Thomas Hartvigsen, and Maarten Sap.
+\newblock {PolyGuard}: A multilingual safety moderation tool for 17 languages,
+  2025.
+\newblock URL \url{https://arxiv.org/abs/2504.04377}.
+
+\bibitem[Conneau et~al.(2018)Conneau, Rinott, Lample, Williams, Bowman,
+  Schwenk, and Stoyanov]{conneau2018xnli}
+Alexis Conneau, Ruty Rinott, Guillaume Lample, Adina Williams, Samuel~R.
+  Bowman, Holger Schwenk, and Veselin Stoyanov.
+\newblock {XNLI}: Evaluating cross-lingual sentence representations.
+\newblock In \emph{Proceedings of the 2018 Conference on Empirical Methods in
+  Natural Language Processing}, pages 2475--2485. Association for Computational
+  Linguistics, 2018.
+\newblock \doi{10.18653/v1/D18-1269}.
+\newblock URL \url{https://aclanthology.org/D18-1269/}.
+
+\bibitem[Artetxe et~al.(2020)Artetxe, Labaka, and
+  Agirre]{artetxe2020translation}
+Mikel Artetxe, Gorka Labaka, and Eneko Agirre.
+\newblock Translation artifacts in cross-lingual transfer learning.
+\newblock In \emph{Proceedings of the 2020 Conference on Empirical Methods in
+  Natural Language Processing ({EMNLP})}, pages 7674--7684. Association for
+  Computational Linguistics, 2020.
+\newblock \doi{10.18653/v1/2020.emnlp-main.618}.
+\newblock URL \url{https://aclanthology.org/2020.emnlp-main.618/}.
+
+\bibitem[Singh et~al.(2025)Singh, Romanou, Fourrier, Adelani,
+  et~al.]{singh2025globalmmlu}
+Shivalika Singh, Angelika Romanou, Cl{\'e}mentine Fourrier, David~Ifeoluwa
+  Adelani, et~al.
+\newblock Global {MMLU}: Understanding and addressing cultural and linguistic
+  biases in multilingual evaluation.
+\newblock In \emph{Proceedings of the 63rd Annual Meeting of the Association
+  for Computational Linguistics (Volume 1: Long Papers)}. Association for
+  Computational Linguistics, 2025.
+\newblock URL \url{https://aclanthology.org/2025.acl-long.919/}.
+
+\bibitem[Hao(2023)]{jackhhao2023jailbreak}
+Jack Hao.
+\newblock jailbreak-classification.
+\newblock Hugging Face dataset,
+  \url{https://huggingface.co/datasets/jackhhao/jailbreak-classification},
+  2023.
+
+\bibitem[{deepset}(2023)]{deepset2023promptinjections}
+{deepset}.
+\newblock prompt-injections.
+\newblock Hugging Face dataset,
+  \url{https://huggingface.co/datasets/deepset/prompt-injections}, 2023.
+
+\bibitem[Ghosh et~al.(2025)Ghosh, Varshney, Sreedhar, Padmakumar, Rebedea,
+  Varghese, and Parisien]{ghosh2025aegis2}
+Shaona Ghosh, Prasoon Varshney, Makesh~Narsimhan Sreedhar, Aishwarya
+  Padmakumar, Traian Rebedea, Jibin~Rajan Varghese, and Christopher Parisien.
+\newblock {AEGIS}2.0: A diverse {AI} safety dataset and risks taxonomy for
+  alignment of {LLM} guardrails.
+\newblock In \emph{Proceedings of the 2025 Conference of the Nations of the
+  Americas Chapter of the Association for Computational Linguistics: Human
+  Language Technologies (Volume 1: Long Papers)}, pages 5992--6026. Association
+  for Computational Linguistics, 2025.
+\newblock \doi{10.18653/v1/2025.naacl-long.306}.
+
+\bibitem[Li et~al.(2026)Li, Luo, Xie, Fu, Yang, Shao, Ren, Qu, Fu, Yang, Shao,
+  Hu, and Liu]{li2026atbench}
+Yu~Li, Haoyu Luo, Yuejin Xie, Yuqian Fu, Zhonghao Yang, Shuai Shao, Qihan Ren,
+  Wanying Qu, Yanwei Fu, Yujiu Yang, Jing Shao, Xia Hu, and Dongrui Liu.
+\newblock {ATBench}: A diverse and realistic agent trajectory benchmark for
+  safety evaluation and diagnosis, 2026.
+\newblock URL \url{https://arxiv.org/abs/2604.02022}.
+
+\bibitem[He and Lab(2025)]{he2025nondeterminism}
+Horace He and Thinking~Machines Lab.
+\newblock Defeating nondeterminism in {LLM} inference.
+\newblock \emph{Thinking Machines Lab: Connectionism}, 2025.
+\newblock \doi{10.64434/tml.20250910}.
+\newblock
+  \url{https://thinkingmachines.ai/blog/defeating-nondeterminism-in-llm-inference/}.
+
+\end{thebibliography}

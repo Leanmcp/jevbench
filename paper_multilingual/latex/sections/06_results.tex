@@ -1,0 +1,129 @@
+\section{Results}
+\label{sec:results}
+
+\subsection{Accuracy by language}
+
+\input{generated/ml_overall}
+
+\begin{figure}[t]
+\centering
+\input{generated/ml_fig_lang}
+\caption{Mean accuracy (\%) over the five safety benchmarks for the
+\MLnModels{} models, with the paired change from English in brackets. The
+vertical line marks English. The axis starts at 50\%, which a constant answer
+reaches on the balanced slices.}
+\label{fig:lang}
+\end{figure}
+
+Table~\ref{tab:overall} and Figure~\ref{fig:lang} give the mean over all
+\MLnModels{} models. The languages fall into three groups.
+
+\paragraph{Close to English.} French (\MLdeltaFR{} points), Chinese
+(\MLdeltaZH{}), Spanish (\MLdeltaES{}) and Russian (\MLdeltaRU{}) are within
+one point of English on average. Chinese and Russian are written in scripts
+other than Latin, so a non-Latin script alone does not cause a loss.
+
+\paragraph{Moderately lower.} Vietnamese (\MLdeltaVI{}), Arabic (\MLdeltaAR{})
+and Hindi (\MLdeltaHI{}) lose between one and four points on average, with
+larger losses for individual models. Hindi has the most significant per-model
+drops of the three (\MLsigNegHI{} of \MLnModels{} models).
+
+\paragraph{Substantially lower.} Swahili loses \MLdeltaAbsSW{} points on average,
+and \MLsigNegSW{} of the \MLnModels{} models are significantly worse than in
+English. Swahili is written in the Latin script, like English, so its loss is
+not a script effect.
+
+\subsection{Per model}
+
+\input{generated/ml_delta}
+
+Table~\ref{tab:delta} gives every model--language pair. Of the \MLnPairs{}
+pairs, \MLsigNeg{} are significantly worse than English and \MLsigPos{}
+significantly better. The changes range from \MLdeltaMin{} to \MLdeltaMax{}
+points.
+
+\paragraph{Some models are stable.} \MLstableModel{} stays between
+\MLstableMin{} and \MLstableMax{} points of its English accuracy in all eight
+languages. Clef-flash, Drex~v1.5, Mercury Decide and pplx-decider~v1.1 stay
+within about five points in every language.
+
+\paragraph{Some models lose in every language.} Solar Decide and ScaleDown
+Classify-1 are significantly worse than English in all eight languages,
+including French and Spanish, where most models are unchanged. Solar Decide has
+the largest mean loss, \MLworstMean{} points. Solar Decide Flash has the largest
+single loss, 19.0 points in Swahili.
+
+\paragraph{Strong English models are not always robust.} Microsoft Decision~1
+is among the most accurate models in English and stays within about two points
+of it in seven languages, but loses 8.7 points in Swahili. Span-01 gains 5.6
+points in Chinese and loses 12.6 in Hindi and 13.0 in Swahili. A model's
+English accuracy does not predict its accuracy in another language.
+
+\paragraph{Gains are real but rare.} TEv1~4B is significantly better than
+English in Chinese, Arabic, Vietnamese and French, and significantly worse in
+Swahili. Section~\ref{sec:examples} shows that some gains of this kind come
+from the translation making a case's intent plainer, not from the model.
+
+\subsection{Per benchmark}
+
+\input{generated/ml_bench}
+
+Table~\ref{tab:bench} breaks the means down by benchmark. Harmful-prompt
+detection (Aegis prompts) loses the most: \MLbenchSWAegisPrompts{} points in
+Swahili and \MLbenchHIAegisPrompts{} in Hindi. Agent safety (ATBench) is lower
+than English in every language, from \MLbenchZHAtbench{} in Chinese to
+\MLbenchSWAtbench{} in Swahili, even though its tool calls and outputs are
+untranslated. Prompt-injection detection and harmful-response judging change
+little outside Swahili, and sometimes improve; the prompt-injection slice has
+116 cases, so changes of a few points there are within noise.
+
+\subsection{Shifted threshold or lost discrimination}
+\label{sec:threshold}
+
+\begin{figure}[t]
+\centering
+\input{generated/ml_fig_scatter}
+\caption{Every model--language pair: change in mean AUROC against change in
+mean accuracy, both from English. Green: French, Chinese, Spanish, Russian;
+blue: Vietnamese, Arabic, Hindi; red: Swahili. Points near the vertical axis
+lost accuracy while keeping their ranking (a shifted operating point); points
+along the dashed diagonal lost both.}
+\label{fig:scatter}
+\end{figure}
+
+\input{generated/ml_bias}
+
+Accuracy at a fixed threshold mixes two failures (Section~\ref{sec:background}).
+Figure~\ref{fig:scatter} separates them for every pair, and
+Table~\ref{tab:bias} shows five of the largest drops per benchmark;
+Table~\ref{tab:auroc} in the appendix gives the change in AUROC for every pair.
+
+\paragraph{A shifted operating point.} Solar Decide Flash on Arabic jailbreak
+prompts falls from \MLaccEnSolarDecideFlashARJailbreak\% to
+\MLaccSolarDecideFlashARJailbreak\% accuracy, but its AUROC is
+\MLaucEnSolarDecideFlashARJailbreak{} in English and
+\MLaucSolarDecideFlashARJailbreak{} in Arabic. It still ranks jailbreaks above
+benign prompts; in Arabic it calls \MLyesSolarDecideFlashARJailbreak\% of
+prompts jailbreaks, against \MLyesEnSolarDecideFlashARJailbreak\% in English.
+A per-language threshold would recover most of the loss. Microsoft Decision~1
+on Swahili prompt injections behaves the same way: its AUROC barely moves
+(\MLaucEnMicrosoftDecisionSWPromptInj{} to \MLaucMicrosoftDecisionSWPromptInj),
+but it flags \MLyesMicrosoftDecisionSWPromptInj\% of texts as injections
+instead of \MLyesEnMicrosoftDecisionSWPromptInj\%, and its accuracy falls from
+\MLaccEnMicrosoftDecisionSWPromptInj\% to \MLaccMicrosoftDecisionSWPromptInj\%.
+
+\paragraph{Lost discrimination.} The largest drops are not threshold effects.
+In Swahili, Solar Decide Flash's AUROC on Aegis prompts falls from
+\MLaucEnSolarDecideFlashSWAegisPrompts{} to \MLaucSolarDecideFlashSWAegisPrompts{},
+close to chance, and it calls \MLyesSolarDecideFlashSWAegisPrompts\% of prompts
+and \MLyesSolarDecideFlashSWAegisResponses\% of responses unsafe, so every
+harmful request passes. In Hindi, Span-01's AUROC on ATBench falls from
+\MLaucEnSpanHIAtbench{} to \MLaucSpanHIAtbench{}, below chance, and it calls
+\MLyesSpanHIAtbench\% of trajectories unsafe against \MLyesEnSpanHIAtbench\% in
+English. In these cases the model no longer separates harmful from harmless
+text, and no threshold restores the guard.
+
+\paragraph{Both directions are failures.} A guard that answers ``safe'' to
+everything lets attacks through; a guard that answers ``unsafe'' to everything
+blocks every user. On a balanced slice both score about 50\%. The yes rate
+distinguishes them, and a deployment should monitor it per language.

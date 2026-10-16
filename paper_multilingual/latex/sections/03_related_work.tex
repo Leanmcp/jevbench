@@ -1,0 +1,44 @@
+\section{Related work}
+\label{sec:related}
+
+\paragraph{Multilingual safety of generative models.} Translating harmful
+English requests into other languages is an effective attack on generative
+models. \citet{yong2023lowresource} raise the rate at which GPT-4 follows
+harmful requests from under 1\% to 79\% by translating them into low-resource
+languages, and find much lower rates for high-resource languages.
+\citet{deng2023multilingualjailbreak} report that low-resource languages
+produce about three times as much harmful content as high-resource ones, and
+that combining jailbreak instructions with a non-English language increases
+it further. \citet{wang2023alllanguages} build XSafety, covering 14 kinds of
+safety issue in 10 languages, and find more unsafe responses in every non-English
+language they test. These studies measure what a generator \emph{says}. We
+measure what a guard \emph{decides}: whether the classifier placed in front of a
+generator still recognises the harmful input in another language.
+
+\paragraph{Multilingual guard models.} PolyGuard \citep{kumar2025polyguard}
+trains a safety classifier on 1.91M samples in 17 languages and evaluates it on
+PolyGuardPrompts, which combines natural multilingual conversations with
+human-verified machine translations. Its finding that existing classifiers
+lose accuracy outside English is the closest to ours. Our work differs in the
+model class and the protocol: we evaluate typed decision models through one
+shared interface, on five tasks that include prompt injection and agent
+trajectories, and pair every language with the same model's English answers on
+identical cases.
+
+\paragraph{Translated benchmarks.} Machine- or human-translating an English
+test set is the standard way to build a multilingual benchmark, as in XNLI
+\citep{conneau2018xnli}. Translation is not neutral.
+\citet{artetxe2020translation} show that translation introduces artifacts that
+models are sensitive to, for example lower lexical overlap between an
+independently translated premise and hypothesis. \citet{singh2025globalmmlu}
+show that translated knowledge questions carry cultural assumptions of the
+source, and that model rankings change on culturally sensitive subsets. Safety
+data adds a further problem: its meaning often lives in slang, slurs, typos and
+deliberate obfuscation, which a translator may normalise, soften or sharpen. We
+report such changes as a finding (Section~\ref{sec:examples}) rather than
+assume them away.
+
+\paragraph{Naming the language.} \citet{ducel2022benderrule} find that only
+about half of ACL papers name the languages they study, which lets
+English-only results read as general ones. We report each language separately,
+English included.

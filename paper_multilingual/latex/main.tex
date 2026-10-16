@@ -1,0 +1,77 @@
+\documentclass{article}
+\usepackage{arxiv}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[numbers]{natbib}
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{booktabs}
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage{nicefrac}
+\usepackage{microtype}
+\usepackage{graphicx}
+\usepackage{multirow}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usetikzlibrary{positioning,arrows.meta,calc,fit}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+
+% Figure palette, the same as the JevBench paper.
+\definecolor{tdline}{HTML}{3A3A3A}
+\definecolor{tdmuted}{HTML}{6B6B6B}
+\definecolor{tdkey}{HTML}{FBECE8}
+\definecolor{tdbar}{HTML}{8DA0CB}
+\definecolor{tdok}{HTML}{1B9E77}
+
+% Draft-only marker for unresolved items; must reach zero before submission.
+\newcommand{\draftnote}[1]{\textcolor{red}{[#1]}}
+
+% Every result quoted in the text, generated from the runs.
+\input{generated/ml_numbers}
+
+\title{JevBench Multilingual: Do Typed Decision Models\\Keep Their Safety Decisions Across Languages?}
+
+\author{%
+  Dheeraj Mohandas Pai\thanks{\texttt{dheeraj.pai@leanmcp.com}} \\
+  Leanmcp \\
+  \And
+  Lu Xian\thanks{\texttt{lu.xian@leanmcp.com}} \\
+  Leanmcp \\
+}
+
+\date{\today}
+
+\renewcommand{\shorttitle}{JevBench Multilingual}
+\renewcommand{\headeright}{}
+\renewcommand{\undertitle}{}
+
+\hypersetup{
+pdftitle={JevBench Multilingual: Do Typed Decision Models Keep Their Safety Decisions Across Languages?},
+pdfkeywords={typed decisions, multilingual evaluation, safety classifiers, guardrails, machine translation, calibration},
+}
+
+\begin{document}
+\maketitle
+
+\input{sections/00_abstract}
+
+\input{sections/01_introduction}
+\input{sections/02_background}
+\input{sections/03_related_work}
+\input{sections/04_benchmark}
+\input{sections/05_setup}
+\input{sections/06_results}
+\input{sections/07_examples}
+\input{sections/08_discussion}
+\input{sections/09_limitations}
+\input{sections/10_reproducibility}
+
+\bibliographystyle{unsrtnat}
+\bibliography{references}
+
+\input{sections/appendix}
+
+\end{document}

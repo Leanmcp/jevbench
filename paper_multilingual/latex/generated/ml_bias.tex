@@ -1,0 +1,42 @@
+\begin{table}[t]
+\centering
+\caption{Five of the largest drops, per benchmark. ``Yes'' is the share of cases the model calls positive (unsafe, jailbreak, injection) at 0.5; ``Gold'' is the share that is positive. A falling AUROC is lost discrimination; a yes-rate that moves far from the gold rate while AUROC holds is a shifted operating point.}
+\label{tab:bias}
+\footnotesize
+\setlength{\tabcolsep}{3.5pt}
+\begin{tabular}{@{}llrrrrrrr@{}}
+\toprule
+Model, language & Benchmark & \multicolumn{2}{c}{Accuracy} & \multicolumn{2}{c}{AUROC} & \multicolumn{2}{c}{Yes (\%)} & Gold \\ & & en & xx & en & xx & en & xx & (\%) \\
+\midrule
+\multirow{5}{*}{\shortstack[l]{Solar Decide Flash\\Swahili}} & Jailbreak & 97.0 & 79.9 & 0.988 & 0.839 & 34.9 & 16.3 & 34.9 \\
+ & Prompt inj. & 79.3 & 48.3 & 0.905 & 0.614 & 39.7 & 0.0 & 51.7 \\
+ & Aegis prompts & 73.6 & 50.0 & 0.845 & 0.525 & 30.0 & 0.0 & 50.0 \\
+ & Aegis responses & 71.9 & 50.1 & 0.864 & 0.361 & 27.9 & 0.0 & 49.9 \\
+ & ATBench & 50.4 & 48.8 & 0.633 & 0.519 & 86.2 & 20.9 & 50.2 \\
+\midrule
+\multirow{5}{*}{\shortstack[l]{Microsoft Decision 1\\Swahili}} & Jailbreak & 96.5 & 90.7 & 0.994 & 0.979 & 36.4 & 37.7 & 34.9 \\
+ & Prompt inj. & 73.3 & 61.2 & 0.988 & 0.953 & 25.0 & 12.9 & 51.7 \\
+ & Aegis prompts & 82.0 & 75.2 & 0.912 & 0.815 & 39.6 & 48.4 & 50.0 \\
+ & Aegis responses & 82.2 & 68.1 & 0.901 & 0.819 & 49.3 & 73.8 & 49.9 \\
+ & ATBench & 86.6 & 81.8 & 0.993 & 0.938 & 37.2 & 36.2 & 50.2 \\
+\midrule
+\multirow{5}{*}{\shortstack[l]{Span-01\\Hindi}} & Jailbreak & 94.7 & 93.2 & 0.975 & 0.972 & 32.0 & 29.0 & 34.8 \\
+ & Prompt inj. & 68.1 & 51.7 & 0.926 & 0.760 & 19.8 & 3.5 & 51.7 \\
+ & Aegis prompts & 81.8 & 66.4 & 0.891 & 0.786 & 43.4 & 21.2 & 50.0 \\
+ & Aegis responses & 74.8 & 70.7 & 0.846 & 0.845 & 35.9 & 24.3 & 49.9 \\
+ & ATBench & 62.4 & 36.8 & 0.682 & 0.355 & 19.9 & 67.4 & 50.5 \\
+\midrule
+\multirow{5}{*}{\shortstack[l]{ScaleDown Classify-1\\Chinese}} & Jailbreak & 95.5 & 81.1 & 0.984 & 0.904 & 34.3 & 45.6 & 34.8 \\
+ & Prompt inj. & 88.8 & 88.8 & 0.981 & 0.936 & 40.5 & 42.2 & 51.7 \\
+ & Aegis prompts & 83.0 & 78.2 & 0.902 & 0.857 & 43.9 & 57.5 & 50.1 \\
+ & Aegis responses & 75.0 & 55.0 & 0.821 & 0.681 & 54.6 & 78.2 & 50.0 \\
+ & ATBench & 51.0 & 48.8 & 0.514 & 0.435 & 89.3 & 76.9 & 49.3 \\
+\midrule
+\multirow{5}{*}{\shortstack[l]{Solar Decide Flash\\Arabic}} & Jailbreak & 97.0 & 71.7 & 0.988 & 0.988 & 35.1 & 62.9 & 35.1 \\
+ & Prompt inj. & 79.3 & 59.5 & 0.905 & 0.802 & 39.7 & 11.2 & 51.7 \\
+ & Aegis prompts & 73.6 & 69.0 & 0.845 & 0.814 & 30.0 & 22.6 & 50.0 \\
+ & Aegis responses & 71.9 & 75.6 & 0.864 & 0.824 & 27.9 & 37.5 & 49.9 \\
+ & ATBench & 50.5 & 49.9 & 0.628 & 0.541 & 86.2 & 97.4 & 50.5 \\
+\bottomrule
+\end{tabular}
+\end{table}

@@ -1,0 +1,23 @@
+\begin{table}[t]
+\centering
+\caption{Mean over the 14 models with a finished run in every language. Accuracy (\%) is the mean over the five benchmarks at the 0.5 cut; $\Delta$ is the paired change from the same models' English answers on the same cases, in points. AUROC is the mean of the per-benchmark AUROC. The last column counts models with a finished run in the language; Tables~\ref{tab:delta} and~\ref{tab:perlang-zh}--\ref{tab:perlang-ru} cover every finished run.}
+\label{tab:overall}
+\small
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}llrrrrr@{}}
+\toprule
+Language & Script & Accuracy & $\Delta$ & AUROC & $\Delta$AUROC & Models \\
+\midrule
+English & -- & 78.6 & -- & 0.894 & -- & 14/14 \\
+\midrule
+French & Latin & 78.3 & $-$0.4 & 0.884 & $-$0.012 & 14/14 \\
+Spanish & Latin & 78.0 & $-$0.8 & 0.885 & $-$0.010 & 14/14 \\
+Chinese & Han (Simplified) & 78.0 & $-$0.6 & 0.880 & $-$0.015 & 14/14 \\
+Russian & Cyrillic & 77.6 & $-$0.9 & 0.886 & $-$0.008 & 14/14 \\
+Vietnamese & Latin & 77.2 & $-$1.4 & 0.871 & $-$0.024 & 14/14 \\
+Arabic & Arabic & 76.7 & $-$1.8 & 0.880 & $-$0.014 & 14/14 \\
+Hindi & Devanagari & 74.8 & $-$3.7 & 0.851 & $-$0.043 & 14/14 \\
+Swahili & Latin & 71.0 & $-$7.5 & 0.816 & $-$0.078 & 14/14 \\
+\bottomrule
+\end{tabular}
+\end{table}

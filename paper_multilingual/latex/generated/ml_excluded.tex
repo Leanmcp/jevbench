@@ -1,0 +1,21 @@
+\begin{table}[p]
+\centering
+\caption{Cases left out of each language, by the check that failed. A case counts once per kind of failure, so a row can sum to more than its total. ``Untranslated'': the output repeats most of the source words or script; ``Length'': the output is much shorter or longer than the source; ``JSON changed'': an ATBench fragment lost a tool name or its truncation marker; ``Call failed'': the translation call exited with an error. Cases whose strings were never sent count in the total but in no column.}
+\label{tab:excluded}
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}lrrrrrrr@{}}
+\toprule
+Language & Left out & Refused & Untranslated & Wrong script & Length & JSON changed & Call failed \\
+\midrule
+Chinese & 37 & 1 & 10 & 26 & 0 & 0 & 0 \\
+Arabic & 9 & 2 & 4 & 3 & 0 & 0 & 0 \\
+Hindi & 17 & 2 & 15 & 0 & 0 & 0 & 0 \\
+Vietnamese & 48 & 1 & 47 & 0 & 0 & 0 & 0 \\
+Swahili & 19 & 2 & 17 & 0 & 0 & 0 & 0 \\
+Spanish & 57 & 1 & 30 & 0 & 0 & 0 & 26 \\
+French & 47 & 1 & 46 & 0 & 0 & 0 & 0 \\
+Russian & 11 & 1 & 10 & 0 & 0 & 0 & 0 \\
+\bottomrule
+\end{tabular}
+\end{table}

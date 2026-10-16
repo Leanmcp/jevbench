@@ -8,16 +8,24 @@ models.json; a translated run is <label>-<lang> (state and question translated)
 or <label>-<lang>-enq (state translated, question in English), as written by
 scripts/45_run_multilingual.sh.
 
-Every number for a model is computed on the same cases: those its English run
-and every translated run it has answered without error. Cases the translator
-did not deliver are absent from the translated sets, so this pairing keeps
-English from being scored on extra, possibly easier, items.
+Each language is paired with English on its own: a model's change in a language
+is computed on the cases both its English run and that language's run answered
+without error. Cases the translator did not deliver are absent from the
+translated sets, so this keeps English from being scored on extra items, and one
+unfinished language cannot shrink the cases behind the others.
+
+A translated run counts only once it has answered at least --min-coverage of
+the cases in its case files. Runs still going, or cut short (for example by an
+HTTP 402 when OpenRouter credits ran out), are listed under "Not included".
 
 The headline is the mean accuracy over the chosen slices (default: the five
-safety slices), each slice weighted equally. The 95% interval on a drop is a
-paired bootstrap over families, resampled once and read on both languages.
+safety slices), each slice weighted equally. The 95% interval on a change is a
+paired bootstrap over families; a change is bold when its interval excludes 0.
+Means over models use only the models finished in every language listed, so
+every column averages the same models.
 
-Writes reports/MULTILINGUAL.md (or MULTILINGUAL_enq.md for --variant state).
+Writes ../local_notes/MULTILINGUAL.md (or MULTILINGUAL_enq.md for --variant state);
+local_notes/ is gitignored.
 """
 
 from __future__ import annotations
@@ -33,6 +41,8 @@ from score_runs import is_correct
 
 SLICES = ["jailbreak_classification", "prompt_injections", "aegis2", "aegis2_response", "atbench500"]
 LANG_NAMES = {"en": "English", "zh": "Chinese", "ar": "Arabic", "hi": "Hindi", "vi": "Vietnamese", "sw": "Swahili", "es": "Spanish", "ta": "Tamil", "kn": "Kannada", "fr": "French", "ru": "Russian"}
+SHORT = {"jailbreak_classification": "Jailbreak", "prompt_injections": "Prompt injection", "aegis2": "Harmful prompt (Aegis)",
+         "aegis2_response": "Harmful response (Aegis)", "atbench500": "Agent safety (ATBench)"}
 BOOTSTRAP_N = 2000
 
 
@@ -82,11 +92,27 @@ def pct(x: float | None) -> str:
     return "–" if x is None else f"{100 * x:.1f}"
 
 
+def md_table(rows: list[list], headers: list[str], align: str = "") -> str:
+    """Markdown pipe table. align: one letter per column, l or r (default: first l, rest r)."""
+    align = align or "l" + "r" * (len(headers) - 1)
+    out = ["| " + " | ".join(headers) + " |",
+           "|" + "|".join(":---" if a == "l" else "---:" for a in align) + "|"]
+    out += ["| " + " | ".join(str(c) for c in row) + " |" for row in rows]
+    return "\n".join(out)
+
+
+def expected_cases(lang: str, suffix: str) -> int:
+    folder = C.DATA / (f"cases_{lang}" if suffix else f"cases_{lang}_full")
+    return sum(sum(1 for _ in C.read_jsonl(folder / f"{k}.jsonl")) for k in SLICES if (folder / f"{k}.jsonl").exists())
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--langs", nargs="+", default=["zh", "ar", "hi", "vi", "sw", "es", "ta", "kn", "fr", "ru"])
     ap.add_argument("--variant", choices=["full", "state"], default="full")
     ap.add_argument("--slices", nargs="+", default=SLICES, help="default: the five safety slices")
+    ap.add_argument("--min-coverage", type=float, default=0.97,
+                    help="a run counts once it answered this share of its language's cases")
     ap.add_argument("--no-ci", action="store_true", help="skip the bootstrap, faster")
     args = ap.parse_args()
     SLICES[:] = args.slices
@@ -94,91 +120,141 @@ def main() -> int:
 
     models = json.loads((C.ROOT / "models.json").read_text(encoding="utf-8"))["models"]
     models = [m for m in models if m.get("endpoint") == "openrouter" and (C.RUNS / m["run_id"]).exists()]
+    expected = {lang: expected_cases(lang, suffix) for lang in args.langs}
 
-    rows, slice_acc, coverage = [], collections.defaultdict(lambda: collections.defaultdict(list)), []
-    langs_seen: list[str] = []
+    # results[model][lang] = (accuracy, english accuracy on the same cases, ci, by_slice, english by_slice, cases)
+    results: dict[str, dict[str, tuple]] = {}
+    en_full: dict[str, float] = {}
+    skipped: list[list] = []
     for m in models:
         en = load(m["run_id"])
-        runs = {lang: load(f"{m['label']}-{lang}{suffix}") for lang in args.langs}
-        runs = {lang: recs for lang, recs in runs.items() if recs}
-        if not en or not runs:
+        if not en:
             continue
-        langs_seen += [lang for lang in runs if lang not in langs_seen]
-        ids = sorted(set(en).intersection(*runs.values()))
-        if not ids:
-            continue
-        print(f"  {m['name']}: {len(ids):,} paired cases, {', '.join(runs)}", flush=True)
-        en_acc, en_slices = macro(en, ids)
-        row = {"model": m["name"], "n": len(ids), "en": en_acc, "langs": {}}
-        for k, v in en_slices.items():
-            slice_acc[k]["en"].append(v)
-        for lang, recs in runs.items():
-            acc, by_slice = macro(recs, ids)
-            ci = None if args.no_ci else paired_ci(en, recs, ids)
-            row["langs"][lang] = (acc, ci)
-            for k, v in by_slice.items():
-                slice_acc[k][lang].append(v)
-            coverage.append([m["name"], LANG_NAMES.get(lang, lang), len(recs), len(ids)])
-        rows.append(row)
-
-    if not rows:
-        print(f"No translated runs found (variant {args.variant}). Run scripts/45_run_multilingual.sh first.")
-        return 2
-    langs = [lang for lang in args.langs if lang in langs_seen]
-    rows.sort(key=lambda r: -(r["en"] or 0))
-
-    head = ["model", "cases", "English"] + [LANG_NAMES.get(lang, lang) for lang in langs]
-    main_rows = []
-    for r in rows:
-        cells = [r["model"], r["n"], pct(r["en"])]
-        for lang in langs:
-            if lang not in r["langs"]:
-                cells.append("–")
+        en_full[m["name"]] = macro(en, sorted(en))[0]
+        results[m["name"]] = {}
+        for lang in args.langs:
+            run_id = f"{m['label']}-{lang}{suffix}"
+            recs = load(run_id)
+            need = expected[lang]
+            if not need:
                 continue
-            acc, ci = r["langs"][lang]
-            delta = f"{100 * (acc - r['en']):+.1f}"
-            cells.append(f"{pct(acc)} ({delta}" + (f", {100 * ci[0]:+.1f} to {100 * ci[1]:+.1f})" if ci else ")"))
-        main_rows.append(cells)
+            if len(recs) < args.min_coverage * need:
+                state = "not started" if not (C.RUNS / run_id).exists() else "running or cut short"
+                skipped.append([m["name"], LANG_NAMES[lang], f"{len(recs):,} / {need:,}", state])
+                continue
+            ids = sorted(set(en) & set(recs))
+            acc, by_slice = macro(recs, ids)
+            en_acc, en_slices = macro(en, ids)
+            ci = None if args.no_ci else paired_ci(en, recs, ids)
+            results[m["name"]][lang] = (acc, en_acc, ci, by_slice, en_slices, len(ids))
+        print(f"  {m['name']}: {', '.join(results[m['name']]) or 'no finished language'}", flush=True)
 
-    mean_cells = ["mean over models", "", pct(statistics.fmean(r["en"] for r in rows))]
-    for lang in langs:
-        have = [r for r in rows if lang in r["langs"]]
-        if not have:
-            mean_cells.append("–")
+    langs = [lang for lang in args.langs if any(lang in r for r in results.values())]
+    if not langs:
+        print(f"No finished translated runs (variant {args.variant}). Run scripts/45_run_multilingual.sh first.")
+        return 2
+    names = sorted((n for n in results if results[n]), key=lambda n: -en_full[n])
+    complete = [n for n in names if all(lang in results[n] for lang in langs)]
+    heads = [LANG_NAMES[lang] for lang in langs]
+
+    # 1. change from English, the headline
+    delta_rows = []
+    for n in names:
+        cells = [n]
+        for lang in langs:
+            if lang not in results[n]:
+                cells.append("·")
+                continue
+            acc, en_acc, ci, *_ = results[n][lang]
+            d = f"{100 * (acc - en_acc):+.1f}".replace("-", "−")
+            significant = ci and (ci[0] > 0 or ci[1] < 0)
+            cells.append(f"**{d}**" if significant else d)
+        delta_rows.append(cells)
+    if complete:
+        cells = [f"*mean, {len(complete)} models*"]
+        for lang in langs:
+            d = statistics.fmean(results[n][lang][0] - results[n][lang][1] for n in complete)
+            cells.append(f"*{100 * d:+.1f}*".replace("-", "−"))
+        delta_rows.append(cells)
+
+    # 2. accuracy
+    acc_rows = []
+    for n in names:
+        acc_rows.append([n, pct(en_full[n])] + [pct(results[n][lang][0]) if lang in results[n] else "·" for lang in langs])
+    if complete:
+        acc_rows.append([f"*mean, {len(complete)} models*", f"*{pct(statistics.fmean(en_full[n] for n in complete))}*"] +
+                        [f"*{pct(statistics.fmean(results[n][lang][0] for n in complete))}*" for lang in langs])
+
+    # 3. by slice, over the models finished in every language
+    slice_rows = []
+    pool = complete or names
+    for k in SLICES:
+        en_vals = [results[n][lang][4][k] for n in pool for lang in langs if lang in results[n] and k in results[n][lang][4]]
+        if not en_vals:
             continue
-        a = statistics.fmean(r["langs"][lang][0] for r in have)
-        e = statistics.fmean(r["en"] for r in have)
-        mean_cells.append(f"{pct(a)} ({100 * (a - e):+.1f})")
-    main_rows.append(mean_cells)
+        cells = [SHORT.get(k, k), pct(statistics.fmean(en_vals))]
+        for lang in langs:
+            vals = [results[n][lang][3][k] for n in pool if lang in results[n] and k in results[n][lang][3]]
+            cells.append(pct(statistics.fmean(vals)) if vals else "·")
+        slice_rows.append(cells)
 
-    slice_rows = [[k, pct(statistics.fmean(slice_acc[k]["en"]))] +
-                  [pct(statistics.fmean(slice_acc[k][lang])) if slice_acc[k][lang] else "–" for lang in langs]
-                  for k in SLICES if slice_acc[k]["en"]]
+    # 4. intervals and cases, for checking
+    ci_rows = []
+    for n in names:
+        for lang in langs:
+            if lang not in results[n]:
+                continue
+            acc, en_acc, ci, _, _, k = results[n][lang]
+            ci_rows.append([n, LANG_NAMES[lang], k, pct(en_acc), pct(acc), f"{100 * (acc - en_acc):+.1f}",
+                            f"{100 * ci[0]:+.1f} to {100 * ci[1]:+.1f}" if ci else "–"])
 
     title = "state and question translated" if args.variant == "full" else "state translated, question in English"
+    pool_note = (f"the {len(complete)} models finished in every language shown" if complete
+                 else "every model with a finished run in that language (no model is finished in all of them yet)")
     out = [
         f"# Decision models in other languages ({title})",
         "",
-        f"Accuracy (%) over {len(SLICES)} slices, each weighted equally. In brackets: change from",
-        "English in points" + ("" if args.no_ci else ", then its paired bootstrap 95% interval") + ".",
-        "Each model is scored on the cases that its English run and all its translated runs answered.",
+        f"{len(SLICES)} safety benchmarks: " + ", ".join(SHORT.get(k, k) for k in SLICES) + ". "
+        "Accuracy is the mean over these benchmarks, each weighted equally, with the yes/no cut at p = 0.5.",
         "",
-        C.table(main_rows, head),
+        f"Models with a finished run: {len(names)}. Finished in every language shown: {len(complete)}. "
+        "`·` means that run is not finished yet.",
         "",
-        "## By slice (mean over models)",
+        "## Change from English (points)",
         "",
-        C.table(slice_rows, ["slice", "English"] + [LANG_NAMES.get(lang, lang) for lang in langs]),
+        "Each cell compares the model with its own English answers on the same cases. "
+        "**Bold**: the 95% interval excludes 0, so the change is not noise." if not args.no_ci else
+        "Each cell compares the model with its own English answers on the same cases.",
         "",
-        "## Coverage",
+        md_table(delta_rows, ["Model"] + heads),
         "",
-        C.table(coverage, ["model", "language", "answered", "paired"]),
+        "## Accuracy (%)",
+        "",
+        "English is on all its cases; a language is on the cases it shares with English.",
+        "",
+        md_table(acc_rows, ["Model", "English"] + heads),
+        "",
+        "## By benchmark (accuracy %, mean over models)",
+        "",
+        f"Averaged over {pool_note}.",
+        "",
+        md_table(slice_rows, ["Benchmark", "English"] + heads),
         "",
     ]
+    if skipped:
+        out += ["## Not included yet", "",
+                f"Runs with fewer than {args.min_coverage:.0%} of their cases answered.", "",
+                md_table(skipped, ["Model", "Language", "Answered", "State"], "llrl"), ""]
+    out += ["## Detail: cases and 95% intervals", "",
+            md_table(ci_rows, ["Model", "Language", "Cases", "English", "Language acc.", "Change", "95% interval"], "llrrrrr"), ""]
     text = "\n".join(out)
-    print(text)
-    path = C.REPORTS / f"MULTILINGUAL{'' if args.variant == 'full' else '_enq'}.md"
+    path = C.ROOT.parent / "local_notes" / f"MULTILINGUAL{'' if args.variant == 'full' else '_enq'}.md"
     path.write_text(text, encoding="utf-8")
-    print(f"wrote {path.relative_to(C.ROOT)}")
+    print()
+    print(C.table([[r[0].strip("*")] + [str(c).strip("*") for c in r[1:]] for r in delta_rows], ["change from English"] + heads))
+    if skipped:
+        print(f"\n{len(skipped)} runs not finished yet; see the report.")
+    print(f"\nwrote {path}")
     return 0
 
 

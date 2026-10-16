@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>JevBench Multilingual</title>
+  <meta name="description" content="Decision models on five safety benchmarks translated into eight languages, compared with English on the same cases.">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="JevBench">
+  <meta property="og:title" content="JevBench Multilingual: decision models in eight languages">
+  <meta property="og:description" content="14 decision models, 5 safety benchmarks, 8 languages. Every model compared with its own English answers on the same cases.">
+  <meta property="og:url" content="https://leanmcp.github.io/jevbench/multilingual.html">
+  <meta property="og:image" content="https://leanmcp.github.io/jevbench/og.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://leanmcp.github.io/jevbench/og.png">
+  <link rel="icon" href="logo.svg">
+  <script>
+    // Set the theme before first paint so the page never flashes the wrong one.
+    try { const t = localStorage.getItem("jevbench-theme"); if (t) document.documentElement.dataset.theme = t; } catch (e) {}
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <script src="_p/map.js"></script>
+  <script src="analytics.js"></script>
+</head>
+<body>
+  <header class="bar">
+    <a class="word" href="index.html">JevBench</a>
+    <nav aria-label="Sections">
+      <a href="index.html">English</a>
+      <a href="#top" aria-current="page"><b>Multilingual</b></a>
+      <a href="#compare">Compare</a>
+      <a href="#language">Languages</a>
+      <a href="#examples">Examples</a>
+      <a href="#method">Method</a>
+      <a href="#cite">Cite</a>
+    </nav>
+    <button class="btn" id="theme" type="button" aria-label="Switch colour theme">Dark</button>
+  </header>
+
+  <main id="top">
+    <section class="intro">
+      <h1>JevBench Multilingual</h1>
+      <p>Decision models on five safety benchmarks in eight languages, each compared with its own English answers on the same cases.</p>
+      <p class="links">
+        <a class="btn" href="index.html">English benchmark</a>
+        <a class="btn" id="github-link" href="https://github.com/Leanmcp/jevbench" target="_blank" rel="noopener"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M6.766 11.328c-2.063-.25-3.516-1.734-3.516-3.656 0-.781.281-1.625.75-2.188-.203-.515-.172-1.609.063-2.062.625-.078 1.468.25 1.968.703.594-.187 1.219-.281 1.985-.281.765 0 1.39.094 1.953.265.484-.437 1.344-.765 1.969-.687.218.422.25 1.515.046 2.047.5.593.766 1.39.766 2.203 0 1.922-1.453 3.375-3.547 3.64.531.344.89 1.094.89 1.954v1.625c0 .468.391.734.86.547C13.781 14.359 16 11.53 16 8.030 16 3.61 12.406 0 7.984 0 3.563 0 0 3.610 0 8.031a7.880 7.880 0 0 0 5.172 7.422c.422.156.828-.125.828-.547v-1.250c-.219.094-.5.156-.75.156-1.031 0-1.640-.562-2.078-1.609-.172-.422-.360-.672-.719-.719-.187-.015-.25-.093-.25-.187 0-.188.313-.328.625-.328.453 0 .844.281 1.25.860.313.452.640.655 1.031.655s.641-.140 1-.5c.266-.265.470-.5.657-.656"/></svg>GitHub</a>
+        <a class="btn" href="#cite">Cite</a>
+      </p>
+      <p class="small" id="status"></p>
+    </section>
+
+    <section id="tabs-wrap">
+      <div class="cats tabs" id="tabs" role="tablist" aria-label="Language"></div>
+    </section>
+
+    <!-- Compare: every language against English -->
+    <div id="view-compare">
+      <section id="compare">
+        <div class="head"><h2>Every language against English</h2><span class="sub" id="compare-sub"></span></div>
+        <div class="chart" id="lang-chart" role="list"></div>
+        <p class="small" id="lang-chart-note"></p>
+      </section>
+
+      <hr>
+
+      <section id="delta">
+        <div class="head"><h2>Change from English, per model</h2><span class="sub">points of accuracy</span></div>
+        <div class="scroll"><table class="grid" id="delta-grid"></table></div>
+        <p class="small">Each cell compares a model with its own English answers on the same cases. Bold and underlined: the 95% paired bootstrap interval excludes zero. "…": the run is still going. Hover a cell for the numbers. Click a language to open it.</p>
+      </section>
+
+      <hr>
+
+      <section id="by-benchmark">
+        <div class="head"><h2>By benchmark</h2><span class="sub" id="bench-sub"></span></div>
+        <div class="scroll"><table class="grid" id="bench-grid"></table></div>
+        <p class="small">Accuracy at the 0.5 cut, mean over models. Colour runs per row, from the weakest language to the strongest.</p>
+      </section>
+    </div>
+
+    <!-- One language -->
+    <div id="view-language" hidden>
+      <section id="language">
+        <div class="head"><h2 id="lang-title"></h2><span class="sub" id="lang-sub"></span></div>
+        <p class="meta" id="lang-meta"></p>
+        <div class="chart" id="model-chart" role="list"></div>
+        <p class="small">Bar: accuracy in this language. Dashed line: the same model in English, on the same cases. Value: accuracy, then the change from English.</p>
+      </section>
+
+      <hr>
+
+      <section id="lang-grid-sec">
+        <div class="head"><h2>Per benchmark</h2><span class="sub" id="lang-grid-sub"></span></div>
+        <div class="scroll"><table class="grid" id="lang-grid"></table></div>
+        <p class="small">Accuracy in this language. Hover a cell for English, the change, AUROC and how often the model said yes. A drop with an unchanged AUROC is a moved threshold, not lost skill.</p>
+      </section>
+
+      <hr>
+
+      <section id="examples">
+        <div class="head"><h2>Examples</h2><div class="cats" id="ex-dir" role="group" aria-label="Direction"></div></div>
+        <p class="small" id="ex-note"></p>
+        <div class="steps" id="ex-steps" role="group" aria-label="Example"></div>
+        <div class="example" id="ex-body"></div>
+      </section>
+    </div>
+
+    <hr>
+
+    <section id="method">
+      <h2>Method</h2>
+      <div class="method" id="method-body"></div>
+    </section>
+
+    <hr>
+
+    <section id="cite">
+      <div class="head"><h2>Cite</h2><button class="btn" id="copy-cite" type="button">Copy BibTeX</button></div>
+      <pre id="bib"></pre>
+    </section>
+  </main>
+
+  <footer class="foot">
+    <span>Code MIT. Datasets keep their own licences.</span>
+    <span id="generated"></span>
+  </footer>
+
+  <div class="tip" id="tip" role="tooltip" hidden></div>
+  <script src="multilingual-data.js"></script>
+  <script src="multilingual.js"></script>
+</body>
+</html>

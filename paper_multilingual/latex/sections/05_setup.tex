@@ -1,0 +1,66 @@
+\section{Experimental setup}
+\label{sec:setup}
+
+\paragraph{Models.} We evaluate the \MLnModels{} decision models that
+OpenRouter serves through its Decisions endpoint
+(\url{https://openrouter.ai/api/alpha/decisions}), which takes the same
+state-and-questions body for every model (Table~\ref{tab:models}). The
+English runs are those of the JevBench extension, made between 11 and 15
+October 2026; the translated runs were made on 15 and 16 October 2026. Each
+model ran once per language, on byte-identical case files. ScaleDown
+Classify-1 and Span-01 reject an object state, so they receive the same state
+serialised as JSON text, in English and in every language alike. Every
+response records the model version and the upstream provider that OpenRouter
+reports.
+
+\begin{table}[t]
+\centering
+\caption{Evaluated models, all reached through OpenRouter's Decisions endpoint.
+Licences as stated by the provider; ``hosted'' means only a service is
+offered.}
+\label{tab:models}
+\small
+\begin{tabular}{@{}lll@{}}
+\toprule
+Model & OpenRouter identifier & Weights \\
+\midrule
+Clef & \texttt{cloudflare/clef} & open, Apache 2.0 \\
+Clef-flash & \texttt{cloudflare/clef-flash} & open, Apache 2.0 \\
+Clef-omni & \texttt{cloudflare/clef-omni} & open, Apache 2.0 \\
+pplx-decider v1.1 & \texttt{perplexity/pplx-decider-v1.1-27b} & open, Apache 2.0 \\
+GPT-6 Luna Decisions & \texttt{openai/gpt-6-luna-decisions} & hosted \\
+Microsoft Decision 1 & \texttt{microsoft/microsoft-decision-1} & hosted \\
+Solar Decide & \texttt{upstage/solar-decide} & hosted \\
+Solar Decide Flash & \texttt{upstage/solar-decide-flash} & hosted \\
+Drex v1.5 & \texttt{nace-ai/drex-v1.5} & open, NACE AI Open RAIL-M \\
+Mercury Decide & \texttt{inception/mercury-decide} & hosted \\
+TEv1 4B (experimental) & \texttt{togethercomputer/tev1-4b-experimental} & open, licence not stated \\
+Kev 4B & \texttt{jaredpalmer/kev-4b} & open, Apache 2.0 \\
+ScaleDown Classify-1 & \texttt{scaledown/classify-1} & hosted; a constrained decoding model \\
+Span-01 & \texttt{respan/span-01} & hosted \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Pairing.} A translated case keeps the identifier of its English
+original. For a model $m$ and language $\ell$, let $S_{m,\ell}$ be the cases on
+which both the English run and the run in $\ell$ returned a valid decision. All
+comparisons between $m$ in English and $m$ in $\ell$ use $S_{m,\ell}$ only.
+Cases the translator did not deliver are therefore removed from the English
+side as well, and a language is not penalised for the cases it lacks. A run
+counts as finished once it has answered at least 97\% of its language's cases.
+
+\paragraph{Metrics.} The headline is accuracy at $\gamma = 0.5$, averaged over
+the five slices with equal weight, so that Aegis (500 cases) does not outweigh
+prompt injections (116). Next to it we report the mean per-slice AUROC and,
+per slice, the yes rate (Section~\ref{sec:background}). Because the English
+and translated runs share their cases, the change in accuracy is a paired
+quantity. Its 95\% interval is a percentile bootstrap with 2{,}000 resamples
+in which case families are resampled within each slice, and the same resample
+is read in both languages. We call a change significant when its interval
+excludes zero; with \MLnPairs{} model--language pairs, a few such intervals are
+expected to exclude zero by chance, so we read individual cells with care and
+patterns across languages and models with more confidence.
+
+\paragraph{Means over models.} All \MLnModels{} models finished all eight
+languages, so every mean over models averages the same \MLnModels{} models.

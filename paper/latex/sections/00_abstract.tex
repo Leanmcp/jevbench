@@ -3,5 +3,7 @@ A class of models does not generate text but returns typed decisions: a probabil
 
 The original three-system evaluation exposes threshold and option-order effects. On prompt-injection detection Jev reaches an AUROC of 0.978 yet only 73.3\% accuracy at 0.5; selecting a threshold on the scored data raises accuracy to 94.8\%, an optimistic diagnostic rather than a held-out gain. Correctness changes under option reordering on 2.6--5.4\% of matched items for Jev, against 12.0--33.6\% for djev and Laya. On shared cases, D1 exceeds Jev by 4.4 percentage points on BANKING77 and 3.8 on Aegis prompts, but trails by 14.1 points on MMLU-Pro. These D1 comparisons are point estimates, without paired uncertainty estimates in this revision.
 
+We further extend the evaluation to 18 systems, adding 14 hosted decision models, and to eight further slices covering MCP server routing and tool selection, reranking, and response judging. On a six-cluster index, pplx-decider v1.1 scores highest at 78.0, the top six systems lie within 2.7 points of each other, and no system leads every cluster.
+
 We additionally evaluate djev's image path: accuracy is 82.8\% on image-bearing ScienceQA rows and 84.7\% on text-only rows. The framework and original predictions are released; the D1 extension is recorded separately from the existing dataset release.
 \end{abstract}

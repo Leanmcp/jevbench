@@ -1,0 +1,34 @@
+\section{Reproducibility and artifacts}
+
+The JevBench code is open source under the MIT licence at
+\url{https://github.com/Leanmcp/jevbench}. The multilingual extension adds four
+scripts to it: \texttt{translate\_cases.py} translates and checks the cases and
+records every translated string with its model, reasoning effort and call;
+\texttt{45\_run\_multilingual.sh} runs a model on a language;
+\texttt{compare\_langs.py} computes the paired comparison; and
+\texttt{build\_multilingual.py} produces every number, table and figure in this
+paper and on the project website. Translated cases keep the identifiers of their
+English originals, and predictions are keyed by case identifier and carry no
+source text. The results and all examples are browsable at
+\url{https://leanmcp.github.io/jevbench/multilingual.html}.
+
+\section*{Ethics statement}
+
+The benchmark contains harmful, offensive and manipulative text by design,
+taken from public safety datasets, and we translated it into eight languages
+faithfully, without softening it. Translated harmful text can be misused in the
+same ways as the English originals; it adds no harmful capability that a public
+translation service does not already provide. Our finding that guards miss
+harmful requests in some languages is a vulnerability report. We describe it at
+the level of languages and models, and give no recipe beyond what prior work on
+multilingual jailbreaks has published.
+
+\section*{Use of AI assistance}
+
+The translations were produced by a language model, as described in
+Section~\ref{sec:translation}. The authors also used AI assistance for software
+engineering, drafting and language editing of this manuscript. All experimental
+design, methodological decisions and interpretation of results are the
+authors' own. Every number in the paper is generated from the released runs by
+the scripts above, and the authors checked the cited works against their
+official records. The authors take full responsibility for the content.

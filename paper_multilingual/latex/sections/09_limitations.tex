@@ -1,0 +1,44 @@
+\section{Limitations}
+\label{sec:limitations}
+
+\paragraph{Machine translation without human review.} One model translated
+every case, and no native speaker reviewed the translations. The automatic
+checks catch refusals, untranslated output, wrong scripts and broken JSON, but
+not a fluent translation with a changed meaning. Section~\ref{sec:examples}
+shows such changes; we expect more in the cases we did not read. Human
+translation, or review of a sample per language, would bound the error rate,
+and we have not done it. The translator is itself a language model, so its
+quality may vary across the same languages as the models under test.
+
+\paragraph{The question is translated too.} In the variant we report, the
+instruction and the answer descriptions are translated along with the state.
+A loss can therefore come from the case text or from the model misreading the
+question. The pipeline also builds a variant with the question in English;
+running it would separate the two, and we leave it to future work.
+
+\paragraph{Source data.} The prompt-injection slice mixes English and German
+texts, and both were translated into each target. The source labels are taken
+as given, including two whose polarity the source does not state
+\citep{pai2026jevbench}. The slices are sampled close to class balance, so
+their accuracies are not incident rates. Cases that were offensive only through
+English-specific slang or slurs may not remain offensive after translation, so
+their gold labels may no longer fit the translated text.
+
+\paragraph{One run, hosted models.} Each model ran once per language through a
+hosted alias. A provider may change the model behind an alias, and OpenRouter
+may route one model to several upstream providers; we record both but cannot
+rule out changes between the English and the translated runs, which were made
+up to five days apart. Inference is not deterministic by default
+\citep{he2025nondeterminism}, so small differences should be read with the
+paired intervals.
+
+\paragraph{One threshold.} We score every model at 0.5. A deployment could tune
+a threshold per language, which would recover the losses we attribute to a
+shifted operating point, though not those with a falling AUROC. Recalibration
+on held-out data \citep{guo2017calibration} would need a calibration split in
+each language, which this benchmark does not provide.
+
+\paragraph{Coverage.} Eight languages and five safety tasks are a narrow sample of
+the world's languages and of the decisions these models are used for. Swahili is
+the only lower-resource language in the set, so our evidence on such languages
+rests on one language.

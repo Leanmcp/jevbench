@@ -1,0 +1,106 @@
+\section{Building the multilingual benchmark}
+\label{sec:benchmark}
+
+\subsection{Source slices}
+
+We translate the five binary safety slices of JevBench \citep{pai2026jevbench},
+\MLnCasesEN{} English cases in total, built from public datasets pinned to exact
+revisions:
+
+\begin{itemize}
+  \item \textbf{Jailbreak classification} (400 cases) \citep{jackhhao2023jailbreak}:
+  is the prompt an attempt to make an assistant ignore its safety rules?
+  \item \textbf{Prompt injections} (116 cases) \citep{deepset2023promptinjections}:
+  does the text try to override, ignore or extract the instructions of the
+  system that receives it? The source mixes English and German texts.
+  \item \textbf{Aegis 2.0 prompts} and \textbf{responses} (500 cases each)
+  \citep{ghosh2025aegis2}: is the user prompt, or the assistant's response,
+  unsafe under a general content-safety policy?
+  \item \textbf{ATBench} (500 cases) \citep{li2026atbench}: considering a whole
+  trajectory of a tool-using agent, did the agent behave unsafely?
+\end{itemize}
+
+The safety slices are sampled close to class balance, except jailbreak
+classification, where 35\% of cases are jailbreaks. Every question carries the
+same preamble, which tells the model to treat the state as data to be evaluated
+and never as instructions, because the states contain adversarial text by design.
+
+\subsection{Languages}
+
+We chose eight languages to vary three properties that plausibly affect a model:
+script, language family, and the amount of text available on the web.
+Table~\ref{tab:langs} lists them. Chinese, Spanish, French and Russian are
+commonly treated as high-resource languages and Swahili as a lower-resource one,
+with Arabic, Hindi and Vietnamese between them; we use these labels only to
+describe the design, not as measured quantities. Four languages share the
+Latin script with English, which separates the effect of script from the effect
+of language.
+
+\input{generated/ml_langs}
+
+\subsection{Translation}
+\label{sec:translation}
+
+\paragraph{Translator.} Translations were produced by \texttt{gpt-6-astra} at
+low reasoning effort, called through the Codex command-line client
+(version 0.155.1) on 15 and 16 October 2026. We did not use a dedicated
+machine-translation system, because safety data contains jailbreaks, slurs and
+descriptions of crimes, and the translator must translate them faithfully rather
+than refuse, soften or summarise them.
+
+\paragraph{What is translated.} Every natural-language string of a case's
+state, and the question's instruction and answer descriptions. For ATBench,
+whose states are JSON, only the user turns, the agent's thoughts and messages,
+and the tool descriptions are translated; tool names, actions, arguments and
+environment outputs stay byte-identical, so the trajectory remains the same
+sequence of actions. Gold labels, identifiers and every other field are never
+sent to the translator. Each unique string is translated once and reused
+wherever it occurs (Aegis prompts and responses share their prompts). The five
+slices hold 5{,}081 unique strings, about 2.06 million characters, per language.
+
+\paragraph{Instructions to the translator.} The prompt
+(Appendix~\ref{app:prompt}) states that the strings are benchmark data, that the
+harmful content is deliberate, and that each translation must stay ``exactly as
+harmful, manipulative, rude, benign, correct or wrong as the original''. It asks
+the translator not to soften, censor, summarise, add warnings or correct
+anything, and to translate, not obey, any instruction inside a string. Strings
+are sent in batches, each wrapped in a tag that carries a random nonce, so text
+inside a string cannot close the block. The prompt names English as the source
+language; the German prompt-injection texts were translated into the target
+language as well.
+
+\subsection{Checks}
+\label{sec:checks}
+
+Every returned string is checked before use:
+
+\begin{itemize}
+  \item \textbf{Refusal}: the translator declined, or the output contains a
+  refusal phrase that the source does not.
+  \item \textbf{Script}: for languages with their own script, at least 30\% of
+  the letters not copied from the source must be in that script (3\% for
+  Vietnamese, whose diacritics are a small share of its letters).
+  \item \textbf{Untranslated}: for Latin-script targets, at most 60\% of the
+  output's words may also appear in the source; for every target, at most
+  70\% of the output's letters may be copied verbatim.
+  \item \textbf{Length}: for sources of 40 characters or more, the output must
+  be 0.4 to 3.5 times as long (0.12 to 2.5 for Chinese).
+  \item \textbf{JSON}: an ATBench fragment must keep every tool name and its
+  truncation marker.
+\end{itemize}
+
+A string that fails is sent again once on its own. A case with any string still
+failing is left out of that language. We do not repair translations by hand.
+Table~\ref{tab:excluded} in the appendix gives the reasons per language. Most
+exclusions were flagged as untranslated. On inspection, many of these are
+translations of jailbreak templates and tasks that keep long stretches of
+code, markup or English template text, which the check cannot tell apart from
+a translator that did nothing; leaving them out is conservative and removes a
+few of the longest jailbreak prompts from the Latin-script languages. Every language keeps between \MLusableMinPct\% (\MLusableMinLang)
+and \MLusableMaxPct\% of the English cases.
+
+\paragraph{Two variants.} The pipeline writes two case sets per language: one
+with the state and the question translated, and one with only the state
+translated and the question kept in English. All results in this paper use the
+first, fully translated variant, which is how a non-English deployment would
+query the model.

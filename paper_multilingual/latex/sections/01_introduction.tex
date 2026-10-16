@@ -1,0 +1,51 @@
+\section{Introduction}
+
+A typed decision model is given a state and a question with declared answers,
+and returns a probability for each answer instead of generating text
+\citep{pai2026jevbench}. Models of this kind are sold as guards: they decide
+whether a prompt is a jailbreak, whether a text tries to override a system's
+instructions, whether a chatbot's reply is harmful, and whether an agent acted
+unsafely. A guard sits in front of other systems, so its decision is an action:
+a request passes or is blocked.
+
+The users of these systems do not all write in English, and neither do
+attackers. Work on generative models has shown that a harmful request
+translated into a low-resource language can pass safety training that holds in
+English \citep{yong2023lowresource,deng2023multilingualjailbreak,wang2023alllanguages}.
+Whether the same gap exists for decision models has not been measured. Their
+public evaluations, including our own JevBench \citep{pai2026jevbench}, use
+English data only.
+
+This paper measures it. We translate the five safety slices of JevBench into
+eight languages and run \MLnModels{} hosted decision models on every language and
+on the English originals. We follow the rule that a result names its language
+\citep{ducel2022benderrule}: every number below is for a named language, and
+English is one of them.
+
+We make four contributions.
+
+\begin{enumerate}
+  \item \textbf{A translated safety benchmark.} \MLnCasesEN{} English cases from
+  five public safety datasets, translated into Chinese, Arabic, Hindi,
+  Vietnamese, Swahili, Spanish, French and Russian, covering five scripts and
+  five language families (Section~\ref{sec:benchmark}). Every
+  translated string passes automatic checks, and a case with a failed string is
+  left out rather than repaired.
+  \item \textbf{A paired comparison with English.} Each model is compared with
+  its own English answers on exactly the cases its translated run answered, with
+  bootstrap intervals over case families, so a language is never credited or
+  penalised for the cases its translation dropped (Section~\ref{sec:setup}).
+  \item \textbf{A separation of two failure modes.} By reporting AUROC and the
+  share of positive answers next to accuracy, we show where a model loses the
+  ability to tell harmful from harmless content and where it keeps that ability
+  but moves its probabilities across the decision threshold
+  (Section~\ref{sec:threshold}).
+  \item \textbf{A case-level audit.} We list the cases with the largest change
+  between English and each language, and find both genuine model failures and
+  changes made by the translation itself (Section~\ref{sec:examples}).
+\end{enumerate}
+
+Our aim is diagnostic, as in JevBench. We do not rank the models for production
+use, and Section~\ref{sec:limitations} sets out why. The results and every
+example are also browsable at
+\url{https://leanmcp.github.io/jevbench/multilingual.html}.

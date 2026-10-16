@@ -1,0 +1,36 @@
+\section{Background}
+\label{sec:background}
+
+\paragraph{Typed decisions.} A caller sends a \emph{state}, which is text or
+JSON describing a situation, and a \emph{question} with a type and declared
+answers. The model returns a distribution over exactly those answers. All five
+slices in this paper use the binary type: the model returns
+$\pi = p_\theta(\textsc{true} \mid s, q) \in [0,1]$, the probability that the
+proposition in the question holds, for example that the prompt in the state is
+a jailbreak attempt \citep{pai2026jevbench}. The question has an instruction and
+a one-sentence description of each answer; in this paper both are translated
+together with the state.
+
+\paragraph{Decision threshold.} A probability becomes a decision only when the
+caller compares it with a threshold $\gamma$:
+$d_\gamma(\pi) = \mathbf{1}[\pi \ge \gamma]$. We use $\gamma = 0.5$ for every
+model and every language, which is the conventional choice and the one an
+integrator who has not tuned the model would make. Accuracy at a fixed threshold
+depends on two separate properties: \emph{discrimination}, whether harmful cases
+receive higher probabilities than harmless ones, and the \emph{operating point},
+where the probabilities sit relative to $\gamma$.
+
+\paragraph{AUROC.} The area under the ROC curve measures discrimination alone:
+it is the probability that a randomly chosen positive case receives a higher
+$\pi$ than a randomly chosen negative case, and it does not depend on $\gamma$.
+A model whose accuracy falls in a language while its AUROC holds has kept its
+ranking but moved its probabilities. Such a model can be repaired with a
+per-language threshold or recalibration on held-out data \citep{guo2017calibration}.
+A model whose AUROC falls has lost information that no threshold restores.
+
+\paragraph{Yes rate.} For each slice we also report the share of cases on which
+the model answers yes at $\gamma = 0.5$, next to the share whose gold label is
+yes. The two are close for a model at a good operating point. A yes rate near
+zero means the guard lets everything through; a yes rate near one means it
+blocks everything. Both can hide behind an accuracy near 50\% on a balanced
+slice.

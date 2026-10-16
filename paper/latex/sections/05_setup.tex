@@ -62,6 +62,23 @@ without a D1-specific prompt rewrite. The run on 30 September 2026 produced
 cases failed with HTTP 429 after six attempts each. Every successful response
 reported \texttt{d1:free} and zero output tokens.
 
+\paragraph{Hosted decision models (extension).} We add 14 decision models
+that OpenRouter serves through one Decisions endpoint
+(\url{https://openrouter.ai/api/alpha/decisions}), which accepts the same
+state-and-questions body as the vendor APIs above:
+Clef, Clef-flash and Clef-omni (Cloudflare), pplx-decider v1.1 (Perplexity),
+GPT-6 Luna Decisions (OpenAI), Microsoft Decision~1, Solar Decide and Solar
+Decide Flash (Upstage), Drex v1.5 (NACE AI), Mercury Decide (Inception), TEv1~4B
+(experimental, Together), Kev~4B, ScaleDown Classify-1, which its provider
+describes as a constrained decoding model, and Span-01 (Respan). Each runs
+on the same case files, once, between 11 and 16 October 2026. The new slices
+of Liquid D1 were run through the same endpoint, and its row combines both
+routes, the direct run taking precedence. Some APIs reject cases outright:
+Solar Decide and TEv1 accept at most 26 and 20 options, so BANKING77 is
+rejected, and Span-01 accepts only the binary type. Rejected slices count as 0
+in the index of Section~\ref{sec:extended}. ScaleDown and Span-01 reject an
+object state, so they receive the same state serialised as JSON text.
+
 \paragraph{Identical inputs.} All four systems received the same case files,
 built once by the adapters of Section~\ref{sec:adapters}, with one typed question
 per request. For every case we record the decision, the full probability vector,

@@ -1,0 +1,29 @@
+\begin{abstract}
+Typed decision models return a probability for a declared question instead of
+generating text, and they are deployed as guards in front of other systems:
+jailbreak and prompt-injection filters, content-safety classifiers and
+agent monitors. Their published evaluations are in English. We translate the
+five safety slices of JevBench (\MLnCasesEN{} cases: jailbreak classification,
+prompt injections, Aegis~2.0 prompts and responses, and ATBench agent
+trajectories) into eight languages: Chinese, Arabic, Hindi, Vietnamese,
+Swahili, Spanish, French and Russian. We evaluate \MLnModels{} hosted decision
+models in every language, and compare every model with its own English answers
+on the same cases, with paired bootstrap intervals.
+
+Averaged over the \MLnModels{} models, English accuracy is \MLaccEN\%. French
+(\MLdeltaFR{} points), Chinese (\MLdeltaZH{}), Spanish (\MLdeltaES{}) and
+Russian (\MLdeltaRU{}) stay close to English; Vietnamese (\MLdeltaVI{}), Arabic
+(\MLdeltaAR{}) and Hindi (\MLdeltaHI{}) lose more, and Swahili loses most
+(\MLdeltaSW{}). Individual changes range from \MLdeltaMin{} to \MLdeltaMax{}
+points, and \MLsigNeg{} of \MLnPairs{} model--language pairs are significantly
+worse than English. The failures take two forms. Some models stop flagging
+harmful content: in Swahili, Solar Decide Flash flags
+\MLyesSolarDecideFlashSWAegisPrompts\% of Aegis prompts as unsafe, against
+\MLyesEnSolarDecideFlashSWAegisPrompts\% in English, while half are unsafe.
+Others flag far more: in Hindi, Span-01 calls \MLyesSpanHIAtbench\% of ATBench
+trajectories unsafe, against \MLyesEnSpanHIAtbench\% in English. Comparing
+AUROC with accuracy separates a shifted operating point from lost
+discrimination. Case inspection shows that some changes come from the
+translation itself, such as an inverted negation or a slur rendered as harmless
+sounds. The scripts that translate, run and score the benchmark are open source.
+\end{abstract}

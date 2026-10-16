@@ -1,4 +1,4 @@
-\begin{thebibliography}{33}
+\begin{thebibliography}{40}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
@@ -113,8 +113,9 @@ Di~Jin, Eileen Pan, Nassim Oufattole, Wei-Hung Weng, Hanyi Fang, and Peter
 \newblock \emph{Applied Sciences}, 11\penalty0 (14):\penalty0 6421, 2021.
 \newblock \doi{10.3390/app11146421}.
 
-\bibitem[Wang et~al.(2024)Wang, Ma, Zhang, Ni, Chandra, Guo, Ren, Arulraj, He,
-  Jiang, Li, Ku, Wang, Zhuang, Fan, Yue, and Chen]{wang2024mmlupro}
+\bibitem[Wang et~al.(2024{\natexlab{a}})Wang, Ma, Zhang, Ni, Chandra, Guo, Ren,
+  Arulraj, He, Jiang, Li, Ku, Wang, Zhuang, Fan, Yue, and
+  Chen]{wang2024mmlupro}
 Yubo Wang, Xueguang Ma, Ge~Zhang, Yuansheng Ni, Abhranil Chandra, Shiguang Guo,
   Weiming Ren, Aaran Arulraj, Xuan He, Ziyan Jiang, Tianle Li, Max Ku, Kai
   Wang, Alex Zhuang, Rongqi Fan, Xiang Yue, and Wenhu Chen.
@@ -123,7 +124,7 @@ Yubo Wang, Xueguang Ma, Ge~Zhang, Yuansheng Ni, Abhranil Chandra, Shiguang Guo,
 \newblock In A.~Globerson, L.~Mackey, D.~Belgrave, A.~Fan, U.~Paquet,
   J.~Tomczak, and C.~Zhang, editors, \emph{Advances in Neural Information
   Processing Systems}, volume~37, pages 95266--95290. Curran Associates, Inc.,
-  2024.
+  2024{\natexlab{a}}.
 \newblock \doi{10.52202/079017-3018}.
 \newblock URL
   \url{https://proceedings.neurips.cc/paper_files/paper/2024/file/ad236edc564f3e3156e1b2feafb99a24-Paper-Datasets_and_Benchmarks_Track.pdf}.
@@ -226,6 +227,65 @@ Jack Hao.
 \newblock Hugging Face dataset,
   \url{https://huggingface.co/datasets/jackhhao/jailbreak-classification},
   2023.
+
+\bibitem[Wang et~al.(2025)Wang, Chang, Patel, Biju, Wu, Liu, Ding, Rezazadeh,
+  Shah, Bao, and Siow]{wang2025mcpbench}
+Zhenting Wang, Qi~Chang, Hemani Patel, Shashank Biju, Cheng-En Wu, Quan Liu,
+  Aolin Ding, Alireza Rezazadeh, Ankit Shah, Yujia Bao, and Eugene Siow.
+\newblock {MCP-Bench}: Benchmarking tool-using {LLM} agents with complex
+  real-world tasks via {MCP} servers, 2025.
+\newblock URL \url{https://arxiv.org/abs/2508.20453}.
+
+\bibitem[Wu et~al.(2025)Wu, Liu, Zhang, Chen, Meng, Du, Zhao, Zhang, Ye, Wang,
+  Wang, Ni, Yang, Xu, and Shieh]{wu2025mcpmark}
+Zijian Wu, Xiangyan Liu, Xinyuan Zhang, Lingjun Chen, Fanqing Meng, Lingxiao
+  Du, Yiran Zhao, Fanshi Zhang, Yaoqi Ye, Jiawei Wang, Zirui Wang, Jinjie Ni,
+  Yufan Yang, Arvin Xu, and Michael~Qizhe Shieh.
+\newblock {MCPMark}: A benchmark for stress-testing realistic and comprehensive
+  {MCP} use, 2025.
+\newblock URL \url{https://arxiv.org/abs/2509.24002}.
+
+\bibitem[Wadden et~al.(2020)Wadden, Lin, Lo, Wang, van Zuylen, Cohan, and
+  Hajishirzi]{wadden2020scifact}
+David Wadden, Shanchuan Lin, Kyle Lo, Lucy~Lu Wang, Madeleine van Zuylen, Arman
+  Cohan, and Hannaneh Hajishirzi.
+\newblock Fact or fiction: Verifying scientific claims.
+\newblock In \emph{Proceedings of the 2020 Conference on Empirical Methods in
+  Natural Language Processing ({EMNLP})}, pages 7534--7550. Association for
+  Computational Linguistics, 2020.
+\newblock \doi{10.18653/v1/2020.emnlp-main.609}.
+\newblock URL \url{https://aclanthology.org/2020.emnlp-main.609/}.
+
+\bibitem[Boteva et~al.(2016)Boteva, Gholipour, Sokolov, and
+  Riezler]{boteva2016nfcorpus}
+Vera Boteva, Demian Gholipour, Artem Sokolov, and Stefan Riezler.
+\newblock \emph{A Full-Text Learning to Rank Dataset for Medical Information
+  Retrieval}, pages 716--722.
+\newblock Springer International Publishing, 2016.
+\newblock \doi{10.1007/978-3-319-30671-1_58}.
+
+\bibitem[Thakur et~al.(2021)Thakur, Reimers, R{\"u}ckl{\'e}, Srivastava, and
+  Gurevych]{thakur2021beir}
+Nandan Thakur, Nils Reimers, Andreas R{\"u}ckl{\'e}, Abhishek Srivastava, and
+  Iryna Gurevych.
+\newblock {BEIR}: A heterogenous benchmark for zero-shot evaluation of
+  information retrieval models, 2021.
+\newblock URL \url{https://arxiv.org/abs/2104.08663}.
+
+\bibitem[Wang et~al.(2024{\natexlab{b}})Wang, Dong, Delalleau, Zeng, Shen,
+  Egert, Zhang, Sreedhar, and Kuchaiev]{wang2024helpsteer2}
+Zhilin Wang, Yi~Dong, Olivier Delalleau, Jiaqi Zeng, Gerald Shen, Daniel Egert,
+  Jimmy~J. Zhang, Makesh~Narsimhan Sreedhar, and Oleksii Kuchaiev.
+\newblock {HelpSteer2}: Open-source dataset for training top-performing reward
+  models, 2024{\natexlab{b}}.
+\newblock URL \url{https://arxiv.org/abs/2406.08673}.
+
+\bibitem[Malik et~al.(2025)Malik, Pyatkin, Land, Morrison, Smith, Hajishirzi,
+  and Lambert]{malik2025rewardbench2}
+Saumya Malik, Valentina Pyatkin, Sander Land, Jacob Morrison, Noah~A. Smith,
+  Hannaneh Hajishirzi, and Nathan Lambert.
+\newblock {RewardBench} 2: Advancing reward model evaluation, 2025.
+\newblock URL \url{https://arxiv.org/abs/2506.01937}.
 
 \bibitem[Villal{\'o}n(2026)]{djev2026}
 David Villal{\'o}n.

@@ -1,0 +1,32 @@
+\begin{table}[t]
+\centering
+\caption{The JevBench Index for all 18 evaluated systems. Every dataset is put on a 0--100 scale (accuracy; nDCG@10 and Spearman $\times 100$; SST-5 as $100(1-\mathrm{MAE}/4)$), averaged within six clusters, and the clusters are averaged. ($k$/6): the system covers $k$ clusters. $^{\ddagger}$: the system's API rejects some datasets outright (too many options, or an unsupported question type), and those count as 0. Point estimates from one run per system.}
+\label{tab:ext_index}
+\small
+\setlength{\tabcolsep}{4pt}
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{@{}rllrrrrrrr@{}}
+\toprule
+\# & System & Access & Index & Science & Tool calling & Business & Selection & Ranking & Judging \\
+\midrule
+1 & pplx-decider v1.1 & API & \textbf{78.0} & 80.4 & 89.1 & 84.6 & 84.3 & 56.9 & 72.8 \\
+2 & Mercury Decide & API & \textbf{76.6} & 76.4 & 89.3 & 89.0 & 81.6 & 55.9 & 67.4 \\
+3 & Jev 1.13 & API & \textbf{76.5} & 82.5 & 86.8 & 84.3 & 85.6 & 56.4 & 63.7 \\
+4 & Clef & API & \textbf{76.1} & 77.1 & 87.6 & 90.7 & 86.6 & 55.9 & 59.0 \\
+5 & Microsoft Decision 1 & API & \textbf{75.6} & 76.5 & 85.9 & 86.4 & 84.2 & 54.9 & 65.8 \\
+6 & Liquid D1 & API & \textbf{75.3} & 79.2 & 84.0 & 86.5 & 82.4 & 55.7 & 64.2 \\
+7 & GPT-6 Luna Decisions & API & \textbf{73.4} & 76.3 & 86.4 & 82.5 & 79.1 & 54.8 & 61.2 \\
+8 & djev-0.1 & Cloud GPU & \textbf{73.1} (3/6) & 62.8 & -- & 78.9 & 77.4 & -- & -- \\
+9 & Clef-omni & API & \textbf{72.0} & 76.6 & 81.2 & 90.9 & 79.1 & 53.9 & 50.2 \\
+10 & Clef-flash & API & \textbf{71.8} & 75.3 & 81.9 & 91.4 & 78.5 & 54.3 & 49.2 \\
+11 & Drex v1.5 & API & \textbf{71.0} & 71.8 & 81.4 & 85.5 & 75.2 & 55.8 & 56.4 \\
+12 & Kev 4B & API & \textbf{67.0} & 65.6 & 76.1 & 85.9 & 73.2 & 53.2 & 48.3 \\
+13 & ScaleDown Classify-1 & API & \textbf{66.9} & 63.2 & 82.2 & 79.1 & 78.8 & 43.9 & 54.0 \\
+14 & Solar Decide & API & \textbf{60.3}$^{\ddagger}$ & 76.7 & 60.6 & 42.5 & 79.4 & 44.0 & 58.7 \\
+15 & TEv1 4B (exp.) & API & \textbf{56.9}$^{\ddagger}$ & 66.7 & 58.4 & 43.5 & 69.0 & 54.7 & 49.0 \\
+16 & Solar Decide Flash & API & \textbf{55.1}$^{\ddagger}$ & 64.2 & 52.0 & 41.0 & 74.4 & 49.5 & 49.3 \\
+17 & Laya 421M & Local & \textbf{52.4} (3/6) & 30.3 & -- & 57.5 & 69.3 & -- & -- \\
+18 & Span-01 & API & \textbf{12.7}$^{\ddagger}$ & 0.0 & 0.0 & 0.0 & 76.4 & 0.0 & 0.0 \\
+\bottomrule
+\end{tabular}}
+\end{table}

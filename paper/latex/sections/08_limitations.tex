@@ -53,3 +53,14 @@ average about 1{,}500 tokens, so Laya's 65.4\% on this slice
 (Table~\ref{tab:main}) reflects a truncated input and is not directly comparable
 with Jev and djev, which received substantially longer inputs
 (Table~\ref{tab:context}).
+
+\paragraph{Extended evaluation.} The 14 OpenRouter models are hosted aliases.
+OpenRouter may route a model to more than one upstream provider, and a provider
+may change the model behind an alias; we record the provider reported for every
+response, but cannot rule out changes between our runs and a replication. Each
+system was run once, so the index and the per-slice results in
+Section~\ref{sec:extended} are point estimates without paired intervals.
+Counting rejected slices as 0 penalises an API's limits, not its model's
+competence on the slices it accepts. The tool-selection checkpoints and their
+candidate functions were written for JevBench; they are not official
+trajectories of either MCP benchmark, and they are few.

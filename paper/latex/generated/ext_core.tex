@@ -1,0 +1,32 @@
+\begin{table}[p]
+\centering
+\caption{Every system on the twelve original text slices: accuracy (\%), except SST-5 mean absolute error (lower is better). Bold: best on the column. $^{*}$: under 99.5\% of cases answered. --: not run, or rejected by the API. Columns: Aegis 2.0 prompts and responses, ATBench, jailbreak classification, prompt injections, MedMCQA, MedQA-USMLE, PubMedQA, MMLU-Pro, ScienceQA text, BANKING77, SST-5.}
+\label{tab:ext_core}
+\scriptsize
+\setlength{\tabcolsep}{3pt}
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{@{}lrrrrrrrrrrrr@{}}
+\toprule
+Model & Aeg-P & Aeg-R & ATB & Jail & PInj & MCQA & MedQA & PubMed & MMLU-P & SciQA & B77 & SST5$\downarrow$ \\
+\midrule
+pplx-decider v1.1 & 86.0 & 80.8 & 74.6 & 89.8 & \textbf{90.5} & 75.7 & \textbf{88.9} & 69.6 & 70.8 & \textbf{97.0} & 81.8 & 0.51 \\
+Mercury Decide & 84.0 & 77.2 & 68.8 & 96.8 & 81.0 & 72.6 & 84.9 & 65.6 & 64.5 & 94.2 & 89.9 & \textbf{0.48} \\
+Jev 1.13 & 82.8 & 81.2 & 93.0 & \textbf{97.5} & 73.3 & \textbf{78.1} & 87.3 & \textbf{70.6} & \textbf{80.6} & 95.7 & 81.3 & 0.51 \\
+Clef & 83.2 & 78.6 & \textbf{93.8} & 97.0 & 80.2 & 72.5 & 84.3 & 67.8 & 66.8 & 93.9 & 94.8 & 0.54 \\
+Microsoft Decision 1 & 82.0 & \textbf{82.2} & 86.8 & 96.5 & 73.3 & 75.9 & 80.7 & 68.0 & 64.7 & 93.2 & 86.4 & 0.54 \\
+Liquid D1 & \textbf{86.6} & 78.8 & 78.6 & 96.5 & 71.6 & 77.0 & 86.6 & 70.4 & 66.4 & 95.8 & 85.7 & 0.51 \\
+GPT-6 Luna Decisions & 74.8 & 72.6 & 87.8 & 96.8 & 63.8 & 77.1$^{*}$ & 87.6 & 62.8 & 59.9 & 94.0 & 78.6 & 0.54 \\
+djev-0.1 & 81.0 & 69.2 & 75.8 & 96.5 & 64.7 & 53.8 & 71.2 & 62.2 & 42.3 & 84.7 & 71.4 & 0.54 \\
+Clef-omni & 84.8 & 79.0 & 67.4 & 92.5 & 71.6 & 72.5 & 79.5 & 67.4 & 71.5 & 92.1 & 94.8 & 0.52 \\
+Clef-flash & 83.2 & 79.0 & 76.8 & 94.3 & 59.5 & 70.4 & 76.6 & 69.6 & 67.6 & 92.3 & \textbf{96.1} & 0.53 \\
+Drex v1.5 & 79.2 & 72.8 & 77.0 & 92.0 & 55.2 & 66.6 & 75.5 & 65.2 & 61.0 & 90.6 & 84.9 & 0.56 \\
+Kev 4B & 84.0 & 79.4 & 48.6 & 94.8 & 59.5 & 56.4 & 67.2 & 64.6 & 52.7 & 86.9 & 85.3 & 0.54 \\
+ScaleDown Classify-1 & 82.8 & 75.0 & 52.0 & 95.5 & 88.8 & 59.6 & 74.2 & 54.4 & 43.6 & 84.0 & 73.6 & 0.62 \\
+Solar Decide & 80.8 & 75.4 & 73.8 & 96.5 & 70.7 & 72.2 & 83.1 & 59.4 & 72.5 & 96.2 & -- & 0.60 \\
+TEv1 4B (exp.) & 76.8 & 67.8 & 53.6 & 91.7 & 55.2 & 61.0 & 68.9 & 66.8 & 48.4 & 88.5 & -- & 0.52 \\
+Solar Decide Flash & 73.6 & 72.0 & 50.0 & 97.0 & 79.3 & 63.4 & 72.2 & 52.4 & 47.2 & 85.6 & -- & 0.72 \\
+Laya 421M & 54.2 & 52.8 & 65.4 & 93.0 & 81.0 & 26.9 & 26.1 & 32.8 & 12.5 & 53.4 & 36.3 & 0.85 \\
+Span-01 & 81.8 & 74.8 & 62.8 & 94.5 & 68.1 & -- & -- & -- & -- & -- & -- & -- \\
+\bottomrule
+\end{tabular}}
+\end{table}

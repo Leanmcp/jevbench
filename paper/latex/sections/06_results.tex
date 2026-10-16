@@ -158,3 +158,54 @@ The 1.9-point difference between the image and text rows of ScienceQA has overla
 \paragraph{Verification that the image is consumed.} Sending 12 VQA-RAD cases twice, identical except for the image, every pair increased input tokens by 254 to 274 with no exceptions, and 3 of 12 decisions changed. With the image removed the model answered ``no'' to all 12 cases, producing varied answers only when the image was present. Accuracy with the image on that small sample was lower than without (66.7\% against 75.0\%), but the no-image condition is a degenerate always-negative predictor and 9 of the 12 golds were negative; we report it to forestall the misreading.
 
 \paragraph{Latency.} Image decisions cost 1{,}633\,ms (VQA-RAD) and 1{,}913\,ms (ScienceQA) at the median against 781\,ms for text on the same hardware.
+
+\subsection{Extended evaluation: 18 systems}
+\label{sec:extended}
+
+Table~\ref{tab:ext_index} and Figure~\ref{fig:ext_index} place all 18 systems on
+the JevBench Index, which averages six clusters of slices: Science (the five
+medical and examination slices), Tool calling (the four MCP slices), Business
+(BANKING77 and SST-5), Selection (the five safety slices), Ranking (SciFact and
+NFCorpus, per-document protocol) and Judging (HelpSteer2 and RewardBench~2).
+Each cluster has equal weight, however many slices it holds.
+Appendix~\ref{app:extended} gives every system on every slice
+(Tables~\ref{tab:ext_core} and~\ref{tab:ext_new}).
+
+\input{generated/ext_index}
+
+\begin{figure}[t]
+\centering
+\input{generated/ext_fig}
+\caption{The JevBench Index (0--100) for all 18 systems, from
+Table~\ref{tab:ext_index}. Light bars cover fewer than six clusters. The index
+is a summary for orientation; per-slice results
+(Appendix~\ref{app:extended}) carry the comparisons.}
+\label{fig:ext_index}
+\end{figure}
+
+\paragraph{The top of the ranking is close.} pplx-decider v1.1 has the highest
+index (78.0), and the top six systems lie within 2.7 points (78.0 to 75.3).
+These are single-run point estimates, so we do not read an order into
+differences of this size. No system leads every cluster: Jev~1.13 leads Science
+(82.5), Mercury Decide leads Tool calling (89.3), Clef-flash leads Business
+(91.4), Clef leads Selection (86.6), and pplx-decider v1.1 leads Ranking (56.9)
+and Judging (72.8).
+
+\paragraph{The binary operating point still dominates the safety slices.} On
+ATBench, accuracy at 0.5 ranges from 48.6\% (Kev~4B) to 93.8\% (Clef), and on
+prompt injections from 55.2\% to 90.5\%. Jailbreak classification stays between
+89.8\% and 97.5\% for every hosted system. As in Section~\ref{sec:threshold},
+binary accuracy at a fixed threshold measures the operating point as well as
+discrimination.
+
+\paragraph{Reranking adds little over the shortlist.} On SciFact, per-document
+nDCG@10 ranges from 0.557 to 0.756 against 0.661 for the BM25 order of the same
+shortlist; Solar Decide, ScaleDown Classify-1 and Solar Decide Flash do not
+improve on BM25. On NFCorpus the range is 0.312 to 0.383 against 0.332.
+
+\paragraph{Judging separates systems most.} Spearman correlation with human
+helpfulness ratings on HelpSteer2 ranges from 0.33 to 0.64, and RewardBench~2
+accuracy from 56.0\% to 81.5\% (chance 25\%). MCPMark routing is hard for every
+system (32.8\% to 58.0\% over six environments), whereas most systems reach 100\% on each tool-selection
+slices. These have 26 and 18 cases from four and three
+tasks, so we do not interpret differences on them.

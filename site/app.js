@@ -308,7 +308,7 @@ function openModel(name, opener) {
   }));
   $("#drawer").replaceChildren(...[
     el("div", { class: "drawer-top" }, el("h2", { id: "drawer-title" }, r.name), el("button", { class: "btn", type: "button", id: "drawer-close", onclick: closeModel }, "Close")),
-    el("p", { class: "meta" }, `${r.links?.["Hugging Face"] ? "Open weights" : r.hosting === "API" ? "Hosted" : r.hosting}. Licence: ${r.licence || "not checked"}.`),
+    el("p", { class: "meta" }, `${r.links?.["Hugging Face"] ? "Open weights" : r.hosting === "API" ? "Hosted" : r.hosting}.${r.architecture ? ` ${r.architecture}.` : ""} Licence: ${r.licence || "not checked"}.`),
     el("div", { class: "links" }, orderedLinks(r.links).map(([label, url]) => el("a", { class: "btn", href: url, target: "_blank", rel: "noopener" }, label))),
     el("div", { class: "big" }, el("span", {}, r.index !== null ? r.index.toFixed(1) : "–"),
       el("span", { class: "sub" }, r.index !== null ? ` index, #${indexRank[r.name]} of ${Object.keys(indexRank).length}` + (r.covered < CAT_NAMES.length ? `, ${r.covered}/${CAT_NAMES.length} categories` : "") : " not indexed yet")),

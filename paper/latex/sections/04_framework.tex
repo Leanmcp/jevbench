@@ -64,6 +64,25 @@ receives them. The jailbreak classification dataset
 \citep{jackhhao2023jailbreak} labels prompts as jailbreak attempts, which try to
 talk a model out of its safety rules, or as benign.
 
+\paragraph{Tool use, reranking and judging (extension).} Eight further slices
+extend the suite beyond single-label classification. From MCP-Bench
+\citep{wang2025mcpbench} and MCPMark \citep{wu2025mcpmark} we build server
+routing (\textsc{choice} over the 28 MCP-Bench servers or the six MCPMark
+environments, from the task description; 112 and 338 cases with reordered
+twins) and tool selection (\textsc{choice} of the next function at a checkpoint
+we wrote for a task; 26 and 18 cases). These measure one decision inside a
+task, not task completion. For reranking we use SciFact
+\citep{wadden2020scifact} and NFCorpus \citep{boteva2016nfcorpus} from BEIR
+\citep{thakur2021beir}: each query comes with a fixed BM25 top-20 shortlist, the
+model answers one \textsc{binary} relevance question per document, and the
+documents are sorted by $p(\textsc{true})$ and scored by nDCG@10 (300 and 298
+queries). For judging, HelpSteer2 \citep{wang2024helpsteer2} asks for the
+helpfulness of a response on the 0--4 human scale (\textsc{score}, 500 cases,
+scored by Spearman correlation with the human rating), and RewardBench~2
+\citep{malik2025rewardbench2} asks for the one correct response of four
+(\textsc{choice}, 600 items asked in two orders, chance 25\%). Model scores on
+these slices are in Section~\ref{sec:extended}.
+
 \paragraph{Images.} ScienceQA rows that include an image form an image slice, and
 VQA-RAD \citep{lau2018vqarad} pairs radiology images with clinicians' questions,
 of which we keep the closed yes/no ones. Only djev-0.1 accepts images, so these

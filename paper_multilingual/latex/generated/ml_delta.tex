@@ -1,0 +1,28 @@
+\begin{table}[t]
+\centering
+\caption{Change in accuracy from English (points), per model and language, each on the cases both runs answered. Bold: the 95\% paired bootstrap interval (2{,}000 resamples over case families) excludes zero. $\cdot$: run not finished. The English column is the model's accuracy on all English cases.}
+\label{tab:delta}
+\footnotesize
+\setlength{\tabcolsep}{3pt}
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{@{}lrrrrrrrrr@{}}
+\toprule
+Model & English & zh & ar & hi & vi & sw & es & fr & ru \\
+\midrule
+Clef & 86.6 & $+$0.9 & $-$0.6 & $-$1.3 & \textbf{$-$3.2} & \textbf{$-$5.5} & $-$0.1 & $+$0.9 & $-$0.8 \\
+pplx-decider v1.1 & 84.3 & \textbf{$-$1.7} & \textbf{$-$1.7} & \textbf{$-$4.7} & \textbf{$-$2.5} & \textbf{$-$3.2} & $+$0.5 & $-$0.9 & $-$0.2 \\
+Microsoft Decision 1 & 84.2 & $+$0.6 & $-$1.5 & \textbf{$-$2.1} & \textbf{$+$1.6} & \textbf{$-$8.7} & $+$0.6 & $-$1.1 & $-$0.5 \\
+Mercury Decide & 81.6 & $-$0.3 & $-$1.2 & \textbf{$-$2.1} & $-$0.5 & \textbf{$-$4.8} & $-$1.3 & \textbf{$-$2.3} & $-$1.1 \\
+Solar Decide & 79.4 & \textbf{$-$4.3} & \textbf{$-$6.8} & \textbf{$-$6.7} & \textbf{$-$9.1} & \textbf{$-$12.0} & \textbf{$-$5.9} & \textbf{$-$4.0} & \textbf{$-$3.4} \\
+GPT-6 Luna Decisions & 79.2 & $-$0.8 & $+$1.1 & $-$1.2 & $+$0.5 & $+$1.0 & $+$0.9 & \textbf{$+$2.2} & \textbf{$-$1.8} \\
+Clef-omni & 79.1 & $+$0.4 & $-$0.4 & \textbf{$-$3.6} & $-$0.5 & \textbf{$-$6.7} & \textbf{$+$1.6} & \textbf{$+$2.6} & $-$0.1 \\
+ScaleDown Classify-1 & 78.8 & \textbf{$-$8.3} & \textbf{$-$6.8} & \textbf{$-$2.7} & \textbf{$-$7.6} & \textbf{$-$8.2} & \textbf{$-$4.5} & \textbf{$-$5.4} & \textbf{$-$4.1} \\
+Clef-flash & 78.6 & $+$0.2 & $-$0.2 & $+$0.3 & \textbf{$+$3.3} & \textbf{$-$5.0} & \textbf{$+$1.6} & $+$0.8 & \textbf{$+$1.4} \\
+Span-01 & 76.4 & \textbf{$+$5.6} & $+$0.3 & \textbf{$-$12.6} & $-$1.1 & \textbf{$-$13.0} & \textbf{$-$1.8} & \textbf{$-$2.9} & \textbf{$-$1.9} \\
+Drex v1.5 & 75.2 & $+$0.7 & $-$0.9 & \textbf{$-$2.6} & \textbf{$+$2.0} & \textbf{$-$4.1} & 0.0 & 0.0 & \textbf{$+$1.6} \\
+Solar Decide Flash & 74.4 & \textbf{$-$4.1} & \textbf{$-$9.3} & \textbf{$-$5.7} & \textbf{$-$4.8} & \textbf{$-$19.0} & \textbf{$-$2.3} & \textbf{$-$2.3} & $-$0.7 \\
+Kev 4B & 73.3 & \textbf{$-$1.9} & \textbf{$-$2.2} & \textbf{$-$6.6} & $-$1.4 & \textbf{$-$8.7} & \textbf{$-$1.7} & $-$0.4 & $-$1.2 \\
+TEv1 4B (exp.) & 69.0 & \textbf{$+$4.6} & \textbf{$+$4.6} & $-$0.9 & \textbf{$+$3.1} & \textbf{$-$7.7} & $+$0.8 & \textbf{$+$7.6} & $+$0.5 \\
+\bottomrule
+\end{tabular}}
+\end{table}
